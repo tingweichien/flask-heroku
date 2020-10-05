@@ -1,18 +1,12 @@
 .navbar {
-    background-color: lightslategray;
-    font-size: 1em;
+    background-color: rgb(107, 115, 122);
+    font-size: 30px;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     color: white;
     padding: 8px 5px 8px 5px;
 }
 
-.navbar a {
-    text-decoration: none;
-    color: inherit;
-}
-
 .navbar-brand {
-    font-size: 1.2em;
     font-weight: 600;
 }
 
