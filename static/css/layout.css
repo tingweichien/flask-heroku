@@ -1,16 +1,18 @@
 .navbar {
-    background-color: rgb(107, 115, 122);
+    background-color: rgb(136, 139, 143);
     font-size: 30px;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    color: white;
+    color: rgb(245, 8, 8);
     padding: 8px 5px 8px 5px;
 }
 
 .navbar-brand {
+    color: rgb(123, 219, 206);
     font-weight: 600;
 }
 
 .navbar-item {
+    color: rgb(245, 248, 246);
     font-variant: small-caps;
     margin-left: 30px;
 }
