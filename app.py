@@ -41,6 +41,17 @@ def contact():
     return render_template("contact.html")
 
 
+@app.route("/OSMmap")
+def OSMmap():
+    return render_template("OSMmap.html")
+
+
+@app.route("/OSMinGMAP")
+def OSMinGMAP():
+    return render_template("OSMinGMAP.html")
+
+
+
 #\ to HTTP method
 @ app.route("/urlREST/<name>")
 def urlREST(name):
