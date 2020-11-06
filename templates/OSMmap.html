@@ -35,7 +35,11 @@
     <div id="footer">&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>
 
     <!-- bring in the google maps library -->
+    {% if api_on %}
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{apikey}}&sensor=false"></script>
+    {% else %}
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    {% endif %}
 
     <script type="text/javascript">
         //Google maps API initialisation
@@ -45,8 +49,8 @@
             center: new google.maps.LatLng(24.150913, 120.650534),
             zoom: 7,
             mapTypeId: "OSM",
-            mapTypeControl: false,
-            streetViewControl: false
+            mapTypeControl: true,
+            streetViewControl: true
         });
 
         //Define OSM map type pointing at the OpenStreetMap tile server

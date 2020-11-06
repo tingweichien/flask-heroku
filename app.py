@@ -2,6 +2,7 @@
 
 from flask import Flask, render_template, request, url_for, redirect, session
 from datetime import timedelta
+from index import *
 
 # __name__ represent the current module
 app = Flask(__name__)
@@ -43,12 +44,9 @@ def contact():
 
 @app.route("/OSMmap")
 def OSMmap():
-    return render_template("OSMmap.html")
+    return render_template("OSMmap.html", apikey = GMAPapikey, api_on = bAPIon)
 
 
-@app.route("/OSMinGMAP")
-def OSMinGMAP():
-    return render_template("OSMinGMAP.html")
 
 
 
