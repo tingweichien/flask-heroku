@@ -5,18 +5,16 @@ import configparser
 from flask import Flask, request, abort
 
 #\ Global
-gHandler = None
+#\ Line bot basic info
+config = configparser.ConfigParser()
+config.read('config.ini')
+gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
+gHandler = WebhookHandler(config.get('line-bot', 'channel_secret'))
+
 
 class LineBotClass():
     #\ -- CONSTRUCTOR --
     def __init__(self, app:Flask):
-        #\ Line bot basic info
-        global gHandler
-        self.config = configparser.ConfigParser()
-        self.config.read('config.ini')
-        self.Line_bot_api = LineBotApi(self.config.get("line-bot", "channel_access_token"))
-        self.handler = WebhookHandler(self.config.get('line-bot', 'channel_secret'))
-        gHandler = self.handler
         self.app = app
 
     #\ -- METHOD --
@@ -45,7 +43,7 @@ class LineBotClass():
     #\ handle the message
     @gHandler.add(MessageEvent, message=TextMessage)
     def handle_message(self, event):
-        self.Line_bot_api.reply_message(
-                                        event.reply_token,
-                                        TextSendMessage(text=event.message.text)
-                                        )
+        gLine_bot_api.reply_message(
+                                event.reply_token,
+                                TextSendMessage(text=event.message.text)
+                                )

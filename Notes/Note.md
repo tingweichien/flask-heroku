@@ -131,3 +131,20 @@ i.e.
 - [Python網頁設計：Flask使用筆記(二)- 搭配HTML和CSS](https://medium.com/@yanweiliu/python%E7%B6%B2%E9%A0%81%E8%A8%AD%E8%A8%88-flask%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98-%E4%BA%8C-89549f4986de)
 
 - [Python 學習筆記 : 用 Flask 架站 (一) 請求處理](http://yhhuang1966.blogspot.com/2019/08/python-flask.html)
+
+### [2021/05/11]
+
+1. Error after changing the name of the project
+     - error
+
+        ```shell
+        D:\Code\python\web\flask_practice>git push -u heroku master
+        error: src refspec master does not match any
+        error: failed to push some refs to 'https://git.heroku.com/dragonfly-flask-web.git'
+        ```
+
+      - solve
+
+        ``` shell
+        git push heroku HEAD:master
+        ```
