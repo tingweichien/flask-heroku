@@ -1,6 +1,6 @@
 from linebot import LineBotApi, WebhookHandler
-from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+# from linebot.exceptions import InvalidSignatureError
+# from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import configparser
 from flask import Flask, request, abort
 
@@ -40,10 +40,10 @@ class LineBotClass():
         return 'OK'
 
 
-    #\ handle the message
-    @gHandler.add(MessageEvent, message=TextMessage)
-    def handle_message(self, event):
-        gLine_bot_api.reply_message(
-                                event.reply_token,
-                                TextSendMessage(text=event.message.text)
-                                )
+    # #\ handle the message
+    # @gHandler.add(MessageEvent, message=TextMessage)
+    # def handle_message(self, event):
+    #     gLine_bot_api.reply_message(
+    #                             event.reply_token,
+    #                             TextSendMessage(text=event.message.text)
+    #                             )

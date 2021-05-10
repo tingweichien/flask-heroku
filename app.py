@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, url_for, redirect, session
 from datetime import timedelta
 from index import *
 import LineBotClass
+from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
 import random
 
@@ -89,7 +90,13 @@ def user():
 def LineBotEcho():
     LineBot.echo()
 
-
+#\ handle the message
+@LineBotClass.gHandler.add(MessageEvent, message=TextMessage)
+def handle_message(self, event):
+    LineBotClass.gLine_bot_api.reply_message(
+                            event.reply_token,
+                            TextSendMessage(text=event.message.text)
+                            )
 
 
 ################################################################################
