@@ -29,6 +29,7 @@ class LineBotClass():
         #\ get request body as text
         body = request.get_data(as_text=True)
         self.app.logger.info("Request body: " + body)
+        print(body)
 
         #\ handle webhook body
         try:
