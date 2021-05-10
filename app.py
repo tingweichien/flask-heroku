@@ -3,15 +3,26 @@
 from flask import Flask, render_template, request, url_for, redirect, session
 from datetime import timedelta
 from index import *
+import LineBotClass
 
-# __name__ represent the current module
+import random
+
+
+#\ __name__ represent the current module
 app = Flask(__name__)
 
-#\ secret key for seeeion
+
+#\ secret key for session
 app.secret_key ="tim960622"
 app.permanent_session_lifetime = timedelta(seconds=5)
 
-#\ APP ROUTER
+
+#\ Line bot basic info
+LineBot = LineBotClass.LineBotClass(app)
+
+
+################################################################################
+#\ -- APP ROUTER --
 #\ Decorator 函式的裝飾:以函式為基礎,提供附加功能
 @app.route("/")
 def home():
@@ -47,10 +58,7 @@ def OSMmap():
     return render_template("OSMmap.html", apikey = GMAPapikey, api_on = bAPIon)
 
 
-
-
-
-#\ to HTTP method
+#\ -- to HTTP method --
 @ app.route("/urlREST/<name>")
 def urlREST(name):
     return "<h1>Hello {} !! This is urlREST example</h1>".format(name)
@@ -74,6 +82,17 @@ def user():
         return redirect(url_for("about"))
 
 
+
+#\ -- Line Bot --
+#\ echo
+@app.route("/LineBotEcho", methods=['POST'])
+def LineBotEcho():
+    LineBot.echo()
+
+
+
+
+################################################################################
 #\ start the server
 if __name__ == "__main__":
     # auto reload page
