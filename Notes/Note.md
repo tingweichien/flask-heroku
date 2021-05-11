@@ -135,7 +135,7 @@ i.e.
 ### [2021/05/11]
 
 1. Error after changing the name of the project
-     - error
+    - error
 
         ```shell
         D:\Code\python\web\flask_practice>git push -u heroku master
@@ -143,8 +143,16 @@ i.e.
         error: failed to push some refs to 'https://git.heroku.com/dragonfly-flask-web.git'
         ```
 
-      - solve
+    - solve
 
-        ``` shell
+        ```shell
         git push heroku HEAD:master
         ```
+
+2. Heroku command
+
+   1. Deploying from a branch besides main
+
+      ```shell
+      git push heroku testbranch:main
+      ```

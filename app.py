@@ -89,7 +89,6 @@ def user():
 @app.route("/LineBotEcho", methods=['POST'])
 def LineBotEcho():
     LineBot.LineBotHandler()
-    LineBot.Event_Trigger()
 
 
 

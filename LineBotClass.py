@@ -41,16 +41,13 @@ class LineBotClass():
         return 'OK'
 
 
-    #\ event trigger
-    def Event_Trigger(self):
-        self.handle_message()
-
-
     #\ handle the message
     @gHandler.add(MessageEvent, message=TextMessage)
     def handle_message(self, event):
-        print("[INFO] : TextMessage")
-        gLine_bot_api.reply_message(
-                                event.reply_token,
-                                TextSendMessage(text=event.message.text)
-                                )
+        print("[INFO]: TextMessage")
+        print(f"[INFO]: {event}")
+        if event.source.user_id != "Udeadbeefdeadbeefdeadbeefdeadbeef":
+            gLine_bot_api.reply_message(
+                                    event.reply_token,
+                                    TextSendMessage(text=event.message.text)
+                                    )
