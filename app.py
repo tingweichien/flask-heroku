@@ -88,15 +88,18 @@ def user():
 #\ echo
 @app.route("/LineBotEcho", methods=['POST'])
 def LineBotEcho():
-    LineBot.echo()
+    LineBot.LineBotHandler()
+    LineBot.Event_Trigger()
+
+
 
 #\ handle the message
-@LineBotClass.gHandler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
-    LineBotClass.gLine_bot_api.reply_message(
-                            event.reply_token,
-                            TextSendMessage(text=event.message.text)
-                            )
+# @LineBotClass.gHandler.add(MessageEvent, message=TextMessage)
+# def handle_message(event):
+#     LineBotClass.gLine_bot_api.reply_message(
+#                             event.reply_token,
+#                             TextSendMessage(text=event.message.text)
+#                             )
 
 
 

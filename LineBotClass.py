@@ -1,6 +1,6 @@
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-# from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import configparser
 from flask import Flask, request, abort
 
@@ -19,8 +19,8 @@ class LineBotClass():
 
     #\ -- METHOD --
 
-    #\ Echo what you send. This is the example from the official doc
-    def echo(self):
+    #\ handler. This is the example from the official doc
+    def LineBotHandler(self):
         #\ get X-Line-Signature header value
         #\ 如果該HTTP POST訊息是來自LINE平台，在HTTP請求標頭中一定會包括X-Line-Signature項目，
         #\ 該項目的內容值是即為數位簽章。例如：
@@ -41,10 +41,16 @@ class LineBotClass():
         return 'OK'
 
 
-    # #\ handle the message
-    # @gHandler.add(MessageEvent, message=TextMessage)
-    # def handle_message(self, event):
-    #     gLine_bot_api.reply_message(
-    #                             event.reply_token,
-    #                             TextSendMessage(text=event.message.text)
-    #                             )
+    #\ event trigger
+    def Event_Trigger(self):
+        self.handle_message()
+
+
+    #\ handle the message
+    @gHandler.add(MessageEvent, message=TextMessage)
+    def handle_message(self, event):
+        print("[INFO] : TextMessage")
+        gLine_bot_api.reply_message(
+                                event.reply_token,
+                                TextSendMessage(text=event.message.text)
+                                )
