@@ -41,9 +41,10 @@ class LineBotClass():
         return 'OK'
 
 
+
     #\ handle the message
     @gHandler.add(MessageEvent, message=TextMessage)
-    def handle_message(self, event):
+    def handle_message(event):
         print("[INFO]: TextMessage")
         print(f"[INFO]: {event}")
         if event.source.user_id != "Udeadbeefdeadbeefdeadbeefdeadbeef":
