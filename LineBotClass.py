@@ -1,8 +1,9 @@
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, JoinEvent
 import configparser
 from flask import Flask, request, abort
+import Index
 
 #\ Global
 #\ Line bot basic info
@@ -12,11 +13,17 @@ gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
 gHandler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 
 
+#\ text for login
+gEventText = ""
+
+
+#\ message text
+gIsJustText = True
+
 class LineBotClass():
     #\ -- CONSTRUCTOR --
     def __init__(self, app:Flask):
         self.app = app
-
     #\ -- METHOD --
 
     #\ handler. This is the example from the official doc
@@ -44,11 +51,49 @@ class LineBotClass():
 
     #\ handle the message
     @gHandler.add(MessageEvent, message=TextMessage)
-    def handle_message(event):
+    def handle_text_message(event):
+        global gIsJustText
         print("[INFO]: TextMessage")
         print(f"[INFO]: {event}")
         if event.source.user_id != "U00a49f1618f9827d4b24f140c2e5f770":
+
+            #\ switch the case of MessageEvent
+            if gIsJustText == True :
+                gEventText = event.message.text.lower()
+
+            if gEventText == "login":
+                gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=Index.LoginEventText[0]))
+                Index.LoginData["Account"] = event.message.text
+                gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=Index.LoginEventText[1]))
+                Index.LoginData["Password"] = event.message.text
+                self.Login2Web(event)
+
+            elif gEventText == "menu":
+                pass
+            else :
+                gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
+
+            #\ reset the is just text flag
+            gIsJustText = True
+
+
+    #\ for the first time joining the group
+    @gHandler.add(JoinEvent)
+    def handle_message(event):
+        global gEventText, gIsJustText
+        gEventText = "login"
+        gIsJustText = False
+        print("[INFO]: TextMessage")
+        print(f"[INFO]: {event}")
+        for idx in range(Index.JointTextFirstPointer):
             gLine_bot_api.reply_message(
-                                    event.reply_token,
-                                    TextSendMessage(text=event.message.text)
-                                    )
+                            event.reply_token,
+                            TextSendMessage(text=Index.JoinEventText[idx])
+                            )
+
+
+    #\
+    def Login2Web(self, event):
+        gLine_bot_api.reply_message(
+                            event.reply_token,
+                            TextSendMessage(text=f'Hi, Check again again for the login info:\nAccount: {Index.LoginData["Account"]}\nPassword: {Index.LoginData["Password"]}'))
