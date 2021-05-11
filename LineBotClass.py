@@ -47,7 +47,7 @@ class LineBotClass():
     def handle_message(event):
         print("[INFO]: TextMessage")
         print(f"[INFO]: {event}")
-        if event.source.user_id != "Udeadbeefdeadbeefdeadbeefdeadbeef":
+        if event.source.user_id != "U00a49f1618f9827d4b24f140c2e5f770":
             gLine_bot_api.reply_message(
                                     event.reply_token,
                                     TextSendMessage(text=event.message.text)
