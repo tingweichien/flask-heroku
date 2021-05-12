@@ -9,20 +9,20 @@ import json
 
 #\ load data from json file
 with open("Index.json") as f:
-    Index = json.load(f)
-    print(f'{"x"*25}\nx [INFO]The Index data is x\n{"x"*25}\n{json.dumps(Index, indent=4)}')
+    INDEX = json.load(f)
+    print(f'{"x"*25}\nx [INFO]The Index data is x\n{"x"*25}\n{json.dumps(INDEX, indent=4)}')
 
 
 #\ -- OSM API --
-bAPIon = Index.OSM.bAPIon
-GMAPapikey = Index.OSM.GMAPapikey
+bAPIon = INDEX.OSM.bAPIon
+GMAPapikey = INDEX.OSM.GMAPapikey
 
 
 #\ -- Line Bot --
 #\ Line Bot join group Text
-JoinEventText = Index.LineBot.JoinEventText
+JoinEventText = INDEX.LineBot.JoinEventText
 
 #\ Login info
-LoginEventText = Index.LineBot.LoginEventText
+LoginEventText = INDEX.LineBot.LoginEventText
 LoginData = dict()
 
