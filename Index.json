@@ -1,0 +1,11 @@
+{
+    "OSM": {
+        "bAPIon" : false,
+        "GMAPapikey" : "AIzaSyBEnhhOTbjqUkeWikhcrmVfYWM4AjeqCQY"
+    },
+
+    "LineBot": {
+        "JoinEventText" : ["Welcome to the dragonfly line bot~", "Please login"],
+        "LoginEventText" : ["Please enter the account : ", "Please enter the password : "]
+    }
+}

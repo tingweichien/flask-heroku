@@ -2,7 +2,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, JoinEvent
 import configparser
-from flask import Flask, request, abort
+from flask import request, abort
 import Index
 
 #\ Global
@@ -32,7 +32,7 @@ def LineBotHandler(app):
     #\ get request body as text
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
-    print(body)
+    print(f"[INFO]{body}")
 
     #\ handle webhook body
     try:
