@@ -6,8 +6,6 @@ import Index
 import LineBotClass
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
-import random
-
 
 #\ __name__ represent the current module
 app = Flask(__name__)
@@ -17,9 +15,6 @@ app = Flask(__name__)
 app.secret_key ="tim960622"
 app.permanent_session_lifetime = timedelta(seconds=5)
 
-
-#\ Line bot basic info
-LineBot = LineBotClass.LineBotClass(app)
 
 
 ################################################################################
@@ -88,7 +83,7 @@ def user():
 #\ echo
 @app.route("/LineBotEcho", methods=['POST'])
 def LineBotEcho():
-    LineBot.LineBotHandler()
+    LineBotClass.LineBotHandler(app)
 
 
 
