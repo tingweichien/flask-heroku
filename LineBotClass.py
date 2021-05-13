@@ -52,7 +52,7 @@ def LineBotHandler(app):
 #\ handle the message
 @gHandler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    global gIsJustText, gEventText, gEventCnt, gEventText
+    global gIsJustText, gEventText, gEventCnt, gEvent
     print("[INFO]: TextMessage")
     print(f"[INFO]: {event}")
 
