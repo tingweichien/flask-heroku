@@ -81,11 +81,11 @@ def handle_text_message(event):
             gEventCnt += 1
             if gEventCnt == 1:
                 gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[0]))
-                LoginData["Account"] = event.message.text
             elif gEventCnt == 2:
                 gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[1]))
-                LoginData["Password"] = event.message.text
+                LoginData["Account"] = event.message.text
             else:
+                LoginData["Password"] = event.message.text
                 Login2Web(event)
                 #\ reset the is-just-text flag and the event count and event
                 gIsJustText = True
@@ -120,4 +120,4 @@ def handle_message(event):
 def Login2Web(event):
     gLine_bot_api.reply_message(
                         event.reply_token,
-                        TextSendMessage(text=f'Hi, Check again again for the login info:\nAccount: {LoginData["Account"]}\nPassword: {LoginData["Password"]}'))
+                        TextSendMessage(text=f'Hi, Check again for the login info:\nAccount: {LoginData["Account"]}\nPassword: {LoginData["Password"]}'))
