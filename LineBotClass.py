@@ -4,6 +4,8 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage, JoinEvent
 import configparser
 from flask import request, abort
 import index
+from VarIndex import *
+
 
 #\ Global
 #\ Line bot basic info
@@ -13,8 +15,10 @@ gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
 gHandler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 
 
-#\ text for login
+#\ global event
 gEventText = ""
+gEvent = None
+gEvenyCnt = 0
 
 #\ message text
 gIsJustText = True
@@ -48,36 +52,57 @@ def LineBotHandler(app):
 #\ handle the message
 @gHandler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    global gIsJustText
+    global gIsJustText, gEventText, gEvenyCnt
     print("[INFO]: TextMessage")
     print(f"[INFO]: {event}")
+
+    #\ workaround for the linebot url verify error
     if event.source.user_id != "U00a49f1618f9827d4b24f140c2e5f770":
 
         #\ switch the case of MessageEvent
+
+        #\ read the text if it meants to trigger some event
         if gIsJustText == True :
             gEventText = event.message.text.lower()
 
-        if gEventText == "login":
-            gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[0]))
-            index.LoginData["Account"] = event.message.text
-            gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[1]))
-            index.LoginData["Password"] = event.message.text
-            Login2Web(event)
+            #\ categorize the text to trigger event
+            if gEventText == "login":
+                gEvent = eLineBotEvent.LOGIN.value
+            elif gEventText == "menu" :
+                gEvent = eLineBotEvent.MENU.value
+            else:
+                pass
 
-        elif gEventText == "menu":
+
+        #\ categorize the event and the corresponding action
+        if gEvent == eLineBotEvent.LOGIN.value:
+            gEvenyCnt += 1
+            if gEvenyCnt == 1:
+                gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[0]))
+                LoginData["Account"] = event.message.text
+            elif gEvenyCnt == 2:
+                gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[1]))
+                LoginData["Password"] = event.message.text
+            else:
+                Login2Web(event)
+                #\ reset the is-just-text flag and the event count
+                gIsJustText = True
+                gEvenyCnt = 0
+
+        elif gEvent == eLineBotEvent.MENU.value:
             pass
+            #\ reset the is-just-text flag
+            gIsJustText = True
         else :
             gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
 
-        #\ reset the is just text flag
-        gIsJustText = True
 
 
 #\ for the first time joining the group
 @gHandler.add(JoinEvent)
 def handle_message(event):
-    global gEventText, gIsJustText
-    gEventText = "login"
+    global gEvent, gIsJustText
+    gEvent = eLineBotEvent.LOGIN.value
     gIsJustText = False
     print("[INFO]: TextMessage")
     print(f"[INFO]: {event}")
@@ -92,4 +117,4 @@ def handle_message(event):
 def Login2Web(event):
     gLine_bot_api.reply_message(
                         event.reply_token,
-                        TextSendMessage(text=f'Hi, Check again again for the login info:\nAccount: {index.LoginData["Account"]}\nPassword: {index.LoginData["Password"]}'))
+                        TextSendMessage(text=f'Hi, Check again again for the login info:\nAccount: {LoginData["Account"]}\nPassword: {LoginData["Password"]}'))

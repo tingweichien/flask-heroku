@@ -24,5 +24,5 @@ JoinEventText = INDEX['LineBot']['JoinEventText']
 
 #\ Login info
 LoginEventText = INDEX['LineBot']['LoginEventText']
-LoginData = dict()
+
 

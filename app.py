@@ -2,9 +2,10 @@
 
 from flask import Flask, render_template, request, url_for, redirect, session
 from datetime import timedelta
-import index
 import LineBotClass
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
+import index
+
 
 
 #\ __name__ represent the current module
