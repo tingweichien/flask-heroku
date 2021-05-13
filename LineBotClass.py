@@ -18,7 +18,7 @@ gHandler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 #\ global event
 gEventText = ""
 gEvent = None
-gEvenyCnt = 0
+gEventCnt = 0
 
 #\ message text
 gIsJustText = True
@@ -52,7 +52,7 @@ def LineBotHandler(app):
 #\ handle the message
 @gHandler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    global gIsJustText, gEventText, gEvenyCnt
+    global gIsJustText, gEventText, gEventCnt, gEventText
     print("[INFO]: TextMessage")
     print(f"[INFO]: {event}")
 
@@ -68,26 +68,29 @@ def handle_text_message(event):
             #\ categorize the text to trigger event
             if gEventText == "login":
                 gEvent = eLineBotEvent.LOGIN.value
+                gIsJustText = False
             elif gEventText == "menu" :
                 gEvent = eLineBotEvent.MENU.value
+                gIsJustText = False
             else:
                 pass
 
 
         #\ categorize the event and the corresponding action
         if gEvent == eLineBotEvent.LOGIN.value:
-            gEvenyCnt += 1
-            if gEvenyCnt == 1:
+            gEventCnt += 1
+            if gEventCnt == 1:
                 gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[0]))
                 LoginData["Account"] = event.message.text
-            elif gEvenyCnt == 2:
+            elif gEventCnt == 2:
                 gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[1]))
                 LoginData["Password"] = event.message.text
             else:
                 Login2Web(event)
-                #\ reset the is-just-text flag and the event count
+                #\ reset the is-just-text flag and the event count and event
                 gIsJustText = True
-                gEvenyCnt = 0
+                gEventCnt = 0
+                gEvent = None
 
         elif gEvent == eLineBotEvent.MENU.value:
             pass
