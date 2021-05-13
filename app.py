@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, request, url_for, redirect, session
 from datetime import timedelta
-from Index import *
+import Index
 import LineBotClass
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
@@ -51,7 +51,7 @@ def contact():
 
 @app.route("/OSMmap")
 def OSMmap():
-    return render_template("OSMmap.html", apikey = GMAPapikey, api_on = bAPIon)
+    return render_template("OSMmap.html", apikey = Index.GMAPapikey, api_on = Index.bAPIon)
 
 
 #\ -- to HTTP method --

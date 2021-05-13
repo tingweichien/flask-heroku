@@ -3,7 +3,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, JoinEvent
 import configparser
 from flask import request, abort
-from Index import *
+import Index
 
 #\ Global
 #\ Line bot basic info
@@ -58,10 +58,10 @@ def handle_text_message(event):
             gEventText = event.message.text.lower()
 
         if gEventText == "login":
-            gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=LoginEventText[0]))
-            LoginData["Account"] = event.message.text
-            gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text= LoginEventText[1]))
-            LoginData["Password"] = event.message.text
+            gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=Index.LoginEventText[0]))
+            Index.LoginData["Account"] = event.message.text
+            gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=Index.LoginEventText[1]))
+            Index.LoginData["Password"] = event.message.text
             Login2Web(event)
 
         elif gEventText == "menu":
@@ -81,10 +81,10 @@ def handle_message(event):
     gIsJustText = False
     print("[INFO]: TextMessage")
     print(f"[INFO]: {event}")
-    for idx in range(len(JoinEventText)):
+    for idx in range(len(Index.JoinEventText)):
         gLine_bot_api.reply_message(
                         event.reply_token,
-                        TextSendMessage(text=JoinEventText[idx])
+                        TextSendMessage(text=Index.JoinEventText[idx])
                         )
 
 
@@ -92,4 +92,4 @@ def handle_message(event):
 def Login2Web(event):
     gLine_bot_api.reply_message(
                         event.reply_token,
-                        TextSendMessage(text=f'Hi, Check again again for the login info:\nAccount: {LoginData["Account"]}\nPassword: {LoginData["Password"]}'))
+                        TextSendMessage(text=f'Hi, Check again again for the login info:\nAccount: {Index.LoginData["Account"]}\nPassword: {Index.LoginData["Password"]}'))
