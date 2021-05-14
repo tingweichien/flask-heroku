@@ -54,53 +54,52 @@ def LineBotHandler(app):
 @gHandler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
     global gIsJustText, gEventText, gEventCnt, gEvent
-    print("[INFO]: TextMessage")
+    print("[INFO] TextMessage")
     print(f"[INFO] Event :{event}")
 
     #\ workaround for the linebot url verify error
-    if event.source.user_id != "U00a49f1618f9827d4b24f140c2e5f770":
+    # if event.source.user_id != "U00a49f1618f9827d4b24f140c2e5f770":
 
-        #\ switch the case of MessageEvent
+    #\ switch the case of MessageEvent
+    #\ read the text if it meants to trigger some event
+    if gIsJustText == True :
+        gEventText = event.message.text.lower()
 
-        #\ read the text if it meants to trigger some event
-        if gIsJustText == True :
-            gEventText = event.message.text.lower()
-
-            #\ categorize the text to trigger event
-            if gEventText == "login":
-                gEvent = eLineBotEvent.LOGIN.value
-                gIsJustText = False
-            elif gEventText == "menu" :
-                gEvent = eLineBotEvent.MENU.value
-                gIsJustText = False
-            else:
-                pass
-
-
-        #\ categorize the event and the corresponding action
-        if gEvent == eLineBotEvent.LOGIN.value:
-            gEventCnt += 1
-            print(f"[EVENT] Login {gEventCnt}")
-            if gEventCnt == 1:
-                gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[0]))
-            elif gEventCnt == 2:
-                gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[1]))
-                LoginData["Account"] = event.message.text
-            else:
-                LoginData["Password"] = event.message.text
-                Login2Web(event)
-                #\ reset the is-just-text flag and the event count and event
-                gIsJustText = True
-                gEventCnt = 0
-                gEvent = None
-
-        elif gEvent == eLineBotEvent.MENU.value:
+        #\ categorize the text to trigger event
+        if gEventText == "login":
+            gEvent = eLineBotEvent.LOGIN.value
+            gIsJustText = False
+        elif gEventText == "menu" :
+            gEvent = eLineBotEvent.MENU.value
+            gIsJustText = False
+        else:
             pass
-            #\ reset the is-just-text flag
+
+
+    #\ categorize the event and the corresponding action
+    if gEvent == eLineBotEvent.LOGIN.value:
+        gEventCnt += 1
+        print(f"[EVENT] Login {gEventCnt}")
+        if gEventCnt == 1:
+            gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[0]))
+        elif gEventCnt == 2:
+            gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[1]))
+            LoginData["Account"] = event.message.text
+        else:
+            LoginData["Password"] = event.message.text
+            Login2Web(event)
+            #\ reset the is-just-text flag and the event count and event
             gIsJustText = True
-        else :
-            print("[EVENT] Echo")
-            gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
+            gEventCnt = 0
+            gEvent = None
+
+    elif gEvent == eLineBotEvent.MENU.value:
+        pass
+        #\ reset the is-just-text flag
+        gIsJustText = True
+    else :
+        print("[EVENT] Echo")
+        gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
 
 
 
