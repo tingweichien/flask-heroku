@@ -10,7 +10,7 @@ import json
 #\ load data from json file
 with open("Index.json") as f:
     INDEX = json.load(f)
-    print(f'{"x"*25}\n| [INFO]The Index data |\n{"x"*25}\n{json.dumps(INDEX, indent=4)}')
+    # print(f'{"x"*25}\n| [INFO]The Index data |\n{"x"*25}\n{json.dumps(INDEX, indent=4)}')
 
 
 #\ -- OSM API --

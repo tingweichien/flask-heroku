@@ -31,12 +31,13 @@ def LineBotHandler(app):
     #\ get X-Line-Signature header value
     #\ 如果該HTTP POST訊息是來自LINE平台，在HTTP請求標頭中一定會包括X-Line-Signature項目，
     #\ 該項目的內容值是即為數位簽章。例如：
+    print("[INFO]LineBotHandler")
     signature = request.headers['X-Line-Signature']
 
     #\ get request body as text
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
-    print(f"[INFO]{body}")
+    print(f"[INFO] body-->{body}")
 
     #\ handle webhook body
     try:
@@ -54,7 +55,7 @@ def LineBotHandler(app):
 def handle_text_message(event):
     global gIsJustText, gEventText, gEventCnt, gEvent
     print("[INFO]: TextMessage")
-    print(f"[INFO]: {event}")
+    print(f"[INFO] Event :{event}")
 
     #\ workaround for the linebot url verify error
     if event.source.user_id != "U00a49f1618f9827d4b24f140c2e5f770":
@@ -79,6 +80,7 @@ def handle_text_message(event):
         #\ categorize the event and the corresponding action
         if gEvent == eLineBotEvent.LOGIN.value:
             gEventCnt += 1
+            print(f"[EVENT] Login {gEventCnt}")
             if gEventCnt == 1:
                 gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[0]))
             elif gEventCnt == 2:
@@ -97,6 +99,7 @@ def handle_text_message(event):
             #\ reset the is-just-text flag
             gIsJustText = True
         else :
+            print("[EVENT] Echo")
             gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
 
 
@@ -107,7 +110,7 @@ def handle_message(event):
     global gEvent, gIsJustText
     gEvent = eLineBotEvent.LOGIN.value
     gIsJustText = False
-    print("[INFO]: TextMessage")
+    print("[INFO]: JoinEvent")
     print(f"[INFO]: {event}")
     for idx in range(len(index.JoinEventText)):
         gLine_bot_api.reply_message(
