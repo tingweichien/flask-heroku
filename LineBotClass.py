@@ -72,8 +72,7 @@ def handle_text_message(event):
         elif gEventText == "menu" :
             gEvent = eLineBotEvent.MENU.value
             gIsJustText = False
-        else:
-            pass
+
 
 
     #\ categorize the event and the corresponding action
@@ -94,7 +93,6 @@ def handle_text_message(event):
             gEvent = None
 
     elif gEvent == eLineBotEvent.MENU.value:
-        pass
         #\ reset the is-just-text flag
         gIsJustText = True
     else :

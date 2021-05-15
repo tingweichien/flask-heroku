@@ -85,6 +85,7 @@ def user():
 @app.route("/LineBotEcho", methods=['POST'])
 def LineBotEcho():
     LineBotClass.LineBotHandler(app)
+    return "ok"
 
 
 
