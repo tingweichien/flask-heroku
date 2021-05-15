@@ -1,10 +1,11 @@
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, JoinEvent
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, FlexSendMessage, PostbackEvent
 import configparser
 from flask import request, abort
 import index
 from VarIndex import *
+import LineBotText
 
 
 #\ Global
@@ -55,31 +56,12 @@ def handle_text_message(event):
         gEventText = event.message.text.lower()
 
         #\ categorize the text to trigger event
-        if gEventText == "login":
-            gEvent = eLineBotEvent.LOGIN.value
-            gIsJustText = False
-        elif gEventText == "menu" :
-            gEvent = eLineBotEvent.MENU.value
-            gIsJustText = False
-
+        CheckEvent(gEventText)
 
     print(f"[INFO] gEvent : {gEvent}")
     #\ categorize the event and the corresponding action
     if gEvent == eLineBotEvent.LOGIN.value:
-        gEventCnt += 1
-        print(f"[EVENT] Login {gEventCnt}")
-        if gEventCnt == 1:
-            gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[0]))
-        elif gEventCnt == 2:
-            gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[1]))
-            LoginData["Account"] = event.message.text
-        else:
-            LoginData["Password"] = event.message.text
-            Login2Web(event)
-            #\ reset the is-just-text flag and the event count and event
-            gIsJustText = True
-            gEventCnt = 0
-            gEvent = None
+        LoginProgress()
 
     elif gEvent == eLineBotEvent.MENU.value:
         #\ reset the is-just-text flag
@@ -91,9 +73,21 @@ def handle_text_message(event):
 
 
 
-#\ for the first time joining the group
-@gHandler.add(JoinEvent)
-def handle_message(event):
+#\ check the event from the received text
+def CheckEvent(event_text:str):
+    global gEvent, gIsJustText
+    if event_text == "login":
+        gEvent = eLineBotEvent.LOGIN.value
+        gIsJustText = False
+    elif event_text == "menu" :
+        gEvent = eLineBotEvent.MENU.value
+        gIsJustText = False
+
+
+
+#\ for the first time follow the group
+@gHandler.add(FollowEvent)
+def handle_follow_message(event):
     global gEvent, gIsJustText
     gEvent = eLineBotEvent.LOGIN.value
     gIsJustText = False
@@ -105,9 +99,69 @@ def handle_message(event):
                         TextSendMessage(text=index.JoinEventText[idx])
                         )
 
+#\ login to web
+def Login2Web():
+    pass
 
-#\
-def Login2Web(event):
-    gLine_bot_api.reply_message(
+
+
+#\Login process
+def LoginProgress(event):
+    global gIsJustText, gEvent, gEventCnt
+    gEventCnt += 1
+    print(f"[EVENT] Login {gEventCnt}")
+
+    #\ specified the login event 4 to determin redo login again or not
+    if gEvent == 4:
+        if event.message.text == "LOGIN_OK":
+            gLine_bot_api.reply_message(
+                                        event.reply_token,
+                                        TextSendMessage(text="Start to Login~")
+                                        )
+            Login2Web()
+        elif event.message.text == "LOGIN_FAIL":
+            gEventCnt = 0
+
+    #\ the login event
+    if gEventCnt == 1:
+        gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[0]))
+    elif gEventCnt == 2:
+        gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[1]))
+        gLoginData["Account"] = event.message.text
+    elif gEventCnt == 3:
+        gLoginData["Password"] = event.message.text
+        flex_message = FlexSendMessage(alt_text=f'Hi, Check again for the login info:\nAccount: {gLoginData["Account"]}\nPassword: {gLoginData["Password"]}',
+                                        contents=LineBotText.LoginCheckText
+                                        )
+        gLine_bot_api.reply_message(
                         event.reply_token,
-                        TextSendMessage(text=f'Hi, Check again for the login info:\nAccount: {LoginData["Account"]}\nPassword: {LoginData["Password"]}'))
+                        flex_message
+                        )
+    else:
+        #\ reset the is-just-text flag and the event count and event
+        gIsJustText = True
+        gEventCnt = 0
+        gEvent = None
+
+
+
+#\ handle post back event
+@gHandler.add(PostbackEvent)
+def handle_postback_event(event):
+    global gLoginDataConfirm, gIsJustText, gEventCnt, gEvent
+    print("[EVENT] PostbackEvent")
+    if event.postback.data == "login_ok":
+        gLine_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text="Start to Login~")
+                )
+        Login2Web()
+        #\ reset the is-just-text flag and the event count and event
+        gIsJustText = True
+        gEventCnt = 0
+        gEvent = None
+    elif event.postback.data == "login_fail":
+        gEventCnt = 0
+
+
+

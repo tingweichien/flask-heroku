@@ -3,7 +3,6 @@
 from flask import Flask, render_template, request, url_for, redirect, session
 from datetime import timedelta
 import LineBotClass
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import index
 
 
