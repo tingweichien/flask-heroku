@@ -61,7 +61,7 @@ def handle_text_message(event):
     print(f"[INFO] gEvent : {gEvent}")
     #\ categorize the event and the corresponding action
     if gEvent == eLineBotEvent.LOGIN.value:
-        LoginProgress()
+        LoginProgress(event)
 
     elif gEvent == eLineBotEvent.MENU.value:
         #\ reset the is-just-text flag
