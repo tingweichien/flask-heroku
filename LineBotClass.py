@@ -15,17 +15,6 @@ gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
 gHandler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 
 
-#\ global event
-gEventText = ""
-gEvent = None
-gEventCnt = 0
-
-#\ message text
-gIsJustText = True
-
-
-
-
 #\ handler. This is the example from the official doc
 def LineBotHandler(app):
     #\ get X-Line-Signature header value
@@ -74,7 +63,7 @@ def handle_text_message(event):
             gIsJustText = False
 
 
-
+    print(f"[INFO] gEvent : {gEvent}")
     #\ categorize the event and the corresponding action
     if gEvent == eLineBotEvent.LOGIN.value:
         gEventCnt += 1
@@ -95,6 +84,7 @@ def handle_text_message(event):
     elif gEvent == eLineBotEvent.MENU.value:
         #\ reset the is-just-text flag
         gIsJustText = True
+
     else :
         print("[EVENT] Echo")
         gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))

@@ -12,3 +12,13 @@ LoginData = {"Account":"",
 class eLineBotEvent(IntEnum):
     LOGIN   = 1
     MENU    = 2
+
+
+
+
+#\ global event
+gEventText = ""
+gEvent = None
+gEventCnt = 0
+#\ message text
+gIsJustText = True
