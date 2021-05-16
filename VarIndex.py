@@ -22,5 +22,4 @@ gEventText = ""
 gEvent = None
 gEventCnt = 0
 #\ message text
-gIsJustText = True
 gLoginDataConfirm = False

@@ -16,6 +16,9 @@ gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
 gHandler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 
 
+gIsJustText = True
+
+
 #\ handler. This is the example from the official doc
 def LineBotHandler(app):
     #\ get X-Line-Signature header value

@@ -31,7 +31,7 @@ LoginCheckText={
         "size": "lg",
         "align": "start",
         "margin": "none",
-
+        "wrap": True,
         "weight": "bold"
       }#,
     #   {
