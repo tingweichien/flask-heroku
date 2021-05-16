@@ -87,39 +87,39 @@ LoginCheckText={
         ]
       }
     ]
-  }#,
-#   "footer": {
-#     "type": "box",
-#     "layout": "vertical",
-#     "spacing": "sm",
-#     "contents": [
-#       {
-#         "type": "button",
-#         "style": "link",
-#         "height": "sm",
-#         "action": {
-#           "type": "message",
-#           "label": "NO",
-#           "text": "LOGIN_FAIL"
-#         }
-#       },
-#       {
-#         "type": "button",
-#         "style": "link",
-#         "height": "sm",
-#         "action": {
-#           "type": "message",
-#           "label": "OK",
-#           "text": "LOGIN_OK"
-#         }
-#       },
-#       {
-#         "type": "spacer",
-#         "size": "sm"
-#       }
-#     ],
-#     "flex": 0
-#   }
+  },
+  "footer": {
+    "type": "box",
+    "layout": "vertical",
+    "spacing": "sm",
+    "contents": [
+      {
+        "type": "button",
+        "style": "link",
+        "height": "sm",
+        "action": {
+          "type": "message",
+          "label": "NO",
+          "text": "LOGIN_FAIL"
+        }
+      },
+      {
+        "type": "button",
+        "style": "link",
+        "height": "sm",
+        "action": {
+          "type": "message",
+          "label": "OK",
+          "text": "LOGIN_OK"
+        }
+      },
+      {
+        "type": "spacer",
+        "size": "sm"
+      }
+    ],
+    "flex": 0
+  }
 }
 
 
