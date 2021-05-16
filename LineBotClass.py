@@ -63,6 +63,7 @@ def handle_text_message(event):
     print(f"[INFO] gEvent : {gEvent}")
     #\ categorize the event and the corresponding action
     if gEvent == eLineBotEvent.LOGIN.value:
+        gIsJustText = False
         LoginProgress(event)
 
     elif gEvent == eLineBotEvent.MENU.value:
@@ -87,6 +88,8 @@ def CheckEvent(event_text:str):
         gIsJustText = False
     else:
         gEvent = eLineBotEvent.NONE.value
+
+    print(f"[INFO] CheckEvent : {event_text}, (gIsJustText : {gIsJustText})")
 
 
 
