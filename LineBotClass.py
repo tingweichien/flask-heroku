@@ -149,12 +149,12 @@ def LoginProgress(event):
 
         #\ assign the account
         gLoginData["Account"] = event.message.text
-        # LineBotText.LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = gLoginData["Account"]
+        LineBotText.LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = gLoginData["Account"]
 
     elif gEventCnt == 3:
         #\ assign the password
         gLoginData["Password"] = event.message.text
-        # LineBotText.LoginCheckText["body"]["contents"][1]["contents"][1]["contents"][1]["text"] = gLoginData["Account"]
+        LineBotText.LoginCheckText["body"]["contents"][1]["contents"][1]["contents"][1]["text"] = gLoginData["Account"]
 
         #\ Check if the user confirm the login info
         flex_message = FlexSendMessage(alt_text=f'Hi, Check again for the login info:\nAccount: {gLoginData["Account"]}\nPassword: {gLoginData["Password"]}',

@@ -54,7 +54,7 @@ LoginCheckText={
               },
               {
                 "type": "text",
-                "text": "",
+                "text": "temp",
                 "wrap": True,
                 "color": "#666666",
                 "size": "sm",
@@ -76,7 +76,7 @@ LoginCheckText={
               },
               {
                 "type": "text",
-                "text": "",
+                "text": "temp",
                 "wrap": True,
                 "color": "#666666",
                 "size": "sm",
