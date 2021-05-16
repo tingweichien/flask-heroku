@@ -95,7 +95,7 @@ LoginCheckText={
     "contents": [
       {
         "type": "button",
-        "style": "link",
+        "style": "primary",
         "height": "sm",
         "action": {
           "type": "message",
@@ -105,20 +105,15 @@ LoginCheckText={
       },
       {
         "type": "button",
-        "style": "link",
+        "style": "primary",
         "height": "sm",
         "action": {
           "type": "message",
           "label": "OK",
           "text": "LOGIN_OK"
         }
-      },
-      {
-        "type": "spacer",
-        "size": "sm"
       }
-    ],
-    "flex": 0
+    ]
   }
 }
 
