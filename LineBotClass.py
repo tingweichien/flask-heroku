@@ -52,7 +52,7 @@ def handle_text_message(event):
 
     #\ switch the case of MessageEvent
     #\ read the text if it meants to trigger some event
-    print(f"[INFO]gIsJustText : {gIsJustText}")
+    print(f"[INFO] gIsJustText : {gIsJustText}")
     if gIsJustText == True :
         gEventText = event.message.text.lower()
 

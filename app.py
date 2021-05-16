@@ -56,7 +56,7 @@ def OSMmap():
 
 
 #\ -- to HTTP method --
-@ app.route("/urlREST/<name>")
+@app.route("/urlREST/<name>")
 def urlREST(name):
     return "<h1>Hello {} !! This is urlREST example</h1>".format(name)
 
