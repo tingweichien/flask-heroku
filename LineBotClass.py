@@ -142,9 +142,17 @@ def LoginProgress(event):
         gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[0]))
     elif gEventCnt == 2:
         gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[1]))
+
+        #\ assign the account
         gLoginData["Account"] = event.message.text
+        LineBotText.LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = gLoginData["Account"]
+
     elif gEventCnt == 3:
+        #\ assign the password
         gLoginData["Password"] = event.message.text
+        LineBotText.LoginCheckText["body"]["contents"][1]["contents"][1]["contents"][1]["text"] = gLoginData["Account"]
+
+        #\ Check if the user confirm the login info
         flex_message = FlexSendMessage(alt_text=f'Hi, Check again for the login info:\nAccount: {gLoginData["Account"]}\nPassword: {gLoginData["Password"]}',
                                         contents=LineBotText.LoginCheckText
                                         )
