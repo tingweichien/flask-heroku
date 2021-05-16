@@ -10,6 +10,7 @@ gLoginData = {"Account":"",
 
 #\ Line bot Event
 class eLineBotEvent(IntEnum):
+    NONE    = 0
     LOGIN   = 1
     MENU    = 2
 

@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, url_for, redirect, session
 from datetime import timedelta
 import LineBotClass
 import index
+from VarIndex import *
 
 
 

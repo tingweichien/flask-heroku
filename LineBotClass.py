@@ -52,11 +52,13 @@ def handle_text_message(event):
 
     #\ switch the case of MessageEvent
     #\ read the text if it meants to trigger some event
+    print(f"[INFO]gIsJustText : {gIsJustText}")
     if gIsJustText == True :
         gEventText = event.message.text.lower()
 
         #\ categorize the text to trigger event
         CheckEvent(gEventText)
+
 
     print(f"[INFO] gEvent : {gEvent}")
     #\ categorize the event and the corresponding action
@@ -69,7 +71,8 @@ def handle_text_message(event):
 
     else :
         print("[EVENT] Echo")
-        # gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
+        gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
+
 
 
 
@@ -82,6 +85,10 @@ def CheckEvent(event_text:str):
     elif event_text == "menu" :
         gEvent = eLineBotEvent.MENU.value
         gIsJustText = False
+    else:
+        gEvent = eLineBotEvent.NONE.value
+
+
 
 
 
@@ -99,6 +106,8 @@ def handle_follow_message(event):
                         TextSendMessage(text=index.JoinEventText[idx])
                         )
 
+
+
 #\ login to web
 def Login2Web():
     pass
@@ -109,20 +118,23 @@ def Login2Web():
 def LoginProgress(event):
     global gIsJustText, gEvent, gEventCnt
     gEventCnt += 1
-    print(f"[EVENT] Login {gEventCnt}")
+    print(f"[EVENT] Login gEventCnt: {gEventCnt}")
 
     #\ specified the login event 4 to determin redo login again or not
-    if gEvent == 4:
+    if gEventCnt == 4:
         if event.message.text == "LOGIN_OK":
+            print("[INFO] Login info user confirm")
             gLine_bot_api.reply_message(
                                         event.reply_token,
                                         TextSendMessage(text="Start to Login~")
                                         )
             Login2Web()
         elif event.message.text == "LOGIN_FAIL":
-            gEventCnt = 0
+            print("[INFO] Login info user decine")
+            gEventCnt = 1
 
     #\ the login event
+    print(f"[EVENT] Login gEventCnt(after gEventCnt 4): {gEventCnt}")
     if gEventCnt == 1:
         gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[0]))
     elif gEventCnt == 2:
@@ -139,29 +151,32 @@ def LoginProgress(event):
                         )
     else:
         #\ reset the is-just-text flag and the event count and event
+        print("[INFO] RESET~~~~~~~~~")
         gIsJustText = True
         gEventCnt = 0
         gEvent = None
 
 
 
-#\ handle post back event
-@gHandler.add(PostbackEvent)
-def handle_postback_event(event):
-    global gLoginDataConfirm, gIsJustText, gEventCnt, gEvent
-    print("[EVENT] PostbackEvent")
-    if event.postback.data == "login_ok":
-        gLine_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text="Start to Login~")
-                )
-        Login2Web()
-        #\ reset the is-just-text flag and the event count and event
-        gIsJustText = True
-        gEventCnt = 0
-        gEvent = None
-    elif event.postback.data == "login_fail":
-        gEventCnt = 0
+
+
+# #\ handle post back event
+# @gHandler.add(PostbackEvent)
+# def handle_postback_event(event):
+#     global gLoginDataConfirm, gIsJustText, gEventCnt, gEvent
+#     print("[EVENT] PostbackEvent")
+#     if event.postback.data == "login_ok":
+#         gLine_bot_api.reply_message(
+#                 event.reply_token,
+#                 TextSendMessage(text="Start to Login~")
+#                 )
+#         Login2Web()
+#         #\ reset the is-just-text flag and the event count and event
+#         gIsJustText = True
+#         gEventCnt = 0
+#         gEvent = None
+#     elif event.postback.data == "login_fail":
+#         gEventCnt = 0
 
 
 
