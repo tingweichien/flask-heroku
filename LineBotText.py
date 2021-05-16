@@ -95,12 +95,12 @@ LoginCheckText={
     "contents": [
       {
         "type": "button",
-        "style": "primary",
+        "style": "secondary",
         "height": "sm",
         "action": {
           "type": "message",
           "label": "NO",
-          "text": "LOGIN_FAIL"
+          "text": "login"
         }
       },
       {
@@ -110,7 +110,7 @@ LoginCheckText={
         "action": {
           "type": "message",
           "label": "OK",
-          "text": "LOGIN_OK"
+          "text": "login_confirm"
         }
       }
     ]

@@ -1,6 +1,7 @@
 #\ this is the entry of the program
 
 from flask import Flask, render_template, request, url_for, redirect, session
+from flask_session import Session
 from datetime import timedelta
 import LineBotClass
 import index
@@ -10,6 +11,10 @@ import index
 #\ __name__ represent the current module
 app = Flask(__name__)
 
+# Check Configuration section for more details
+SESSION_TYPE = 'filesystem'
+app.config.from_object(__name__)
+Session(app)
 
 #\ secret key for session
 app.secret_key ="tim960622"
@@ -83,6 +88,15 @@ def user():
 #\ echo
 @app.route("/LineBotEcho", methods=['POST'])
 def LineBotEcho():
+
+    #\ global event
+    session["gEventText"] = ""
+    session["gEvent"] = None
+    session["gEventCnt"] = 0
+    session["gIsJustText"] = True
+    #\ message text
+    session["gLoginDataConfirm"] = False
+
     LineBotClass.LineBotHandler(app)
     return "ok"
 

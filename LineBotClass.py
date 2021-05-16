@@ -2,7 +2,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, FlexSendMessage, PostbackEvent
 import configparser
-from flask import request, abort
+from flask import request, abort, session
 import index
 from VarIndex import *
 import LineBotText
@@ -16,7 +16,7 @@ gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
 gHandler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 
 
-gIsJustText = True
+
 
 
 #\ handler. This is the example from the official doc
@@ -46,7 +46,7 @@ def LineBotHandler(app):
 #\ handle the message
 @gHandler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    global gIsJustText, gEventText, gEventCnt, gEvent
+    global session
     print("[INFO] TextMessage")
     print(f"[INFO] Event :{event}")
 
@@ -55,24 +55,23 @@ def handle_text_message(event):
 
     #\ switch the case of MessageEvent
     #\ read the text if it meants to trigger some event
-    print(f"[INFO] gIsJustText : {gIsJustText}")
-    print(f"[INFO] gEvent : {gEvent}")
-    if gIsJustText == True :
-        gEventText = event.message.text.lower()
+    print(f'[INFO] gIsJustText : {session["gIsJustText"]}')
+    print(f'[INFO] gEvent : {session["gEvent"]}')
+    if session["gIsJustText"] == True :
+        session["gEventText"] = event.message.text.lower()
 
         #\ categorize the text to trigger event
-        CheckEvent(gEventText)
+        CheckEvent(session["gEventText"])
 
 
-    print(f"[INFO] gEvent(after ChekEvent) : {gEvent}")
+    print(f'[INFO] gEvent(after ChekEvent) : {session["gEvent"]}')
     #\ categorize the event and the corresponding action
-    if gEvent == eLineBotEvent.LOGIN.value:
-        gIsJustText = False
+    if session["gEvent"] == eLineBotEvent.LOGIN.value:
         LoginProgress(event)
 
-    elif gEvent == eLineBotEvent.MENU.value:
+    elif session["gEvent"] == eLineBotEvent.MENU.value:
         #\ reset the is-just-text flag
-        gIsJustText = True
+        session["gIsJustText"] = True
 
     else :
         print("[EVENT] Echo")
@@ -83,17 +82,17 @@ def handle_text_message(event):
 
 #\ check the event from the received text
 def CheckEvent(event_text:str):
-    global gEvent, gIsJustText
+    global session
     if event_text == "login":
-        gEvent = eLineBotEvent.LOGIN.value
-        gIsJustText = False
+        session["gEvent"] = eLineBotEvent.LOGIN.value
+        session["gIsJustText"] = False
     elif event_text == "menu" :
-        gEvent = eLineBotEvent.MENU.value
-        gIsJustText = False
+        session["gEvent"] = eLineBotEvent.MENU.value
+        session["gIsJustText"] = False
     else:
-        gEvent = eLineBotEvent.NONE.value
+        session["gEvent"] = eLineBotEvent.NONE.value
 
-    print(f"[INFO] CheckEvent : {event_text}, (gIsJustText : {gIsJustText})")
+    print(f'[INFO] CheckEvent : {event_text}, (gIsJustText : {session["gIsJustText"]})')
 
 
 
@@ -102,9 +101,9 @@ def CheckEvent(event_text:str):
 #\ for the first time follow the group
 @gHandler.add(FollowEvent)
 def handle_follow_message(event):
-    global gEvent, gIsJustText
-    gEvent = eLineBotEvent.LOGIN.value
-    gIsJustText = False
+    global session
+    session["gEvent"] = eLineBotEvent.LOGIN.value
+    session["gIsJustText"] = False
     print("[INFO]: JoinEvent")
     print(f"[INFO]: {event}")
     for idx in range(len(index.JoinEventText)):
@@ -123,12 +122,12 @@ def Login2Web():
 
 #\Login process
 def LoginProgress(event):
-    global gIsJustText, gEvent, gEventCnt
-    gEventCnt += 1
-    print(f"[EVENT] Login gEventCnt: {gEventCnt}")
+    global session
+    session["gEventCnt"] += 1
+    print(f'[EVENT] Login gEventCnt: {session["gEventCnt"]}')
 
     #\ specified the login event 4 to determin redo login again or not
-    if gEventCnt == 4:
+    if session["gEventCnt"] == 4:
         if event.message.text == "LOGIN_OK":
             print("[INFO] Login info user confirm")
             gLine_bot_api.reply_message(
@@ -137,21 +136,21 @@ def LoginProgress(event):
                                         )
             Login2Web()
         elif event.message.text == "LOGIN_FAIL":
-            print("[INFO] Login info user decine")
-            gEventCnt = 1
+            print("[INFO] Login info user decline")
+            session["gEventCnt"] = 1
 
     #\ the login event
-    print(f"[EVENT] Login gEventCnt(after gEventCnt 4): {gEventCnt}")
-    if gEventCnt == 1:
+    print(f'[EVENT] Login gEventCnt(after gEventCnt 4): {session["gEventCnt"]}')
+    if session["gEventCnt"] == 1:
         gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[0]))
-    elif gEventCnt == 2:
+    elif session["gEventCnt"] == 2:
         gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[1]))
 
         #\ assign the account
         gLoginData["Account"] = event.message.text
         LineBotText.LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = gLoginData["Account"]
 
-    elif gEventCnt == 3:
+    elif session["gEventCnt"] == 3:
         #\ assign the password
         gLoginData["Password"] = event.message.text
         LineBotText.LoginCheckText["body"]["contents"][1]["contents"][1]["contents"][1]["text"] = gLoginData["Password"]
@@ -167,9 +166,9 @@ def LoginProgress(event):
     else:
         #\ reset the is-just-text flag and the event count and event
         print("[INFO] RESET~~~~~~~~~")
-        gIsJustText = True
-        gEventCnt = 0
-        gEvent = None
+        session["gIsJustText"] = True
+        session["gEventCnt"] = 0
+        session["gEvent"] = None
 
 
 
