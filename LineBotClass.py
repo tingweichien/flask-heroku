@@ -56,6 +56,7 @@ def handle_text_message(event):
     #\ switch the case of MessageEvent
     #\ read the text if it meants to trigger some event
     print(f"[INFO] gIsJustText : {gIsJustText}")
+    print(f"[INFO] gEvent : {gEvent}")
     if gIsJustText == True :
         gEventText = event.message.text.lower()
 
@@ -63,7 +64,7 @@ def handle_text_message(event):
         CheckEvent(gEventText)
 
 
-    print(f"[INFO] gEvent : {gEvent}")
+    print(f"[INFO] gEvent(after ChekEvent) : {gEvent}")
     #\ categorize the event and the corresponding action
     if gEvent == eLineBotEvent.LOGIN.value:
         gIsJustText = False

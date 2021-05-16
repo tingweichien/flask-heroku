@@ -33,59 +33,59 @@ LoginCheckText={
         "margin": "none",
         "wrap": True,
         "weight": "bold"
-      }#,
-    #   {
-    #     "type": "box",
-    #     "layout": "vertical",
-    #     "margin": "lg",
-    #     "spacing": "sm",
-    #     "contents": [
-    #       {
-    #         "type": "box",
-    #         "layout": "baseline",
-    #         "spacing": "sm",
-    #         "contents": [
-    #           {
-    #             "type": "text",
-    #             "text": "Account",
-    #             "color": "#aaaaaa",
-    #             "size": "sm",
-    #             "flex": 2
-    #           },
-    #           {
-    #             "type": "text",
-    #             "text": "",
-    #             "wrap": True,
-    #             "color": "#666666",
-    #             "size": "sm",
-    #             "flex": 5
-    #           }
-    #         ]
-    #       },
-    #       {
-    #         "type": "box",
-    #         "layout": "baseline",
-    #         "spacing": "sm",
-    #         "contents": [
-    #           {
-    #             "type": "text",
-    #             "text": "Password",
-    #             "color": "#aaaaaa",
-    #             "size": "sm",
-    #             "flex": 2
-    #           },
-    #           {
-    #             "type": "text",
-    #             "text": "",
-    #             "wrap": True,
-    #             "color": "#666666",
-    #             "size": "sm",
-    #             "flex": 5
-    #           }
-    #         ]
-    #       }
-    #     ]
-    #   }
+      },
+      {
+        "type": "box",
+        "layout": "vertical",
+        "margin": "lg",
+        "spacing": "sm",
+        "contents": [
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "Account",
+                "color": "#aaaaaa",
+                "size": "sm",
+                "flex": 2
+              },
+              {
+                "type": "text",
+                "text": "",
+                "wrap": True,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "Password",
+                "color": "#aaaaaa",
+                "size": "sm",
+                "flex": 2
+              },
+              {
+                "type": "text",
+                "text": "",
+                "wrap": True,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              }
+            ]
+          }
+        ]
+      }
     ]
   }#,
 #   "footer": {
