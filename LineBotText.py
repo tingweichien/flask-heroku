@@ -8,6 +8,7 @@ from VarIndex import *
 #\ Login Flex-message for login check text
 LoginCheckText={
   "type": "bubble",
+  'direction': 'ltr',
   "body": {
     "type": "box",
     "layout": "vertical",
@@ -20,7 +21,7 @@ LoginCheckText={
         "offsetBottom": "none",
         "align": "start",
         "margin": "none",
-        "wrap": True,
+
         "weight": "bold"
       },
       {
@@ -44,7 +45,7 @@ LoginCheckText={
               {
                 "type": "text",
                 "text": gLoginData["Account"],
-                "wrap": True,
+
                 "color": "#666666",
                 "size": "sm",
                 "flex": 5
@@ -66,7 +67,7 @@ LoginCheckText={
               {
                 "type": "text",
                 "text": gLoginData["Password"],
-                "wrap": True,
+
                 "color": "#666666",
                 "size": "sm",
                 "flex": 5

@@ -69,7 +69,7 @@ def handle_text_message(event):
 
     else :
         print("[EVENT] Echo")
-        gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
+        # gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
 
 
 
