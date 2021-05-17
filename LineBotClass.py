@@ -2,7 +2,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, FlexSendMessage, PostbackEvent
 import configparser
-from flask import request, abort, session
+from flask import request, abort
 import index
 from VarIndex import *
 import LineBotText
@@ -15,12 +15,12 @@ config.read('config.ini')
 gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
 gHandler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 
-
+gSession = None
 
 
 
 #\ handler. This is the example from the official doc
-def LineBotHandler(app):
+def LineBotHandler(app, session):
     #\ get X-Line-Signature header value
     #\ 如果該HTTP POST訊息是來自LINE平台，在HTTP請求標頭中一定會包括X-Line-Signature項目，
     #\ 該項目的內容值是即為數位簽章。例如：
@@ -34,6 +34,7 @@ def LineBotHandler(app):
 
     #\ handle webhook body
     try:
+        gSession = session
         gHandler.handle(body, signature)
     except InvalidSignatureError:
         print("Invalid signature. Please check your channel access token/channel secret.")
@@ -46,7 +47,7 @@ def LineBotHandler(app):
 #\ handle the message
 @gHandler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    global session
+    global gSession
     print("[INFO] TextMessage")
     print(f"[INFO] Event :{event}")
 
@@ -55,23 +56,23 @@ def handle_text_message(event):
 
     #\ switch the case of MessageEvent
     #\ read the text if it meants to trigger some event
-    print(f'[INFO] gIsJustText : {session["gIsJustText"]}')
-    print(f'[INFO] gEvent : {session["gEvent"]}')
-    if session["gIsJustText"] == True :
-        session["gEventText"] = event.message.text.lower()
+    print(f'[INFO] gIsJustText : {gSession["gIsJustText"]}')
+    print(f'[INFO] gEvent : {gSession["gEvent"]}')
+    if gSession["gIsJustText"] == True :
+        gSession["gEventText"] = event.message.text.lower()
 
         #\ categorize the text to trigger event
-        CheckEvent(session["gEventText"])
+        CheckEvent(gSession["gEventText"])
 
 
-    print(f'[INFO] gEvent(after ChekEvent) : {session["gEvent"]}')
+    print(f'[INFO] gEvent(after ChekEvent) : {gSession["gEvent"]}')
     #\ categorize the event and the corresponding action
-    if session["gEvent"] == eLineBotEvent.LOGIN.value:
+    if gSession["gEvent"] == eLineBotEvent.LOGIN.value:
         LoginProgress(event)
 
-    elif session["gEvent"] == eLineBotEvent.MENU.value:
+    elif gSession["gEvent"] == eLineBotEvent.MENU.value:
         #\ reset the is-just-text flag
-        session["gIsJustText"] = True
+        gSession["gIsJustText"] = True
 
     else :
         print("[EVENT] Echo")
@@ -82,17 +83,17 @@ def handle_text_message(event):
 
 #\ check the event from the received text
 def CheckEvent(event_text:str):
-    global session
+    global gSession
     if event_text == "login":
-        session["gEvent"] = eLineBotEvent.LOGIN.value
-        session["gIsJustText"] = False
+        gSession["gEvent"] = eLineBotEvent.LOGIN.value
+        gSession["gIsJustText"] = False
     elif event_text == "menu" :
-        session["gEvent"] = eLineBotEvent.MENU.value
-        session["gIsJustText"] = False
+        gSession["gEvent"] = eLineBotEvent.MENU.value
+        gSession["gIsJustText"] = False
     else:
-        session["gEvent"] = eLineBotEvent.NONE.value
+        gSession["gEvent"] = eLineBotEvent.NONE.value
 
-    print(f'[INFO] CheckEvent : {event_text}, (gIsJustText : {session["gIsJustText"]})')
+    print(f'[INFO] CheckEvent : {event_text}, (gIsJustText : {gSession["gIsJustText"]})')
 
 
 
@@ -101,9 +102,9 @@ def CheckEvent(event_text:str):
 #\ for the first time follow the group
 @gHandler.add(FollowEvent)
 def handle_follow_message(event):
-    global session
-    session["gEvent"] = eLineBotEvent.LOGIN.value
-    session["gIsJustText"] = False
+    global gSession
+    gSession["gEvent"] = eLineBotEvent.LOGIN.value
+    gSession["gIsJustText"] = False
     print("[INFO]: JoinEvent")
     print(f"[INFO]: {event}")
     for idx in range(len(index.JoinEventText)):
@@ -122,12 +123,12 @@ def Login2Web():
 
 #\Login process
 def LoginProgress(event):
-    global session
-    session["gEventCnt"] += 1
-    print(f'[EVENT] Login gEventCnt: {session["gEventCnt"]}')
+    global gSession
+    gSession["gEventCnt"] += 1
+    print(f'[EVENT] Login gEventCnt: {gSession["gEventCnt"]}')
 
     #\ specified the login event 4 to determin redo login again or not
-    if session["gEventCnt"] == 4:
+    if gSession["gEventCnt"] == 4:
         if event.message.text == "LOGIN_OK":
             print("[INFO] Login info user confirm")
             gLine_bot_api.reply_message(
@@ -137,20 +138,20 @@ def LoginProgress(event):
             Login2Web()
         elif event.message.text == "LOGIN_FAIL":
             print("[INFO] Login info user decline")
-            session["gEventCnt"] = 1
+            gSession["gEventCnt"] = 1
 
     #\ the login event
-    print(f'[EVENT] Login gEventCnt(after gEventCnt 4): {session["gEventCnt"]}')
-    if session["gEventCnt"] == 1:
+    print(f'[EVENT] Login gEventCnt(after gEventCnt 4): {gSession["gEventCnt"]}')
+    if gSession["gEventCnt"] == 1:
         gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[0]))
-    elif session["gEventCnt"] == 2:
+    elif gSession["gEventCnt"] == 2:
         gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[1]))
 
         #\ assign the account
         gLoginData["Account"] = event.message.text
         LineBotText.LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = gLoginData["Account"]
 
-    elif session["gEventCnt"] == 3:
+    elif gSession["gEventCnt"] == 3:
         #\ assign the password
         gLoginData["Password"] = event.message.text
         LineBotText.LoginCheckText["body"]["contents"][1]["contents"][1]["contents"][1]["text"] = gLoginData["Password"]
@@ -166,9 +167,9 @@ def LoginProgress(event):
     else:
         #\ reset the is-just-text flag and the event count and event
         print("[INFO] RESET~~~~~~~~~")
-        session["gIsJustText"] = True
-        session["gEventCnt"] = 0
-        session["gEvent"] = None
+        gSession["gIsJustText"] = True
+        gSession["gEventCnt"] = 0
+        gSession["gEvent"] = None
 
 
 

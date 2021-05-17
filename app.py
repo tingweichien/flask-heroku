@@ -97,7 +97,7 @@ def LineBotEcho():
     #\ message text
     session["gLoginDataConfirm"] = False
 
-    LineBotClass.LineBotHandler(app)
+    LineBotClass.LineBotHandler(app,session)
     return "ok"
 
 
