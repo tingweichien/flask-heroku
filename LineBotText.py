@@ -100,7 +100,7 @@ LoginCheckText={
         "action": {
           "type": "message",
           "label": "NO",
-          "text": "login"
+          "text": "LOGIN_FAIL"
         }
       },
       {
@@ -110,7 +110,7 @@ LoginCheckText={
         "action": {
           "type": "message",
           "label": "OK",
-          "text": "login_confirm"
+          "text": "LOGIN_CONFIRM"
         }
       }
     ]

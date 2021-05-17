@@ -126,14 +126,14 @@ def Login2Web():
 #\Login process
 def LoginProgress(event):
     global gSession
-    tmpCnt = cache.get("gEventCnt") 
+    tmpCnt = cache.get("gEventCnt")
     tmpCnt += 1
-    cache.set("gEventCnt", tmpCnt) 
+    cache.set("gEventCnt", tmpCnt)
     print(f'[EVENT] Login gEventCnt: {cache.get("gEventCnt")}')
 
     #\ specified the login event 4 to determin redo login again or not
     if cache.get("gEventCnt") == 4:
-        if event.message.text == "LOGIN_OK":
+        if event.message.text == "LOGIN_CONFIRM":
             print("[INFO] Login info user confirm")
             gLine_bot_api.reply_message(
                                         event.reply_token,
