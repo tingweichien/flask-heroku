@@ -5,6 +5,7 @@ from flask_session import Session
 from datetime import timedelta
 import LineBotClass
 import index
+from VarIndex import cache
 
 
 
@@ -20,6 +21,15 @@ Session(app)
 app.secret_key ="tim960622"
 app.permanent_session_lifetime = timedelta(seconds=5)
 
+
+#\ cache for global variable
+cache.init_app(app=app, config={"CACHE_TYPE": "filesystem", "CACHE_DIR":"/tmp"})
+#\set cache data
+cache.set("gEventText", None)
+cache.set("gEvent", None)
+cache.set("gEventCnt", 0)
+cache.set("gIsJustText", True)
+cache.set("gLoginDataConfirm", False)
 
 
 ################################################################################

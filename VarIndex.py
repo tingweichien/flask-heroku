@@ -2,6 +2,10 @@
 
 from enum import IntEnum
 # from flask import session
+from flask_caching import Cache
+
+# Instantiate the cache
+cache = Cache()
 
 
 #\ Login info
