@@ -1,25 +1,35 @@
 #\ this is the entry of the program
 
 from flask import Flask, render_template, request, url_for, redirect, session
+from flask_session import Session
 from datetime import timedelta
-from index import *
 import LineBotClass
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+import index
+from VarIndex import cache
 
-import random
 
 
 #\ __name__ represent the current module
 app = Flask(__name__)
 
+# Check Configuration section for more details
+SESSION_TYPE = 'filesystem'
+app.config.from_object(__name__)
+Session(app)
 
 #\ secret key for session
 app.secret_key ="tim960622"
 app.permanent_session_lifetime = timedelta(seconds=5)
 
 
-#\ Line bot basic info
-LineBot = LineBotClass.LineBotClass(app)
+#\ cache for global variable
+cache.init_app(app=app, config={"CACHE_TYPE": "filesystem", "CACHE_DIR":"/tmp"})
+#\set cache data
+cache.set("gEventText", None)
+cache.set("gEvent", None)
+cache.set("gEventCnt", 0)
+cache.set("gIsJustText", True)
+cache.set("gLoginDataConfirm", False)
 
 
 ################################################################################
@@ -56,11 +66,11 @@ def contact():
 
 @app.route("/OSMmap")
 def OSMmap():
-    return render_template("OSMmap.html", apikey = GMAPapikey, api_on = bAPIon)
+    return render_template("OSMmap.html", apikey = index.GMAPapikey, api_on = index.bAPIon)
 
 
 #\ -- to HTTP method --
-@ app.route("/urlREST/<name>")
+@app.route("/urlREST/<name>")
 def urlREST(name):
     return "<h1>Hello {} !! This is urlREST example</h1>".format(name)
 
@@ -88,7 +98,17 @@ def user():
 #\ echo
 @app.route("/LineBotEcho", methods=['POST'])
 def LineBotEcho():
-    LineBot.LineBotHandler()
+
+    #\ global event
+    session["gEventText"] = ""
+    session["gEvent"] = None
+    session["gEventCnt"] = 0
+    session["gIsJustText"] = True
+    #\ message text
+    session["gLoginDataConfirm"] = False
+
+    LineBotClass.LineBotHandler(app,session)
+    return "ok"
 
 
 
