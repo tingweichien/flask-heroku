@@ -7,3 +7,4 @@ bs4 == 0.0.1
 proxyscrape == 0.3.0
 requests == 2.24.0
 typing-extensions == 3.7.4.3
+fake-useragent == 0.1.11

@@ -4,10 +4,21 @@ import requests
 from bs4 import BeautifulSoup
 import DataClass
 import index
+from fake_useragent import UserAgent
+import re
 
+
+#\ seesion
 session = requests.Session()
 
 
+
+#\--->Now use random fake user agent
+# https://ithelp.ithome.com.tw/articles/10209356
+UA = UserAgent()
+headers = {
+        'User-Agent' : UA.random,
+}
 
 
 #\ Proxy auto crawling
