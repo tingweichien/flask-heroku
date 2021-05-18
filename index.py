@@ -33,9 +33,9 @@ re_try_limit = INDEX["DragonflyData"]["re_try_limit"]
 
 #\ URL
 general_url = INDEX["DragonflyData"]["URL"]["general_url"]
-Login_url = INDEX["DragonflyData"]["URL"]["Login_url"]
-All_Observation_Data_url = INDEX["DragonflyData"]["URL"]["All_Observation_Data_url"]
-Next_page_url = INDEX["DragonflyData"]["URL"]["Next_page_url"]
+Login_url = general_url + INDEX["DragonflyData"]["URL"]["Login_url"]
+All_Observation_Data_url = general_url + INDEX["DragonflyData"]["URL"]["All_Observation_Data_url"]
+Next_page_url = general_url + INDEX["DragonflyData"]["URL"]["Next_page_url"]
 Brief_discriptions_url = INDEX["DragonflyData"]["URL"]["Brief_discriptions_url"]
 Detailed_discriptions_url = INDEX["DragonflyData"]["URL"]["Detailed_discriptions_url"]
 map_info_url = INDEX["DragonflyData"]["URL"]["map_info_url"]
