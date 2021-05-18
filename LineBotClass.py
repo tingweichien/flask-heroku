@@ -111,7 +111,7 @@ def handle_follow_message(event):
     for idx in range(len(index.JoinEventText)):
         gLine_bot_api.reply_message(
                         event.reply_token,
-                        TextSendMessage(text=index.JoinEventText[idx])
+                        TextSendMessage(text=index.JoinEventText[idx], wrap=True)
                         )
 
 
