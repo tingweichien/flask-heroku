@@ -104,7 +104,6 @@ def CheckEvent(event_text:str):
 #\ for the first time follow the group
 @gHandler.add(FollowEvent)
 def handle_follow_message(event):
-    global gSession
     cache.set("gEvent", eLineBotEvent.LOGIN.value)
     cache.set("gIsJustText", False)
     print("[INFO]: JoinEvent")

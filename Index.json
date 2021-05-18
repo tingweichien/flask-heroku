@@ -5,13 +5,13 @@
     },
 
     "LineBot": {
-        "JoinEventText" : ["Welcome to the dragonfly line bot~", "Please login"],
+        "JoinEventText" : ["Welcome to the dragonfly line bot~\nPlease login by typing 'login' or via the richmenu"],
         "LoginEventText" : ["Please enter the account : ", "Please enter the password : "]
     },
     "DragonflyData": {
         "re_try_limit" : 4,
         "URL": {
-            "Login_url" : "login.php",
+            "Login_url" : "login.php"
         }
     }
 }
