@@ -153,11 +153,13 @@ def LoginProgress(event):
 
         #\ assign the account
         gLoginData["Account"] = event.message.text
-        LineBotText.LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = gLoginData["Account"]
 
     elif cache.get("gEventCnt") == 3:
         #\ assign the password
         gLoginData["Password"] = event.message.text
+
+        #\ Text to print on Flex message for re-checking the user login info
+        LineBotText.LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = gLoginData["Account"]
         LineBotText.LoginCheckText["body"]["contents"][1]["contents"][1]["contents"][1]["text"] = gLoginData["Password"]
 
         #\ Check if the user confirm the login info

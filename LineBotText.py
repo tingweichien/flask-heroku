@@ -3,7 +3,6 @@
 #\  1. https://developers.line.biz/flex-simulator/
 # \ 2. https://medium.com/@marstseng/line-flex-message-b83b33483f9d
 
-from VarIndex import *
 
 #\ Login Flex-message for login check text
 # LoginCheckText = {
