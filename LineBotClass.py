@@ -179,8 +179,13 @@ def handle_follow_message(event):
 #\ login to web
 def Login2Web(event):
     print("[INFO] Login2Web")
-    print(f'[INFO] Account: {gLoginData["Account"]}, Password: {gLoginData["Password"]}')
-    [Dragonfly_session, Login_Response, Login_state] = DragonflyData.Login_Web(gLoginData["Account"], gLoginData["Password"])
+    login_account = cache.get("gAccount")
+    login_password = cache.get("gPassword")
+    print(f'[INFO] Account: {login_account}, Password: {login_password}')
+
+    #\ main function to login
+    [Dragonfly_session, Login_Response, Login_state] = DragonflyData.Login_Web(login_account, login_password)
+    print(f"[INFO] Login_Response: {Login_Response}, Login_state: {Login_state}")
 
     #\ check the login state
     if (Login_state == False):
