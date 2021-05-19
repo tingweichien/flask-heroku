@@ -176,37 +176,37 @@ def handle_follow_message(event):
 
 
 
-# #\ login to web
-# def Login2Web(event):
-#     print("[INFO] Login2Web")
-#     print(f'[INFO] Account: {gLoginData["Account"]}, Password: {gLoginData["Password"]}')
-#     [Dragonfly_session, Login_Response, Login_state] = DragonflyData.Login_Web(gLoginData["Account"], gLoginData["Password"])
+#\ login to web
+def Login2Web(event):
+    print("[INFO] Login2Web")
+    print(f'[INFO] Account: {gLoginData["Account"]}, Password: {gLoginData["Password"]}')
+    [Dragonfly_session, Login_Response, Login_state] = DragonflyData.Login_Web(gLoginData["Account"], gLoginData["Password"])
 
-#     #\ check the login state
-#     if (Login_state == False):
-#         print("[Warning] Warning!!! Account or Password might be incorrect!!!!")  #incorrect account or password
-#         gLine_bot_api.reply_message(
-#                                     event.reply_token,
-#                                     TextSendMessage(text="Account or Password might be incorrect!!!!")
-#                                     )
-#     elif Login_Response == None and Login_state == None:
-#         print("[Warning] No connection to server, check the internet connection!!!")
-#         gLine_bot_api.reply_message(
-#                                     event.reply_token,
-#                                     TextSendMessage(text=" No connection to server, check the internet connection!!!")
-#                                     )
-#     else:
-#         print("[info] Login state success")
-#         gLine_bot_api.reply_message(
-#                                     event.reply_token,
-#                                     TextSendMessage(text="Login state success~")
-#                                     )
+    #\ check the login state
+    if (Login_state == False):
+        print("[Warning] Warning!!! Account or Password might be incorrect!!!!")  #incorrect account or password
+        gLine_bot_api.reply_message(
+                                    event.reply_token,
+                                    TextSendMessage(text="Account or Password might be incorrect!!!!")
+                                    )
+    elif Login_Response == None and Login_state == None:
+        print("[Warning] No connection to server, check the internet connection!!!")
+        gLine_bot_api.reply_message(
+                                    event.reply_token,
+                                    TextSendMessage(text=" No connection to server, check the internet connection!!!")
+                                    )
+    else:
+        print("[info] Login state success")
+        gLine_bot_api.reply_message(
+                                    event.reply_token,
+                                    TextSendMessage(text="Login state success~")
+                                    )
 
 
-#         #\ save the login authorization info
+        #\ save the login authorization info
 
-#         #\ function finish state
-#         cache.set("gLoginStatus", True)
+        #\ function finish state
+        cache.set("gLoginStatus", True)
 
 
 
@@ -232,7 +232,7 @@ def LoginProgress(event):
                                         )
 
             #\ Start Login to web method
-            # Login2Web(event)
+            Login2Web(event)
 
 
         elif event.message.text == "LOGIN_FAIL":
