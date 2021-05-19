@@ -115,7 +115,7 @@ def handle_text_message(event):
         gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
 
 
-        
+
 
 
 
@@ -248,18 +248,20 @@ def LoginProgress(event):
         gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[1]))
 
         #\ assign the account
-        gLoginData["Account"] = event.message.text
+        # gLoginData["Account"] = event.message.text
+        cache.set("gAccount", event.message.text)
 
     elif cache.get("gEventCnt") == 3:
         #\ assign the password
-        gLoginData["Password"] = event.message.text
+        # gLoginData["Password"] = event.message.text
+        cache.set("gPassword", event.message.text)
 
         #\ Text to print on Flex message for re-checking the user login info
-        LineBotText.LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = gLoginData["Account"]
-        LineBotText.LoginCheckText["body"]["contents"][1]["contents"][1]["contents"][1]["text"] = gLoginData["Password"]
+        LineBotText.LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = cache.get("gAccount")
+        LineBotText.LoginCheckText["body"]["contents"][1]["contents"][1]["contents"][1]["text"] = cache.get("gPassword")
 
         #\ Check if the user confirm the login info
-        flex_message = FlexSendMessage(alt_text=f'Hi, Check again for the login info:\nAccount: {gLoginData["Account"]}\nPassword: {gLoginData["Password"]}',
+        flex_message = FlexSendMessage(alt_text=f'Hi, Check again for the login info:\nAccount: {cache.get("gAccount")}\nPassword: {cache.get("gPassword")}',
                                         contents=LineBotText.LoginCheckText
                                         )
         gLine_bot_api.reply_message(
