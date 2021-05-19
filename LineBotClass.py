@@ -235,10 +235,11 @@ def LoginProgress(event):
             LoginStateMessage = Login2Web()
             print(f"[INFO] LoginStateMessage: {LoginStateMessage}")
             print(f"[BUG] LoginProgress event: {event}")
-            gLine_bot_api.reply_message(
-                                        event.reply_token,
+            gLine_bot_api.push_message(
+                                        event.source.userId,
                                         TextSendMessage(text=LoginStateMessage)
                                         )
+            gLine_bot_api.broadcast(TextSendMessage(text=LoginStateMessage))
 
 
         elif event.message.text == "LOGIN_FAIL":
