@@ -30,6 +30,10 @@ cache.set("gEvent", None)
 cache.set("gEventCnt", 0)
 cache.set("gIsJustText", True)
 cache.set("gLoginDataConfirm", False)
+cache.set("gLoginStatus", False)
+cache.set("gAccount", None)
+cache.set("gPassword", None)
+
 
 
 ################################################################################

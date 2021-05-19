@@ -33,16 +33,17 @@ def get_proxy()->list:
 
 
 #\ Login
-"""
-params:
-    account
-    password
-return:
-    session
-    Login_Response
-    Login_state
-"""
-def Login_Web(Input_account:str, Input_password:str):
+def Login_Web(Input_account:str, Input_password:str)->list:
+    """
+    params:
+        account,
+        password
+    return:
+        session,
+        Login_Response,
+        Login_state
+    """
+
     #\ Login account and password
     data = {
         'account' : Input_account,
