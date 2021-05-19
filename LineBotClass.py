@@ -75,36 +75,47 @@ def handle_text_message(event):
 
     elif cache.get("gEvent") == eLineBotEvent.MENU.value:
         pleaseLogin(event)
-        pass
+        #\ reset the is-just-text flag
+        cache.set("gIsJustText", True)
+
 
     elif cache.get("gEvent") == eLineBotEvent.REQUEST.value:
         pleaseLogin(event)
-        pass
+        #\ reset the is-just-text flag
+        cache.set("gIsJustText", True)
+
 
     elif cache.get("gEvent") == eLineBotEvent.RECORD.value:
         pleaseLogin(event)
-        pass
+        #\ reset the is-just-text flag
+        cache.set("gIsJustText", True)
+
 
     elif cache.get("gEvent") == eLineBotEvent.SETTING.value:
         pleaseLogin(event)
-        pass
+        #\ reset the is-just-text flag
+        cache.set("gIsJustText", True)
+
 
     elif cache.get("gEvent") == eLineBotEvent.SEARCH.value:
         pleaseLogin(event)
-        pass
+        #\ reset the is-just-text flag
+        cache.set("gIsJustText", True)
+
 
     elif cache.get("gEvent") == eLineBotEvent.OTHERS.value:
         pleaseLogin(event)
-        pass
+        #\ reset the is-just-text flag
+        cache.set("gIsJustText", True)
+
 
     else :
         print("[EVENT] Echo")
         cache.set("gEvent", eLineBotEvent.NONE.value)
         gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
 
-    #\ reset the is-just-text flag
-    if cache.get("gEvent") != eLineBotEvent.NONE.value or cache.get("gEvent") != eLineBotEvent.LOGIN.value:
-        cache.set("gIsJustText", True)
+
+        
 
 
 
