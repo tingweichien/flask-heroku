@@ -201,8 +201,12 @@ def Login2Web(event):
 
 #\Login process
 def LoginProgress(event):
-    global gSession
-    tmpCnt = cache.get("gEventCnt")
+
+    if cache.get("gEventCnt") == None:
+        tmpCnt = 0
+    else :
+        tmpCnt = cache.get("gEventCnt")
+
     tmpCnt += 1
     cache.set("gEventCnt", tmpCnt)
     print(f'[EVENT] Login gEventCnt: {cache.get("gEventCnt")}')
