@@ -49,7 +49,6 @@ def LineBotHandler(app, session):
 #\ handle the message
 @gHandler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    global gSession
     print("[INFO] TextMessage")
     print(f"[INFO] Event :{event}")
 
@@ -235,9 +234,9 @@ def LoginProgress(event):
             LoginStateMessage = Login2Web()
             print(f"[INFO] LoginStateMessage: {LoginStateMessage}")
             print(f"[BUG] LoginProgress event: {event}")
-            print(f"[BUG] LoginProgress event.source.userId: {event.source.userId}")
+            print(f"[BUG] LoginProgress event.source.userId: {event.source.user_Id}")
             gLine_bot_api.push_message(
-                                        event.source.userId,
+                                        event.source.user_Id,
                                         TextSendMessage(text=LoginStateMessage)
                                         )
             gLine_bot_api.broadcast(TextSendMessage(text=LoginStateMessage))
