@@ -234,6 +234,7 @@ def LoginProgress(event):
 
             #\ Start Login to web method
             LoginStateMessage = Login2Web()
+            print(f"[BUG] LoginProgress event: {event}")
             gLine_bot_api.reply_message(
                                         event.reply_token,
                                         TextSendMessage(text=LoginStateMessage)
