@@ -75,7 +75,7 @@ def Login_Web(Input_account:str, Input_password:str)->list:
 
         else:
             #\ 執行登入
-            Login_Response = session.post(index.Login_url, headers=index.headers, data=data)
+            Login_Response = session.post(index.Login_url, headers=headers, data=data)
 
             #\ 確認是否成功登入
             soup_login_ckeck = BeautifulSoup(Login_Response.text, 'html.parser')
@@ -116,7 +116,7 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
 
 
     #\ 執行進入"蜓種觀察資料查詢作業"
-    All_Observation_Data_response = session.post(index.All_Observation_Data_url, headers=index.headers)
+    All_Observation_Data_response = session.post(index.All_Observation_Data_url, headers=headers)
 
 
     #\ 下一頁
@@ -209,7 +209,7 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
         ID_find_result = []
     else:
         #\ 執行
-        response_Detailed_discriptions2 = session.post(index.general_url + index.Detailed_discriptions_url + Input_ID, headers=index.headers)
+        response_Detailed_discriptions2 = session.post(index.general_url + index.Detailed_discriptions_url + Input_ID, headers=headers)
         soup2 = BeautifulSoup(response_Detailed_discriptions2.text, 'html.parser')
         Longitude = soup2.find(id = 'R_LNG').get('value')
         print('經度 : ' + Longitude)
