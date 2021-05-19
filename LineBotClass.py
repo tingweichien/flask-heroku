@@ -37,7 +37,6 @@ def LineBotHandler(app, session):
 
     #\ handle webhook body
     try:
-        gSession = session
         gHandler.handle(body, signature)
     except InvalidSignatureError:
         print("Invalid signature. Please check your channel access token/channel secret.")
@@ -234,6 +233,7 @@ def LoginProgress(event):
 
             #\ Start Login to web method
             LoginStateMessage = Login2Web()
+            print(f"[INFO] LoginStateMessage: {LoginStateMessage}")
             print(f"[BUG] LoginProgress event: {event}")
             gLine_bot_api.reply_message(
                                         event.reply_token,
@@ -244,6 +244,7 @@ def LoginProgress(event):
         elif event.message.text == "LOGIN_FAIL":
             print("[INFO] Login info user decline")
             cache.set("gEventCnt", 1)
+
 
     #\ the login event
     print(f'[EVENT] Login gEventCnt(after gEventCnt 4): {cache.get("gEventCnt")}')
