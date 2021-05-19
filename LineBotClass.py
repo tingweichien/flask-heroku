@@ -177,7 +177,7 @@ def handle_follow_message(event):
 
 
 #\ login to web
-def Login2Web(event):
+def Login2Web():
     print("[INFO] Login2Web")
     login_account = cache.get("gAccount")
     login_password = cache.get("gPassword")
@@ -190,28 +190,24 @@ def Login2Web(event):
     #\ check the login state
     if (Login_state == False):
         print("[Warning] Warning!!! Account or Password might be incorrect!!!!")  #incorrect account or password
-        gLine_bot_api.reply_message(
-                                    event.reply_token,
-                                    TextSendMessage(text="Account or Password might be incorrect!!!!")
-                                    )
+        return "Account or Password might be incorrect!!!!"
+
     elif Login_Response == None and Login_state == None:
         print("[Warning] No connection to server, check the internet connection!!!")
-        gLine_bot_api.reply_message(
-                                    event.reply_token,
-                                    TextSendMessage(text=" No connection to server, check the internet connection!!!")
-                                    )
-    else:
-        print("[info] Login state success")
-        gLine_bot_api.reply_message(
-                                    event.reply_token,
-                                    TextSendMessage(text="Login state success~")
-                                    )
+        return " No connection to server, check the internet connection!!!")
 
+    else: #\ Login_state == True and Login_Response not None
+        print("[info] Login state success")
 
         #\ save the login authorization info
 
         #\ function finish state
         cache.set("gLoginStatus", True)
+
+        return "Login state success~"
+
+
+
 
 
 
@@ -237,7 +233,11 @@ def LoginProgress(event):
                                         )
 
             #\ Start Login to web method
-            Login2Web(event)
+            LoginStateMessage = Login2Web()
+            gLine_bot_api.reply_message(
+                                        event.reply_token,
+                                        TextSendMessage(text=LoginStateMessage)
+                                        )
 
 
         elif event.message.text == "LOGIN_FAIL":
