@@ -194,7 +194,7 @@ def Login2Web():
 
     elif Login_Response == None and Login_state == None:
         print("[Warning] No connection to server, check the internet connection!!!")
-        return " No connection to server, check the internet connection!!!")
+        return " No connection to server, check the internet connection!!!"
 
     else: #\ Login_state == True and Login_Response not None
         print("[info] Login state success")
