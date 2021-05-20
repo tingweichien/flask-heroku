@@ -33,23 +33,23 @@ def get_proxy()->list:
 
 
 #\ Login
-"""
-params:
-    account
-    password
-return:
-    session
-    Login_Response
-    Login_state
-"""
-def Login_Web(Input_account:str, Input_password:str):
+def Login_Web(Input_account:str, Input_password:str)->list:
+    """
+    params:
+        account,
+        password
+    return:
+        session,
+        Login_Response,
+        Login_state
+    """
+
     #\ Login account and password
     data = {
         'account' : Input_account,
         'password' : Input_password,
     }
 
-    Login_state = True
     re_try = 0
     #\ retry for certain times if failed
     while re_try < index.re_try_limit:
@@ -74,14 +74,22 @@ def Login_Web(Input_account:str, Input_password:str):
 
         else:
             #\ 執行登入
-            Login_Response = session.post(index.Login_url, headers=index.headers, data=data)
+            Login_Response = session.post(index.Login_url, headers=headers, data=data)
 
             #\ 確認是否成功登入
+            # print(f"[INFO] Login response text : \n {Login_Response.text}")
             soup_login_ckeck = BeautifulSoup(Login_Response.text, 'html.parser')
-            script = soup_login_ckeck.find("script").extract() # find the alert
-            alert = re.findall(r'(?<=alert\(\").+(?=\")', script.text) #\r\n    alert("登入失敗，請重新登入");\r\n
+            script = soup_login_ckeck.find("script") # find the alert
+            try :
+                alert = re.findall(r'(?<=alert\(\").+(?=\")', script.contents[0]) #\r\n    alert("登入失敗，請重新登入");\r\n
+
+            except :
+                alert = ""
+
             if (len(alert) > 0):
                 Login_state = False # to show the error that the password or account might be wrong
+            else:
+                Login_state = True
             return [session, Login_Response, Login_state]
 
     #\ retry failed
@@ -115,7 +123,7 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
 
 
     #\ 執行進入"蜓種觀察資料查詢作業"
-    All_Observation_Data_response = session.post(index.All_Observation_Data_url, headers=index.headers)
+    All_Observation_Data_response = session.post(index.All_Observation_Data_url, headers=headers)
 
 
     #\ 下一頁
@@ -208,7 +216,7 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
         ID_find_result = []
     else:
         #\ 執行
-        response_Detailed_discriptions2 = session.post(index.general_url + index.Detailed_discriptions_url + Input_ID, headers=index.headers)
+        response_Detailed_discriptions2 = session.post(index.general_url + index.Detailed_discriptions_url + Input_ID, headers=headers)
         soup2 = BeautifulSoup(response_Detailed_discriptions2.text, 'html.parser')
         Longitude = soup2.find(id = 'R_LNG').get('value')
         print('經度 : ' + Longitude)
@@ -229,3 +237,11 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
                                             soup2.find(id='R_MEMO').get('value'))
 
     return [ID_find_result, overflow, int(Max_ID_Num)]
+
+
+
+
+
+
+#\ for testing 
+# Login_Web("xxxx", "xxxxxx")
