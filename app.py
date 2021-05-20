@@ -5,7 +5,7 @@ from flask_session import Session
 from datetime import timedelta
 import LineBotClass
 import index
-from VarIndex import cache
+from VarIndex import cache, eLineBotEvent
 
 
 
@@ -26,7 +26,7 @@ app.permanent_session_lifetime = timedelta(seconds=5)
 cache.init_app(app=app, config={"CACHE_TYPE": "filesystem", "CACHE_DIR":"/tmp"})
 #\set cache data
 cache.set("gEventText", None)
-cache.set("gEvent", None)
+cache.set("gEvent", eLineBotEvent.NONE.value)
 cache.set("gEventCnt", 0)
 cache.set("gIsJustText", True)
 cache.set("gLoginDataConfirm", False)

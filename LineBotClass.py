@@ -71,6 +71,7 @@ def handle_text_message(event):
     if cache.get("gEvent") == eLineBotEvent.LOGIN.value:
         LoginProgress(event)
 
+
     elif cache.get("gEvent") == eLineBotEvent.MENU.value:
         pleaseLogin(event)
         #\ reset the is-just-text flag
@@ -278,7 +279,7 @@ def LoginProgress(event):
         print("[INFO] RESET~~~~~~~~~")
         cache.set("gIsJustText", True)
         cache.set("gEventCnt", 0)
-        cache.set("gEvent", None)
+        cache.set("gEvent", eLineBotEvent.NONE.value)
 
 
 
