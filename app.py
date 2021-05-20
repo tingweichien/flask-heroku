@@ -33,6 +33,7 @@ cache.set("gLoginDataConfirm", False)
 cache.set("gLoginStatus", False)
 cache.set("gAccount", None)
 cache.set("gPassword", None)
+cache.set("Dragonfly_session", None)
 
 
 

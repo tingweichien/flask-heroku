@@ -80,6 +80,9 @@ def handle_text_message(event):
 
     elif cache.get("gEvent") == eLineBotEvent.REQUEST.value:
         pleaseLogin(event)
+        AakInputID(event)
+        # DragonflyData.DataCrawler(cache.get("Dragonfly_session"), Input_ID)
+
         #\ reset the is-just-text flag
         cache.set("gIsJustText", True)
 
@@ -158,6 +161,13 @@ def pleaseLogin(event):
                 TextSendMessage(text="Please Login first to use this function")
                 )
 
+#\ Ask the input ID for request
+def AakInputID(event):
+    gLine_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text="Please Enter the request ID")
+        )
+
 
 
 #\ for the first time follow the group
@@ -202,6 +212,9 @@ def Login2Web():
 
         #\ function finish state
         cache.set("gLoginStatus", True)
+
+        #\ set the login session
+        cache.set("Dragonfly_session", Dragonfly_session)
 
         return "Login state success~"
 
@@ -276,7 +289,7 @@ def LoginProgress(event):
                         )
     else:
         #\ reset the is-just-text flag and the event count and event
-        print("[INFO] RESET~~~~~~~~~")
+        print("[INFO] RESET event data~~~~~~~~~")
         cache.set("gIsJustText", True)
         cache.set("gEventCnt", 0)
         cache.set("gEvent", eLineBotEvent.NONE.value)
