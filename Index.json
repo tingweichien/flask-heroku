@@ -1,0 +1,27 @@
+{
+    "OSM": {
+        "bAPIon" : false,
+        "GMAPapikey" : "AIzaSyBEnhhOTbjqUkeWikhcrmVfYWM4AjeqCQY"
+    },
+
+    "LineBot": {
+        "JoinEventText" : ["Welcome to the dragonfly line bot~\nPlease login by typing 'login' or via the richmenu"],
+        "LoginEventText" : ["Please enter the account : ", "Please enter the password : "]
+    },
+    "DragonflyData": {
+        "re_try_limit" : 4,
+        "URL": {
+            "general_url" : "http://dragonfly.idv.tw/dragonfly/",
+            "Login_url" : "login.php",
+            "All_Observation_Data_url" : "rec_list_view.php",
+            "Next_page_url" : "?pageNum_rs_dragonfly_record=",
+            "Brief_discriptions_url" : "view_data.php?id=",
+            "Detailed_discriptions_url" : "read_data.php?id=",
+            "map_info_url" : "tokei.php?kind_key=",
+            "species_all_record_data_first_url" : "rec_list_view_for_key.php",
+            "species_all_record_data_page_url" : "?pageNum_rs_dragonfly_record=",
+            "species_all_record_data_species_url" : "&type=total_kind&kind=",
+            "total_num_species_url" : "kind_total_records.php"
+        }
+    }
+}

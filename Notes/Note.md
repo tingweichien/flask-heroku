@@ -93,49 +93,49 @@ i.e.
 
 ### [2020/10/06]
 
-#### 1. somehow can show the image when deploying on the heroku
+1. somehow can show the image when deploying on the heroku
 
-- I found that I should make sure that the file typt for my picture should in lowercase, despite the fact that it's not sensitive on the localhost. However, after I modified the problem, it still can't shown on the heroku server.
+   - I found that I should make sure that the file typt for my picture should in lowercase, despite the fact that it's not sensitive on the localhost. However, after I modified the problem, it still can't shown on the heroku server.
 
-- So, I turn into another solution, which is change the file type to .png , then everything went well !!!
+   - So, I turn into another solution, which is change the file type to .png , then everything went well !!!
 
-#### 2. The css template do not change after I modified it
+2. The css template do not change after I modified it
 
-- The solution is just to simply refresh the page by ```crtl + shift + R```
+   - The solution is just to simply refresh the page by ```crtl + shift + R```
 
-- reference:
-  - [Why won't my Flask app connect to my CSS files?](https://stackoverflow.com/questions/45567877/why-wont-my-flask-app-connect-to-my-css-files/45588180)
+   - reference:
+     - [Why won't my Flask app connect to my CSS files?](https://stackoverflow.com/questions/45567877/why-wont-my-flask-app-connect-to-my-css-files/45588180)
 
-#### 3. make sure when you using the ```url_for``` function there should be a corresponding function
+3. make sure when you using the ```url_for``` function there should be a corresponding function
 
-- I get the error on the ```layout.html``` template, due to that I only create the ```.html``` file but not adding  the correspondingfunction in ```app.py```
+   - I get the error on the ```layout.html``` template, due to that I only create the ```.html``` file but not adding  the correspondingfunction in ```app.py```
 
 
-#### 4. While running, the console log showing favicon.ico 404 not found
+4. While running, the console log showing favicon.ico 404 not found
 
-- that means there are no icon specified.
-- the icon can be in ```.png```or ```.ico```
-- the html to add
+   - that means there are no icon specified.
+   - the icon can be in ```.png```or ```.ico```
+   - the html to add
 
-  ```html
-    <link rel="shortcut icon" href="/path/to/icons/favicon.ico">
-    <link rel="icon" type="image/png" href="/path/to/icons/favicon-192x192.png" sizes="192x192">
-    <link rel="apple-touch-icon" sizes="180x180" href="/path/to/icons/apple-touch-icon-180x180.png">
-  ```
+     ```html
+       <link rel="shortcut icon" href="/path/to/icons/favicon.ico">
+       <link rel="icon" type="image/png" href="/path/to/icons/favicon-192x192.png" sizes="192x192">
+       <link rel="apple-touch-icon" sizes="180x180" href="/path/to/icons/apple-touch-icon-180x180.png">
+     ```
 
-- reference:
-    [What is the best practice for creating a favicon on a web site?](https://stackoverflow.com/questions/25952907/what-is-the-best-practice-for-creating-a-favicon-on-a-web-site)
+   - reference:
+       [What is the best practice for creating a favicon on a web site?](https://stackoverflow.com/questions/25952907/what-is-the-best-practice-for-creating-a-favicon-on-a-web-site)
 
-## Reference
+##### Reference
 
-- [Python網頁設計：Flask使用筆記(二)- 搭配HTML和CSS](https://medium.com/@yanweiliu/python%E7%B6%B2%E9%A0%81%E8%A8%AD%E8%A8%88-flask%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98-%E4%BA%8C-89549f4986de)
+   - [Python網頁設計：Flask使用筆記(二)- 搭配HTML和CSS](https://medium.com/@yanweiliu/python%E7%B6%B2%E9%A0%81%E8%A8%AD%E8%A8%88-flask%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98-%E4%BA%8C-89549f4986de)
 
-- [Python 學習筆記 : 用 Flask 架站 (一) 請求處理](http://yhhuang1966.blogspot.com/2019/08/python-flask.html)
+   - [Python 學習筆記 : 用 Flask 架站 (一) 請求處理](http://yhhuang1966.blogspot.com/2019/08/python-flask.html)
 
 ### [2021/05/11]
 
 1. Error after changing the name of the project
-     - error
+    - error
 
         ```shell
         D:\Code\python\web\flask_practice>git push -u heroku master
@@ -143,8 +143,66 @@ i.e.
         error: failed to push some refs to 'https://git.heroku.com/dragonfly-flask-web.git'
         ```
 
-      - solve
+    - solve
 
-        ``` shell
+        ```shell
         git push heroku HEAD:master
         ```
+
+2. Heroku command
+
+   1. Deploying from a branch besides main
+
+      ```shell
+      git push heroku testbranch:main
+      ```
+
+### [2021/05/20]
+
+1. userId is user_id : ```event.source.user_id```
+     - <https://xiaosean.github.io/chatbot/2018-04-19-LineChatbot_usage/>)
+
+2. Flask cache for global variable : ```from flask_caching import Cache```
+   Since the flask is multithread, the gloabl variable will not work, we use the **session** or **cache** to implement.
+   - <https://flask-caching.readthedocs.io/en/latest/index.html>
+   - <https://stackoverflow.com/questions/32815451/are-global-variables-thread-safe-in-flask-how-do-i-share-data-between-requests>
+
+3. [Line bot Flex message template](https://medium.com/@marstseng/line-flex-message-b83b33483f9d) and [useful online desginer](https://developers.line.biz/flex-simulator/)
+
+    ![Line bot Flex message](https://i.imgur.com/BQpqWkc.png)
+
+4. other useful line bot design
+    - <https://ithelp.ithome.com.tw/articles/10217767>
+    - <https://ithelp.ithome.com.tw/articles/10229943>
+    - <https://engineering.linecorp.com/zh-hant/blog/line-device-10/>
+    - <https://ithelp.ithome.com.tw/articles/10219503>
+    - <https://engineering.linecorp.com/zh-hant/blog/2020-flex-message-10-reason/>
+
+5. LIFF (Line Front End Framework)
+    - <https://ithelp.ithome.com.tw/articles/10222415>
+
+6. font
+
+    ```json
+    {
+      "type": "text",
+      "text": "...",
+      "contents": [
+        {
+          "type": "span",
+          "text": "LINE",
+          "size": "32px",
+          "weight": "bold",
+          "color": "#00ff00"
+        },
+        {
+          "type": "span",
+          "text": " Developers",
+          "size": "24px"
+        }
+      ]
+    }
+    ```
+
+    ![font](https://i.imgur.com/ny1bXZS.png)
+
