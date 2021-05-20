@@ -78,6 +78,7 @@ def Login_Web(Input_account:str, Input_password:str)->list:
             Login_Response = session.post(index.Login_url, headers=headers, data=data)
 
             #\ 確認是否成功登入
+            print(f"[INFO] Login response text : \n {Login_Response.text}")
             soup_login_ckeck = BeautifulSoup(Login_Response.text, 'html.parser')
             script = soup_login_ckeck.find("script").extract() # find the alert
             alert = re.findall(r'(?<=alert\(\").+(?=\")', script.text) #\r\n    alert("登入失敗，請重新登入");\r\n
