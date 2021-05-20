@@ -234,9 +234,9 @@ def LoginProgress(event):
             LoginStateMessage = Login2Web()
             print(f"[INFO] LoginStateMessage: {LoginStateMessage}")
             print(f"[BUG] LoginProgress event: {event}")
-            print(f"[BUG] LoginProgress event.source.userId: {event.source.user_Id}")
+            print(f"[BUG] LoginProgress event.source.userId: {event.source.user_id}")
             gLine_bot_api.push_message(
-                                        event.source.user_Id,
+                                        event.source.user_id,
                                         TextSendMessage(text=LoginStateMessage)
                                         )
             gLine_bot_api.broadcast(TextSendMessage(text=LoginStateMessage))
