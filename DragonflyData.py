@@ -50,7 +50,6 @@ def Login_Web(Input_account:str, Input_password:str)->list:
         'password' : Input_password,
     }
 
-    Login_state = True
     re_try = 0
     #\ retry for certain times if failed
     while re_try < index.re_try_limit:
@@ -84,6 +83,9 @@ def Login_Web(Input_account:str, Input_password:str)->list:
             alert = re.findall(r'(?<=alert\(\").+(?=\")', script.text) #\r\n    alert("登入失敗，請重新登入");\r\n
             if (len(alert) > 0):
                 Login_state = False # to show the error that the password or account might be wrong
+            else:
+                Login_state = True
+            print(f"[INFO] Login_Response: {Login_Response}, Login_state: {Login_state}")
             return [session, Login_Response, Login_state]
 
     #\ retry failed
