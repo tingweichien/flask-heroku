@@ -80,7 +80,12 @@ def Login_Web(Input_account:str, Input_password:str)->list:
             # print(f"[INFO] Login response text : \n {Login_Response.text}")
             soup_login_ckeck = BeautifulSoup(Login_Response.text, 'html.parser')
             script = soup_login_ckeck.find("script") # find the alert
-            alert = re.findall(r'(?<=alert\(\").+(?=\")', script.contents[0]) #\r\n    alert("登入失敗，請重新登入");\r\n
+            try :
+                alert = re.findall(r'(?<=alert\(\").+(?=\")', script.contents[0]) #\r\n    alert("登入失敗，請重新登入");\r\n
+
+            except :
+                alert = ""
+
             if (len(alert) > 0):
                 Login_state = False # to show the error that the password or account might be wrong
             else:
@@ -239,4 +244,4 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
 
 
 #\ for testing 
-Login_Web("xxxx", "33333")
+# Login_Web("xxxx", "xxxxxx")
