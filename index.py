@@ -17,6 +17,9 @@ with open("Index.json") as f:
 bAPIon = INDEX['OSM']['bAPIon']
 GMAPapikey = INDEX['OSM']['GMAPapikey']
 
+#\ -- Server url--
+ServerURL = INDEX["Server"]
+
 
 #\ -- Line Bot --
 #\ Line Bot join group Text
@@ -43,3 +46,13 @@ species_all_record_data_first_url = INDEX["DragonflyData"]["URL"]["species_all_r
 species_all_record_data_page_url = INDEX["DragonflyData"]["URL"]["species_all_record_data_page_url"]
 species_all_record_data_species_url = INDEX["DragonflyData"]["URL"]["species_all_record_data_species_url"]
 total_num_species_url = INDEX["DragonflyData"]["URL"]["total_num_species_url"]
+
+
+#\ Alarm
+HourFrom = INDEX["WakeUpAlarm"]["HourFrom"]
+HourEnd = INDEX["WakeUpAlarm"]["HourEnd"]
+HourRange = f"{HourFrom}-{HourEnd}"
+IntervalPerHour = INDEX["WakeUpAlarm"]["IntervalPerHour"]
+IntervalPerMin = INDEX["WakeUpAlarm"]["IntervalPerMin"]
+HOUR = {"hour" : HourRange+"/"+IntervalPerHour} if IntervalPerHour != "" else {"minute" : "*/"+IntervalPerMin}
+

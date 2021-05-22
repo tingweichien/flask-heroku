@@ -206,3 +206,8 @@ i.e.
 
     ![font](https://i.imgur.com/ny1bXZS.png)
 
+### [2021/05/21]
+
+1. Alarm to do action in schedule
+
+- <https://ithelp.ithome.com.tw/articles/10218874>
