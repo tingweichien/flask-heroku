@@ -12,10 +12,15 @@ with open("Index.json") as f:
     INDEX = json.load(f)
     # print(f'{"x"*25}\n| [INFO]The Index data |\n{"x"*25}\n{json.dumps(INDEX, indent=4)}')
 
+#\ load the provate data from json file
+with open("Private_Index.json") as p_f:
+    INDEX_PRIVATE = json.load(p_f)
+
+
 
 #\ -- OSM API --
 bAPIon = INDEX['OSM']['bAPIon']
-GMAPapikey = INDEX['OSM']['GMAPapikey']
+GMAPapikey = INDEX_PRIVATE['OSM']['GMAPapikey']
 
 
 #\ -- Line Bot --
