@@ -1,7 +1,6 @@
 {
     "OSM": {
-        "bAPIon" : false,
-        "GMAPapikey" : "AIzaSyBEnhhOTbjqUkeWikhcrmVfYWM4AjeqCQY"
+        "bAPIon" : false
     },
 
     "LineBot": {
