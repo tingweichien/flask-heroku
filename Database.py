@@ -9,11 +9,11 @@ import psycopg2
 
 #\ craete database connection
 def CreateDBConection():
-    DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a dragonfly-flask-web').read()[:-1]
-    print(DATABASE_URL)
+    PG_DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a dragonfly-flask-web').read()[:-1]
+    print(PG_DATABASE_URL)
 
     # try:
-    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    conn = psycopg2.connect(PG_DATABASE_URL, sslmode='require')
     print("[INFO] Successfully create the connection to the database")
     return conn
 
