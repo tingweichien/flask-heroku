@@ -11,7 +11,7 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEve
 import configparser
 from flask import request, abort
 import index
-from VarIndex import *
+from VarIndex import * #\ remeber to include this to use the cache function
 import LineBotText
 import DragonflyData
 import Database
@@ -27,8 +27,6 @@ gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
 gHandler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 
 
-#\ Create database connection and save the connection to the cache
-cache.set("DBConection",Database.CreateDBConection())
 
 
 #\ ----------------------------------------------------------------------

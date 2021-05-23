@@ -6,6 +6,7 @@ from datetime import timedelta
 import LineBotClass
 import index
 from VarIndex import cache, eLineBotEvent
+import Database
 
 
 
@@ -34,7 +35,7 @@ cache.set("gLoginStatus", False)
 cache.set("gAccount", None)
 cache.set("gPassword", None)
 cache.set("Dragonfly_session", None)
-cache.set("DBConection", None)
+cache.set("DBConection" ,Database.CreateDBConection()) #\ Create database connection and save the connection to the cache
 
 
 
