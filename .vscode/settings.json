@@ -1,4 +1,22 @@
 {
     "python.pythonPath": "C:\\Users\\Admin\\.pyenv\\pyenv-win\\versions\\3.7.3\\python.exe",
-    "compile-hero.disable-compile-files-on-did-save-code": false
+    "compile-hero.disable-compile-files-on-did-save-code": false,
+    "sqltools.connections": [
+        {
+            "pgOptions": {
+                "ssl": {
+                    "requestCert": false
+                }
+            },
+            "previewLimit": 50,
+            "server": "ec2-18-214-195-34.compute-1.amazonaws.com",
+            "port": 5432,
+            "askForPassword": true,
+            "driver": "PostgreSQL",
+            "database": "d3837jdqn7djk1",
+            "username": "nlnadwtqqirozk",
+            "name": "dragonfly-flask-web",
+            "connectString": "postgres://nlnadwtqqirozk:8b4b5399181c4dedd71b9ae38ccfba5e5bb129643046e413b072055ce0c34661@ec2-18-214-195-34.compute-1.amazonaws.com:5432/d3837jdqn7djk1"
+        }
+    ]
 }

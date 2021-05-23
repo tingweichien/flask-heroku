@@ -3,8 +3,10 @@
 #\   Put the data here      /#
 #\                          /#
 ##############################
-
-
+# ************************** #
+#     Please replace         #
+#    Private_Index.json      #
+# ************************** #
 import json
 
 #\ load data from json file
@@ -12,7 +14,7 @@ with open("Index.json") as f:
     INDEX = json.load(f)
     # print(f'{"x"*25}\n| [INFO]The Index data |\n{"x"*25}\n{json.dumps(INDEX, indent=4)}')
 
-#\ load the provate data from json file
+#\ load the private data from json file
 with open("Private_Index.json") as p_f:
     INDEX_PRIVATE = json.load(p_f)
 
@@ -48,3 +50,17 @@ species_all_record_data_first_url = INDEX["DragonflyData"]["URL"]["species_all_r
 species_all_record_data_page_url = INDEX["DragonflyData"]["URL"]["species_all_record_data_page_url"]
 species_all_record_data_species_url = INDEX["DragonflyData"]["URL"]["species_all_record_data_species_url"]
 total_num_species_url = INDEX["DragonflyData"]["URL"]["total_num_species_url"]
+
+
+
+#\ -- DataBase --
+#\ Database info
+host = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["host"]
+Database = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["Database"]
+User = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["User"]
+Port = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["Port"]
+Password = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["Password"]
+URI = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["URI"]
+
+#\ Database table name
+UserInfoTableName = INDEX["DataBase"]["DataBaseTable"]["UserInfoTableName"]

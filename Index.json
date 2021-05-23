@@ -7,6 +7,7 @@
         "JoinEventText" : ["Welcome to the dragonfly line bot~\nPlease login by typing 'login' or via the richmenu"],
         "LoginEventText" : ["Please enter the account : ", "Please enter the password : "]
     },
+
     "DragonflyData": {
         "re_try_limit" : 4,
         "URL": {
@@ -21,6 +22,12 @@
             "species_all_record_data_page_url" : "?pageNum_rs_dragonfly_record=",
             "species_all_record_data_species_url" : "&type=total_kind&kind=",
             "total_num_species_url" : "kind_total_records.php"
+        }
+    },
+
+    "DataBase":{
+        "DataBaseTable":{
+            "UserInfoTableName": "UserInfo"
         }
     }
 }
