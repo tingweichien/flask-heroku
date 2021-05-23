@@ -34,6 +34,7 @@ cache.set("gLoginStatus", False)
 cache.set("gAccount", None)
 cache.set("gPassword", None)
 cache.set("Dragonfly_session", None)
+cache.set("DBConection", None)
 
 
 
@@ -103,15 +104,6 @@ def user():
 #\ echo
 @app.route("/LineBotEcho", methods=['POST'])
 def LineBotEcho():
-
-    #\ global event
-    session["gEventText"] = ""
-    session["gEvent"] = None
-    session["gEventCnt"] = 0
-    session["gIsJustText"] = True
-    #\ message text
-    session["gLoginDataConfirm"] = False
-
     LineBotClass.LineBotHandler(app,session)
     return "ok"
 

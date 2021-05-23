@@ -6,17 +6,17 @@
 import os
 import psycopg2
 
-DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a dragonfly-flask-web').read()[:-1]
 
 #\ craete database connection
 def CreateDBConection():
+    DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a dragonfly-flask-web').read()[:-1]
     try:
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         print("[INFO] Successfully create the connection to the database")
         return conn
 
     except:
-        print("[WARNING] Unabnle to create the connection to the database")
+        print("[WARNING] Unable to create the connection to the database")
         return None
 
 
@@ -68,3 +68,8 @@ Insert_query = lambda Table, name, value : f"INSERT INTO {Table} {name} VALUES {
 #\ value should be "(XXX, XXX, XXXX, XX, XXXXX, .....)"
 def Insert_userinfo_query(Table:str, name:str,  userid:str, join_date:str, account:str, password:str):
     return f"""INSERT INTO {Table} (name, userid, join_date, account, password) VALUES ('{name}', '{userid}', '{join_date}', '{account}', '{password}') ON CONFLICT ON CONSTRAINT userinfo_userid_key DO UPDATE SET name = EXCLUDED.name, join_date=EXCLUDED.join_date, account=EXCLUDED.account, password=EXCLUDED.password ;"""
+
+
+
+#\ -- For testing --
+# CreateDBConection()
