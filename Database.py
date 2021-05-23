@@ -9,6 +9,7 @@ import psycopg2
 
 #\ craete database connection
 def CreateDBConection():
+    print("[INFO] Start to CreateDBConection")
     PG_DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a dragonfly-flask-web').read()[:-1]
     print(PG_DATABASE_URL)
 
