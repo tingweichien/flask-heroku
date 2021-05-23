@@ -206,3 +206,14 @@ i.e.
 
     ![font](https://i.imgur.com/ny1bXZS.png)
 
+### [2021/05/23]
+
+1. Add Heroku Postgres 
+2. reference
+   - https://ithelp.ithome.com.tw/articles/10219773 
+   - https://docs.postgresql.tw/the-sql-language/data-manipulation/6.1.-xin-zeng-zi-liao
+   - https://docs.postgresql.tw/the-sql-language/data-types/date-time
+   - https://www.postgresqltutorial.com/postgresql-upsert/
+  
+  3. Insert if non-exist
+   - https://stackoverflow.com/questions/4069718/postgres-insert-if-does-not-exist-already
