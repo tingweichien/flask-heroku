@@ -230,3 +230,17 @@ i.e.
   ```shell
   heroku ps -a dragonfly-flask-web
   ```
+
+### [2021/05/24]
+
+1. When using the connection under the local using ```os.popen```, but when deploy to the Heroku, using ```os.system``` instead to
+  get the database URI or infomation
+
+- error log
+  ![error log](https://i.imgur.com/1TBIJ7U.png)
+
+- solving
+  ![solving](https://i.imgur.com/9A8LOBz.png)
+
+
+

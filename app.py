@@ -25,6 +25,7 @@ app.permanent_session_lifetime = timedelta(seconds=5)
 
 #\ cache for global variable
 cache.init_app(app=app, config={"CACHE_TYPE": "filesystem", "CACHE_DIR":"/tmp"})
+
 #\set cache data
 cache.set("gEventText", None)
 cache.set("gEvent", eLineBotEvent.NONE.value)
@@ -35,7 +36,8 @@ cache.set("gLoginStatus", False)
 cache.set("gAccount", None)
 cache.set("gPassword", None)
 cache.set("Dragonfly_session", None)
-cache.set("DBConection", Database.CreateDBConection()) #\ Create database connection and save the connection to the cache
+cache.set("DBInfo", Database.InitDBInfo())
+# cache.set("DBConection", Database.CreateDBConection()) #\ Create database connection and save the connection to the cache
 
 
 

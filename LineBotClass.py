@@ -296,10 +296,11 @@ def LoginProgress(event):
 
             #\ Store the user info if success to skip login process
             if cache.get("gLoginStatus") is True:
-                #\ create the database if not exist
+                #\ Connect and Create the database if not exist
+                Database.CreateDBConection()
                 Database.ExecuteDB(cache.get("DBConection"), Database.UserInfo_create_table_query)
 
-                #\ request the user info
+                #\ Request the user info
                 #\      self.display_name = display_name
                 #\      self.user_id = user_id
                 #\      self.picture_url = picture_url
@@ -307,18 +308,22 @@ def LoginProgress(event):
                 #\      self.language = language
                 request_userinfo = gLine_bot_api.get_profile(event.source.user_id)
 
-                #\ save the PW and ACCOUNT to the database
-                Database.ExecuteDB(cache.get("DBConection"),
-                                   Database.Insert_userinfo_query(index.UserInfoTableName,
-                                                                    request_userinfo.display_name,
-                                                                    event.source.user_id,
-                                                                    datetime.datetime.now().strftime("%Y-%m-%d"),
-                                                                    cache.get("gAccount"),
-                                                                    cache.get("gPassword")
-                                                                    )
-                                   )
+                #\ Data to input
+                InsertData = (
+                    request_userinfo.display_name,
+                    event.source.user_id,
+                    datetime.datetime.now().strftime("%Y-%m-%d"),
+                    cache.get("gAccount"),
+                    cache.get("gPassword")
+                )
 
-        #\ login not confirm
+                #\ Save the PW and ACCOUNT to the database
+                Database.InsertDB(cache.get("DBConection"),
+                                    Database.Insert_userinfo_query(index.UserInfoTableName),
+                                    InsertData
+                                )
+
+        #\ Login not confirm
         elif event.message.text == "LOGIN_FAIL":
             print("[INFO] Login info user decline")
             cache.set("gEventCnt", 1)

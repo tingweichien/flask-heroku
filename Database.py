@@ -6,28 +6,56 @@
 import os
 import psycopg2
 import urllib.parse as urlparse
+from VarIndex import *
+
+
+#\ Init the database info
+def InitDBInfo()->dict:
+    print("[INFO] Init the DB info")
+    try:
+        try:
+            #\ This is for the local
+            PG_DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a dragonfly-flask-web').read()[:-1]
+            print("[INFO] Init the DB info successfully")
+            return {"DBURI":PG_DATABASE_URL}
+        except:
+            #\ Actually just replace the os.popen to os.environ
+            #\ This is for the heroku deploy
+            PG_DATABASE_URL = urlparse.urlparse(os.environ['DATABASE_URL'])
+
+            #\ Catrgorize the option
+            dbname = PG_DATABASE_URL.path[1:]
+            user = PG_DATABASE_URL.username
+            password = PG_DATABASE_URL.password
+            host = PG_DATABASE_URL.hostname
+            port = PG_DATABASE_URL.port
+            print("[INFO] Init the DB info successfully")
+            return {"dbname":dbname, "user":user, "password":password, "host":host, "port":port}
+
+    except :
+        print("[Warning] Init the DB information fail")
+        return None
+
+
 
 
 #\ craete database connection
 def CreateDBConection():
     print("[INFO] Start to CreateDBConection")
-    # PG_DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a dragonfly-flask-web').read()[:-1]
-    PG_DATABASE_URL = urlparse.urlparse(os.environ['DATABASE_URL'])
-    dbname = PG_DATABASE_URL.path[1:]
-    user = PG_DATABASE_URL.username
-    password = PG_DATABASE_URL.password
-    host = PG_DATABASE_URL.hostname
-    port = PG_DATABASE_URL.port
 
     try:
-    # conn = psycopg2.connect(PG_DATABASE_URL, sslmode='require')
-        conn = psycopg2.connect(
-                dbname=dbname,
-                user=user,
-                password=password,
-                host=host,
-                port=port
-                )
+        # conn = psycopg2.connect(PG_DATABASE_URL, sslmode='require')
+        # conn = psycopg2.connect(
+        #         dbname=dbname,
+        #         user=user,
+        #         password=password,
+        #         host=host,
+        #         port=port
+        #         )
+        try:
+            conn = psycopg2.connect(cache.get("DBInfo"))
+        except:
+            conn = psycopg2.connect(cache.get("DBInfo")["DBURI"])#\ This is for the local DB connection
         print("[INFO] Successfully create the connection to the database")
         return conn
 
@@ -36,7 +64,7 @@ def CreateDBConection():
         return None
 
 
-#\execute the SQL command
+#\ Execute the SQL command
 def ExecuteDB(conn, query):
     try:
         cursor = conn.cursor()
@@ -48,7 +76,20 @@ def ExecuteDB(conn, query):
         print("[WARNING] Unable to execute the database query")
 
 
-#\ close the DB connection
+#\ Insert into DB SQL command
+def InsertDB(conn, query, data):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(query, data)
+        conn.commit()
+        print("[INFO] Successfully execute the database query")
+
+    except:
+        print("[WARNING] Unable to execute the database query")
+
+
+
+#\ Close the DB connection
 def CloseDBConnection(conn):
     try:
         cursor = conn.cursor()
@@ -82,10 +123,9 @@ Insert_query = lambda Table, name, value : f"INSERT INTO {Table} {name} VALUES {
 
 #\ insert to the userinfo database if the userid conflict then update the reset of the column
 #\ value should be "(XXX, XXX, XXXX, XX, XXXXX, .....)"
-def Insert_userinfo_query(Table:str, name:str,  userid:str, join_date:str, account:str, password:str):
-    return f"""INSERT INTO {Table} (name, userid, join_date, account, password) VALUES ('{name}', '{userid}', '{join_date}', '{account}', '{password}') ON CONFLICT ON CONSTRAINT userinfo_userid_key DO UPDATE SET name = EXCLUDED.name, join_date=EXCLUDED.join_date, account=EXCLUDED.account, password=EXCLUDED.password ;"""
+Insert_userinfo_query = lambda Table : f"""INSERT INTO {Table} (name, userid, join_date, account, password) VALUES (%s, %s, %s, %s, %s) ON CONFLICT ON CONSTRAINT userinfo_userid_key DO UPDATE SET name = EXCLUDED.name, join_date=EXCLUDED.join_date, account=EXCLUDED.account, password=EXCLUDED.password ;"""
 
 
 
 #\ -- For testing --
-CreateDBConection()
+# CreateDBConection()
