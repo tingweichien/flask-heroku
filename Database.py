@@ -5,16 +5,30 @@
 #\
 import os
 import psycopg2
+import urllib.parse as urlparse
 
 
 #\ craete database connection
 def CreateDBConection():
     print("[INFO] Start to CreateDBConection")
-    PG_DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a dragonfly-flask-web').read()[:-1]
+    # PG_DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a dragonfly-flask-web').read()[:-1]
+    PG_DATABASE_URL = urlparse.urlparse(os.environ['DATABASE_URL'])
+    dbname = PG_DATABASE_URL.path[1:]
+    user = PG_DATABASE_URL.username
+    password = PG_DATABASE_URL.password
+    host = PG_DATABASE_URL.hostname
+    port = PG_DATABASE_URL.port
     print(PG_DATABASE_URL)
 
     # try:
-    conn = psycopg2.connect(PG_DATABASE_URL)#, sslmode='require')
+    # conn = psycopg2.connect(PG_DATABASE_URL, sslmode='require')
+    conn = psycopg2.connect(
+            dbname=dbname,
+            user=user,
+            password=password,
+            host=host,
+            port=port
+            )
     print("[INFO] Successfully create the connection to the database")
     return conn
 
