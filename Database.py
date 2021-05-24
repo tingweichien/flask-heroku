@@ -20,6 +20,7 @@ def InitDBInfo()->dict:
             return {"DBURI":PG_DATABASE_URL}
         except:
             #\ Actually just replace the os.popen to os.environ
+            # PG_DATABASE_URL = os.environ['DATABASE_URL']
             #\ This is for the heroku deploy
             PG_DATABASE_URL = urlparse.urlparse(os.environ['DATABASE_URL'])
 
@@ -45,6 +46,12 @@ def CreateDBConection():
 
     try:
         # conn = psycopg2.connect(PG_DATABASE_URL, sslmode='require')
+        # PG_DATABASE_URL = urlparse.urlparse(os.environ['DATABASE_URL'])
+        # dbname = PG_DATABASE_URL.path[1:]
+        # user = PG_DATABASE_URL.username
+        # password = PG_DATABASE_URL.password
+        # host = PG_DATABASE_URL.hostname
+        # port = PG_DATABASE_URL.port
         # conn = psycopg2.connect(
         #         dbname=dbname,
         #         user=user,
@@ -53,9 +60,11 @@ def CreateDBConection():
         #         port=port
         #         )
         try:
+            print(cache.get("DBInfo"))
             conn = psycopg2.connect(**cache.get("DBInfo"))
         except:
             conn = psycopg2.connect(cache.get("DBInfo")["DBURI"])#\ This is for the local DB connection
+
         print("[INFO] Successfully create the connection to the database")
         return conn
 
