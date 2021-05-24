@@ -14,11 +14,6 @@ def InitDBInfo()->dict:
     print("[INFO] Init the DB info")
     try:
         try:
-            #\ This is for the local
-            PG_DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a dragonfly-flask-web').read()[:-1]
-            print("[INFO] Init the DB info successfully")
-            return {"DBURI":PG_DATABASE_URL}
-        except:
             #\ Actually just replace the os.popen to os.environ
             # PG_DATABASE_URL = os.environ['DATABASE_URL']
             #\ This is for the heroku deploy
@@ -30,8 +25,14 @@ def InitDBInfo()->dict:
             password = PG_DATABASE_URL.password
             host = PG_DATABASE_URL.hostname
             port = PG_DATABASE_URL.port
-            print("[INFO] Init the DB info successfully")
+            print("[INFO] Init the DB info successfully(os.environ)")
             return {"dbname":dbname, "user":user, "password":password, "host":host, "port":port}
+
+        except:
+            #\ This is for the local
+            PG_DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a dragonfly-flask-web').read()[:-1]
+            print("[INFO] Init the DB info successfully(os.popen)")
+            return {"DBURI":PG_DATABASE_URL}
 
     except :
         print("[Warning] Init the DB information fail")
