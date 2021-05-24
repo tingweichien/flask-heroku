@@ -53,7 +53,7 @@ def CreateDBConection():
         #         port=port
         #         )
         try:
-            conn = psycopg2.connect(cache.get("DBInfo"))
+            conn = psycopg2.connect(**cache.get("DBInfo"))
         except:
             conn = psycopg2.connect(cache.get("DBInfo")["DBURI"])#\ This is for the local DB connection
         print("[INFO] Successfully create the connection to the database")
@@ -87,6 +87,10 @@ def InsertDB(conn, query, data):
     except:
         print("[WARNING] Unable to execute the database query")
 
+
+#\ Update
+def UpdateDB(conn, query, data):
+    pass
 
 
 #\ Close the DB connection
