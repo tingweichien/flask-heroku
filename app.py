@@ -19,7 +19,7 @@ app.config.from_object(__name__)
 Session(app)
 
 #\ secret key for session
-app.secret_key ="tim960622"
+app.secret_key = index.APP_Pri_Key
 app.permanent_session_lifetime = timedelta(seconds=5)
 
 #\ Build the Connection to the database

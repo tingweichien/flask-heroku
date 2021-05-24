@@ -19,6 +19,9 @@ with open("Private_Index.json") as p_f:
     INDEX_PRIVATE = json.load(p_f)
 
 
+#\ APP Private Key
+APP_Pri_Key = INDEX_PRIVATE["APP_Pri_Key"]
+
 
 #\ -- OSM API --
 bAPIon = INDEX['OSM']['bAPIon']

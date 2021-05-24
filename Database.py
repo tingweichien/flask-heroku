@@ -14,7 +14,7 @@ def CreateDBConection():
     print(PG_DATABASE_URL)
 
     # try:
-    conn = psycopg2.connect(PG_DATABASE_URL, sslmode='require')
+    conn = psycopg2.connect(PG_DATABASE_URL)#, sslmode='require')
     print("[INFO] Successfully create the connection to the database")
     return conn
 
