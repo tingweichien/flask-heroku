@@ -37,8 +37,9 @@ cache.set("gAccount", None)
 cache.set("gPassword", None)
 cache.set("Dragonfly_session", None)
 cache.set("DBInfo", Database.InitDBInfo())
-# cache.set("DBConection", Database.CreateDBConection()) #\ Create database connection and save the connection to the cache
 
+#\ for testing
+# Database.InsertDB(Database.CreateDBConection(), Database.Insert_userinfo_query(index.UserInfoTableName), ("Tim", "123456789", "2021-05-24", "xxxx", "ooooo"))
 
 
 ################################################################################

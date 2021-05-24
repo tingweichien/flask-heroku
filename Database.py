@@ -61,10 +61,10 @@ def CreateDBConection():
         #         port=port
         #         )
         try:
-            print(cache.get("DBInfo"))
-            conn = psycopg2.connect(**cache.get("DBInfo"))
+            # print(cache.get("DBInfo"))
+            conn = psycopg2.connect(**cache.get("DBInfo"), sslmode='require')
         except:
-            conn = psycopg2.connect(cache.get("DBInfo")["DBURI"])#\ This is for the local DB connection
+            conn = psycopg2.connect(cache.get("DBInfo")["DBURI"], sslmode='require')#\ This is for the local DB connection
 
         print("[INFO] Successfully create the connection to the database")
         return conn
@@ -92,10 +92,10 @@ def InsertDB(conn, query, data):
         cursor = conn.cursor()
         cursor.execute(query, data)
         conn.commit()
-        print("[INFO] Successfully execute the database query")
+        print("[INFO] Successfully execute the insert database query")
 
     except:
-        print("[WARNING] Unable to execute the database query")
+        print("[WARNING] Unable to execute the insert database query")
 
 
 #\ Update
@@ -137,9 +137,9 @@ Insert_query = lambda Table, name, value : f"INSERT INTO {Table} {name} VALUES {
 
 #\ insert to the userinfo database if the userid conflict then update the reset of the column
 #\ value should be "(XXX, XXX, XXXX, XX, XXXXX, .....)"
-Insert_userinfo_query = lambda Table : f"""INSERT INTO {Table} (name, userid, join_date, account, password) VALUES (%s, %s, %s, %s, %s) ON CONFLICT ON CONSTRAINT userinfo_userid_key DO UPDATE SET name = EXCLUDED.name, join_date=EXCLUDED.join_date, account=EXCLUDED.account, password=EXCLUDED.password ;"""
+Insert_userinfo_query = lambda Table : f"INSERT INTO {Table} (name, userid, join_date, account, password) VALUES (%s, %s, %s, %s, %s) ON CONFLICT ON CONSTRAINT userinfo_userid_key DO UPDATE SET name = EXCLUDED.name, join_date=EXCLUDED.join_date, account=EXCLUDED.account, password=EXCLUDED.password ;"
 
 
 
 #\ -- For testing --
-# CreateDBConection()
+
