@@ -22,8 +22,6 @@ Session(app)
 app.secret_key = index.APP_Pri_Key
 app.permanent_session_lifetime = timedelta(seconds=5)
 
-#\ Build the Connection to the database
-Database.CreateDBConection()
 
 #\ cache for global variable
 cache.init_app(app=app, config={"CACHE_TYPE": "filesystem", "CACHE_DIR":"/tmp"})
@@ -37,7 +35,7 @@ cache.set("gLoginStatus", False)
 cache.set("gAccount", None)
 cache.set("gPassword", None)
 cache.set("Dragonfly_session", None)
-cache.set("DBConection", None) #\ Create database connection and save the connection to the cache
+cache.set("DBConection", Database.CreateDBConection()) #\ Create database connection and save the connection to the cache
 
 
 

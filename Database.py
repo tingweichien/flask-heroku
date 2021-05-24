@@ -18,23 +18,22 @@ def CreateDBConection():
     password = PG_DATABASE_URL.password
     host = PG_DATABASE_URL.hostname
     port = PG_DATABASE_URL.port
-    print(PG_DATABASE_URL)
 
-    # try:
+    try:
     # conn = psycopg2.connect(PG_DATABASE_URL, sslmode='require')
-    conn = psycopg2.connect(
-            dbname=dbname,
-            user=user,
-            password=password,
-            host=host,
-            port=port
-            )
-    print("[INFO] Successfully create the connection to the database")
-    return conn
+        conn = psycopg2.connect(
+                dbname=dbname,
+                user=user,
+                password=password,
+                host=host,
+                port=port
+                )
+        print("[INFO] Successfully create the connection to the database")
+        return conn
 
-    # except:
-    #     print("[WARNING] Unable to create the connection to the database")
-    #     return None
+    except:
+        print("[WARNING] Unable to create the connection to the database")
+        return None
 
 
 #\execute the SQL command
