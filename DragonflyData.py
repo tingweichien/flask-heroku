@@ -277,5 +277,5 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
 
 
 #\ for testing
-[session, Login_Response, Login_state] = Login_Web("簡庭威", "tim960622")
-DataCrawler(session, "77257")
+# [session, Login_Response, Login_state] = Login_Web("簡庭威", "tim960622")
+# DataCrawler(session, "77257")

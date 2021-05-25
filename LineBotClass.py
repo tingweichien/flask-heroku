@@ -7,7 +7,7 @@
 
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, FlexSendMessage, PostbackEvent
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, FlexSendMessage, PostbackEvent, LocationSendMessage
 import configparser
 from flask import request, abort
 import index
@@ -254,11 +254,11 @@ def RequestCallback(event):
     else:
         print(f"[INFO] Successfully craw the data")
         #\ handle the Description to align
-        ID_find_result.Description = f"\n{' '*15}".join(list(ID_find_result.Description.split("\n")))
+        ID_find_result.Description = f"\n{' '*10}".join(list(ID_find_result.Description.split("\n")))
         gLine_bot_api.push_message(event.source.user_id,
                                     TextSendMessage(text=f"[IdNumber]: {ID_find_result.IdNumber}\n"+\
-                                                         f"[Dates]: {ID_find_result.Dates}\n"+\
-                                                        f"[Times]: {ID_find_result.Times}\n"+\
+                                                        f"[Dates]: {ID_find_result.Dates}, {ID_find_result.Times}\n"+\
+                                                        f"[City]: {ID_find_result.City} {ID_find_result.District}\n"+\
                                                         f"[Place]: {ID_find_result.Place}\n"+\
                                                         f"[Altitude]: {ID_find_result.Altitude}\n" +\
                                                         f"[User]: {ID_find_result.User}\n"+\
@@ -268,6 +268,15 @@ def RequestCallback(event):
                                                         f"[Description]: {ID_find_result.Description}\n"
                                                     )
                                     )
+        #\ loaction message
+        gLine_bot_api.push_message(event.source.user_id,
+                                    LocationSendMessage(
+                                                        title=f'# {ID_find_result.IdNumber}',
+                                                        address=f'{ID_find_result.City} {ID_find_result.District} {ID_find_result.Place}',
+                                                        latitude=float(ID_find_result.Latitude),
+                                                        longitude=float(ID_find_result.Longitude)
+                                                        )
+        )
 
 
 
