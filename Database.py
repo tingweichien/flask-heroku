@@ -116,7 +116,7 @@ def ReadFromDB(conn, query, FetchOneOrNot)->tuple:
     cursor = ExecuteDB(conn, query)
     try:
         if FetchOneOrNot:
-            returnData = cursor.fetchall()
+            returnData = cursor.fetchone()
             print(f"[INFO] Read from DB : \n{returnData}")
             CloseDBConnection(conn)
             return returnData
