@@ -227,57 +227,66 @@ def AskInputID(event):
 #\ request command callback
 def RequestCallback(event):
 
-    #\ message to ask for the request ID
-    AskInputID(event)
+    tmpCnt = cache.get("gEventCnt")
+    tmpCnt += 1
+    if tmpCnt == 1:
 
-    #\ read the data from DB
-    DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
-                                    Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
-                                    True)
-    # print(f"[INFO] DB_Data: {DB_Data}")
+        #\ message to ask for the request ID
+        AskInputID(event)
 
-    #\ check the return from the database is vaild or not
-    if DB_Data is None:
-        print("[Warning] No DB Data return, skip the requwst ID function")
+    elif tmpCnt == 2:
+        #\ read the data from DB
+        DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
+                                        Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
+                                        True)
+        # print(f"[INFO] DB_Data: {DB_Data}")
 
-    #\ login
-    DragonflyData_session = Login2Web(DB_Data[4], DB_Data[5])
+        #\ check the return from the database is vaild or not
+        if DB_Data is None:
+            print("[Warning] No DB Data return, skip the requwst ID function")
 
-    #\ execute the crawler function
-    [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, event.message.text)
+        #\ login
+        DragonflyData_session = Login2Web(DB_Data[4], DB_Data[5])
 
-    if overflow:
-        print(f"[INFO] The ID is overflow, please use the ID smaller {Max_ID_Num}")
-        gLine_bot_api.push_message(event.source.user_id,
-                            TextSendMessage(text=f"The ID is overflow, please use the ID smaller {Max_ID_Num}")
-                            )
-    else:
-        print(f"[INFO] Successfully craw the data")
-        #\ handle the Description to align
-        ID_find_result.Description = f"\n{' '*10}".join(list(ID_find_result.Description.split("\n")))
-        gLine_bot_api.push_message(event.source.user_id,
-                                    TextSendMessage(text=f"[IdNumber]: {ID_find_result.IdNumber}\n"+\
-                                                        f"[Dates]: {ID_find_result.Dates}, {ID_find_result.Times}\n"+\
-                                                        f"[City]: {ID_find_result.City} {ID_find_result.District}\n"+\
-                                                        f"[Place]: {ID_find_result.Place}\n"+\
-                                                        f"[Altitude]: {ID_find_result.Altitude}\n" +\
-                                                        f"[User]: {ID_find_result.User}\n"+\
-                                                        f"[Latitude]: {ID_find_result.Latitude}\n"+\
-                                                        f"[Longitude]: {ID_find_result.Longitude}\n"\
-                                                        f"[Speceis]: {', '.join(ID_find_result.SpeciesList)}\n"+\
-                                                        f"[Description]: {ID_find_result.Description}\n",
-                                                    wrap = True
-                                                    )
-                                    )
-        #\ loaction message
-        gLine_bot_api.push_message(event.source.user_id,
-                                    LocationSendMessage(
-                                                        title=f'# {ID_find_result.IdNumber}',
-                                                        address=f'{ID_find_result.City} {ID_find_result.District} {ID_find_result.Place}',
-                                                        latitude=float(ID_find_result.Latitude),
-                                                        longitude=float(ID_find_result.Longitude)
+        #\ execute the crawler function
+        [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, event.message.text)
+
+        if overflow:
+            print(f"[INFO] The ID is overflow, please use the ID smaller {Max_ID_Num}")
+            gLine_bot_api.push_message(event.source.user_id,
+                                TextSendMessage(text=f"The ID is overflow, please use the ID smaller {Max_ID_Num}")
+                                )
+        else:
+            print(f"[INFO] Successfully craw the data")
+            #\ handle the Description to align
+            ID_find_result.Description = f"\n{' '*10}".join(list(ID_find_result.Description.split("\n")))
+            gLine_bot_api.push_message(event.source.user_id,
+                                        TextSendMessage(text=f"[IdNumber]: {ID_find_result.IdNumber}\n"+\
+                                                            f"[Dates]: {ID_find_result.Dates}, {ID_find_result.Times}\n"+\
+                                                            f"[City]: {ID_find_result.City} {ID_find_result.District}\n"+\
+                                                            f"[Place]: {ID_find_result.Place}\n"+\
+                                                            f"[Altitude]: {ID_find_result.Altitude}\n" +\
+                                                            f"[User]: {ID_find_result.User}\n"+\
+                                                            f"[Latitude]: {ID_find_result.Latitude}\n"+\
+                                                            f"[Longitude]: {ID_find_result.Longitude}\n"\
+                                                            f"[Speceis]: {', '.join(ID_find_result.SpeciesList)}\n"+\
+                                                            f"[Description]: {ID_find_result.Description}\n",
+                                                        wrap = True
                                                         )
-        )
+                                        )
+            #\ loaction message
+            gLine_bot_api.push_message(event.source.user_id,
+                                        LocationSendMessage(
+                                                            title=f'# {ID_find_result.IdNumber}',
+                                                            address=f'{ID_find_result.City} {ID_find_result.District} {ID_find_result.Place}',
+                                                            latitude=float(ID_find_result.Latitude),
+                                                            longitude=float(ID_find_result.Longitude)
+                                                            )
+            )
+
+
+        #\ reset the counter
+        cache.set("gEventCnt", 0)
 
 
 
