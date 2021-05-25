@@ -244,3 +244,33 @@ i.e.
 
 
 
+### [2021/05/25]
+
+1. Split the string with something and store to list
+
+  ```python
+  txt = "apple#banana####cherry##orange"
+
+  x = list(filter(None, txt.split("#")))
+  ```
+
+  result
+
+  ```shell
+  ['apple', 'banana', 'cherry', 'orange']
+  ```
+
+2. Turn the list to string
+
+  ```python
+  s_list = ["a", "b", "2", "asd", "rew123"]
+  s = "".join(s_list)
+  s2 = ", ".join(s_list)
+  ```
+
+  result
+
+  ```shell
+  s = 'ab2asdrew123'
+  s2 = 'a, b, 2, asd, rew123'
+  ```

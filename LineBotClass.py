@@ -73,7 +73,7 @@ def handle_text_message(event):
     #\ Read the text if it meants to trigger some event
     print(f'[INFO] gIsJustText : {cache.get("gIsJustText")}\n[INFO] gEvent : {cache.get("gEvent")}')
     if cache.get("gIsJustText") == True :
-        cache.set("gEventText", event.message.text.lower())
+        cache.set("gEventText", event.message.text.lower().replace(" ", ""))
 
         #\ categorize the text to trigger event
         CheckEvent(cache.get("gEventText"))
@@ -253,17 +253,19 @@ def RequestCallback(event):
                             )
     else:
         print(f"[INFO] Successfully craw the data")
+        #\ handle the Description to align
+        ID_find_result.Description = f"\n{' '*15}".join(list(ID_find_result.Description.split("\n")))
         gLine_bot_api.push_message(event.source.user_id,
-                                    TextSendMessage(text=f"IdNumber : {ID_find_result.IdNumber}\n"+\
-                                                         f"Dates : {ID_find_result.Dates}\n"+\
-                                                        f"Times : {ID_find_result.Times}\n"+\
-                                                        f"Place : {ID_find_result.Place}\n"+\
-                                                        f"Altitude : {ID_find_result.Altitude}\n" +\
-                                                        f"User : {ID_find_result.User}\n"+\
-                                                        f"Latitude : {ID_find_result.Latitude}\n"+\
-                                                        f"Longitude : {ID_find_result.Longitude}\n"\
-                                                        f"Speceis : {', '.join(ID_find_result.SpeciesList)}\n"+\
-                                                        f"Description : {ID_find_result.Description}\n"
+                                    TextSendMessage(text=f"[IdNumber]: {ID_find_result.IdNumber}\n"+\
+                                                         f"[Dates]: {ID_find_result.Dates}\n"+\
+                                                        f"[Times]: {ID_find_result.Times}\n"+\
+                                                        f"[Place]: {ID_find_result.Place}\n"+\
+                                                        f"[Altitude]: {ID_find_result.Altitude}\n" +\
+                                                        f"[User]: {ID_find_result.User}\n"+\
+                                                        f"[Latitude]: {ID_find_result.Latitude}\n"+\
+                                                        f"[Longitude]: {ID_find_result.Longitude}\n"\
+                                                        f"[Speceis]: {', '.join(ID_find_result.SpeciesList)}\n"+\
+                                                        f"[Description]: {ID_find_result.Description}\n"
                                                     )
                                     )
 

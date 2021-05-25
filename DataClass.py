@@ -35,6 +35,12 @@ class DetailedTableInfo(simplifyTableInfo):
         self.Description    = Description
         self.weather        = weather
 
+        #\ handle the Description to make it print better
+        self.Description = list(self.Description.split("\n"))
+        self.Description = f"\n{' '*18}".join(self.Description)
+
+
+
     def __str__(self):
         '''
         return (super(DetailedTableInfo, self).__str__()+
