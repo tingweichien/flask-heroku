@@ -6,6 +6,7 @@ from datetime import timedelta
 import LineBotClass
 import index
 from VarIndex import cache, eLineBotEvent
+import Database
 
 
 
@@ -18,12 +19,13 @@ app.config.from_object(__name__)
 Session(app)
 
 #\ secret key for session
-app.secret_key ="tim960622"
+app.secret_key = index.APP_Pri_Key
 app.permanent_session_lifetime = timedelta(seconds=5)
 
 
 #\ cache for global variable
 cache.init_app(app=app, config={"CACHE_TYPE": "filesystem", "CACHE_DIR":"/tmp"})
+
 #\set cache data
 cache.set("gEventText", None)
 cache.set("gEvent", eLineBotEvent.NONE.value)
@@ -34,7 +36,10 @@ cache.set("gLoginStatus", False)
 cache.set("gAccount", None)
 cache.set("gPassword", None)
 cache.set("Dragonfly_session", None)
+cache.set("DBInfo", Database.InitDBInfo())
 
+#\ for testing
+# Database.InsertDB(Database.CreateDBConection(), Database.Insert_userinfo_query(index.UserInfoTableName), ("Tim", "123456789", "2021-05-24", "xxxx", "ooooo"))
 
 
 ################################################################################
@@ -103,15 +108,6 @@ def user():
 #\ echo
 @app.route("/LineBotEcho", methods=['POST'])
 def LineBotEcho():
-
-    #\ global event
-    session["gEventText"] = ""
-    session["gEvent"] = None
-    session["gEventCnt"] = 0
-    session["gIsJustText"] = True
-    #\ message text
-    session["gLoginDataConfirm"] = False
-
     LineBotClass.LineBotHandler(app,session)
     return "ok"
 
