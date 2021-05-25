@@ -10,7 +10,7 @@
 import json
 
 #\ load data from json file
-with open("Index.json") as f:
+with open("Index.json", encoding="utf-8") as f:
     INDEX = json.load(f)
     # print(f'{"x"*25}\n| [INFO]The Index data |\n{"x"*25}\n{json.dumps(INDEX, indent=4)}')
 
@@ -54,6 +54,11 @@ species_all_record_data_page_url = INDEX["DragonflyData"]["URL"]["species_all_re
 species_all_record_data_species_url = INDEX["DragonflyData"]["URL"]["species_all_record_data_species_url"]
 total_num_species_url = INDEX["DragonflyData"]["URL"]["total_num_species_url"]
 
+
+#\ dragonfly simple info species column name
+dragonfly_simple_info_species_col_name = INDEX["DragonflyData"]["Simple_info_table"]["dragonfly_simple_info_species_col_name"]
+dragonfly_simple_info_city_col_name = INDEX["DragonflyData"]["Simple_info_table"]["dragonfly_simple_info_city_col_name"]
+# print(dragonfly_simple_info_species_col_name)
 
 
 #\ -- DataBase --

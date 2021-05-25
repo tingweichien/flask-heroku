@@ -81,9 +81,11 @@ def ExecuteDB(conn, query):
         cursor.execute(query)
         conn.commit()
         print("[INFO] Successfully execute the database query")
+        return cursor
 
     except:
         print("[WARNING] Unable to execute the database query")
+        return None
 
 
 #\ Insert into DB SQL command
@@ -101,6 +103,17 @@ def InsertDB(conn, query, data):
 #\ Update
 def UpdateDB(conn, query, data):
     pass
+
+
+#\ Read the data
+def ReadFromDB(conn, query, FetchOneOrNot)->tuple:
+    cursor = ExecuteDB(conn, query)
+    if FetchOneOrNot:
+        print(f"[INFO] Read from DB : \n{cursor.fetchall()}")
+        return cursor.fetchone()
+    else:
+        print(f"[INFO] Read from DB : \n{cursor.fetchall()}")
+        return cursor.fetchall()
 
 
 #\ Close the DB connection
@@ -140,6 +153,8 @@ Insert_query = lambda Table, name, value : f"INSERT INTO {Table} {name} VALUES {
 Insert_userinfo_query = lambda Table : f"INSERT INTO {Table} (name, userid, join_date, account, password) VALUES (%s, %s, %s, %s, %s) ON CONFLICT ON CONSTRAINT userinfo_userid_key DO UPDATE SET name = EXCLUDED.name, join_date=EXCLUDED.join_date, account=EXCLUDED.account, password=EXCLUDED.password ;"
 
 
+#\ Read the userinfo
+Read_userinfo_query = lambda Table, userid : f"SELECT * FROM {Table} WHERE userid = '{userid}';"
 
 #\ -- For testing --
 
