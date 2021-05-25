@@ -60,16 +60,18 @@ def LineBotHandler(app, session):
 #\ handle the message
 @gHandler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    print("[INFO] TextMessage")
-    print(f"[INFO] Event :{event}")
+    print(f"[INFO] TextMessage\n[INFO] Event :{event}")
+
+    #\ Check if there are user info store in the database, if True, then skip the login check
+    if cache.get("gLoginStatus") is False:
+        CheckUserInfo(event)
 
     #\ workaround for the linebot url verify error
     # if event.source.user_id != "U00a49f1618f9827d4b24f140c2e5f770":
 
-    #\ switch the case of MessageEvent
-    #\ read the text if it meants to trigger some event
-    print(f'[INFO] gIsJustText : {cache.get("gIsJustText")}')
-    print(f'[INFO] gEvent : {cache.get("gEvent")}')
+    #\ Switch the case of MessageEvent
+    #\ Read the text if it meants to trigger some event
+    print(f'[INFO] gIsJustText : {cache.get("gIsJustText")}\n[INFO] gEvent : {cache.get("gEvent")}')
     if cache.get("gIsJustText") == True :
         cache.set("gEventText", event.message.text.lower())
 
@@ -77,8 +79,8 @@ def handle_text_message(event):
         CheckEvent(cache.get("gEventText"))
 
 
-    #\ categorize the event and the corresponding action
-    print(f'[INFO] gEvent(after ChekEvent) : {cache.get("gEvent")}')
+    #\ Categorize the event and the corresponding action
+    #\---------------------------------------------------
     if cache.get("gEvent") == eLineBotEvent.LOGIN.value:
         LoginProgress(event)
 
@@ -94,6 +96,8 @@ def handle_text_message(event):
 
     elif cache.get("gEvent") == eLineBotEvent.REQUEST.value:
         pleaseLogin(event)
+
+        #\ main function callback
         RequestCallback(event)
 
         #\ reset the is-just-text flag
@@ -146,9 +150,7 @@ def handle_text_message(event):
 
 
 
-
-
-#\ check the event from the received text
+#\ Check the event from the received text
 def CheckEvent(event_text:str):
     if event_text == "login":
         cache.set("gEvent", eLineBotEvent.LOGIN.value)
@@ -185,6 +187,18 @@ def CheckEvent(event_text:str):
 
 
 
+#\ Check User Info from database to see if there are any records or not
+def CheckUserInfo(event):
+    DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
+                                    Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
+                                    True)
+    if DB_Data is not None:
+        cache.set("gLoginStatus", True)
+        return True
+    else :
+        return False
+
+
 
 #\ When richmenu event been triggerred, check if the login state vaild
 def pleaseLogin(event):
@@ -206,6 +220,8 @@ def AskInputID(event):
 
 #\ request command callback
 def RequestCallback(event):
+
+    #\ message to ask for the request ID
     AskInputID(event)
 
     #\ read the data from DB

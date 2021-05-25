@@ -43,6 +43,9 @@ def InitDBInfo()->dict:
 
 #\ craete database connection
 def CreateDBConection():
+    """
+    return : conn or None
+    """
     print("[INFO] Start to CreateDBConection")
 
     try:
@@ -81,11 +84,14 @@ def ExecuteDB(conn, query):
         cursor.execute(query)
         conn.commit()
         print("[INFO] Successfully execute the database query")
+        CloseDBConnection(conn)
         return cursor
 
     except:
         print("[WARNING] Unable to execute the database query")
+        CloseDBConnection(conn)
         return None
+
 
 
 #\ Insert into DB SQL command
@@ -98,6 +104,7 @@ def InsertDB(conn, query, data):
 
     except:
         print("[WARNING] Unable to execute the insert database query")
+    CloseDBConnection(conn)
 
 
 #\ Update
@@ -108,12 +115,19 @@ def UpdateDB(conn, query, data):
 #\ Read the data
 def ReadFromDB(conn, query, FetchOneOrNot)->tuple:
     cursor = ExecuteDB(conn, query)
-    if FetchOneOrNot:
-        print(f"[INFO] Read from DB : \n{cursor.fetchall()}")
-        return cursor.fetchone()
-    else:
-        print(f"[INFO] Read from DB : \n{cursor.fetchall()}")
-        return cursor.fetchall()
+    try:
+        if FetchOneOrNot:
+            print(f"[INFO] Read from DB : \n{cursor.fetchall()}")
+            CloseDBConnection(conn)
+            return cursor.fetchone()
+        else:
+            print(f"[INFO] Read from DB : \n{cursor.fetchall()}")
+            CloseDBConnection(conn)
+            return cursor.fetchall()
+
+    except:
+        print("[Warning] Read from DB might not have the data or something wrong")
+        return None
 
 
 #\ Close the DB connection
