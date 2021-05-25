@@ -150,7 +150,6 @@ def handle_text_message(event):
 
 #\ check the event from the received text
 def CheckEvent(event_text:str):
-    global gSession
     if event_text == "login":
         cache.set("gEvent", eLineBotEvent.LOGIN.value)
         cache.set("gIsJustText", False)
@@ -248,10 +247,9 @@ def RequestCallback(event):
 #\ for the first time follow the group
 @gHandler.add(FollowEvent)
 def handle_follow_message(event):
-    cache.set("gEvent", eLineBotEvent.LOGIN.value)
-    cache.set("gIsJustText", False)
+    # cache.set("gEvent", eLineBotEvent.LOGIN.value)
+    # cache.set("gIsJustText", False)
     print("[INFO]: JoinEvent")
-    print(f"[INFO]: {event}")
     for idx in range(len(index.JoinEventText)):
         gLine_bot_api.reply_message(
                         event.reply_token,
