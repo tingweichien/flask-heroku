@@ -86,58 +86,58 @@ def handle_text_message(event):
 
 
     elif cache.get("gEvent") == eLineBotEvent.MENU.value:
-        pleaseLogin(event)
-        #\
-        #\ Add the event here
-        #\
-        #\ reset the is-just-text flag
-        cache.set("gIsJustText", True)
+        if pleaseLogin(event) is True:
+            #\
+            #\ Add the event here
+            #\
+            #\ reset the is-just-text flag
+            cache.set("gIsJustText", True)
 
 
     elif cache.get("gEvent") == eLineBotEvent.REQUEST.value:
-        pleaseLogin(event)
+        if pleaseLogin(event) is True:
 
-        #\ main function callback
-        RequestCallback(event)
+            #\ main function callback
+            RequestCallback(event)
 
-        #\ reset the is-just-text flag
-        cache.set("gIsJustText", True)
+            #\ reset the is-just-text flag
+            cache.set("gIsJustText", True)
 
 
     elif cache.get("gEvent") == eLineBotEvent.RECORD.value:
-        pleaseLogin(event)
-        #\
-        #\ Add the event here
-        #\
-        #\ reset the is-just-text flag
-        cache.set("gIsJustText", True)
+        if pleaseLogin(event) is True:
+            #\
+            #\ Add the event here
+            #\
+            #\ reset the is-just-text flag
+            cache.set("gIsJustText", True)
 
 
     elif cache.get("gEvent") == eLineBotEvent.SETTING.value:
-        pleaseLogin(event)
-        #\
-        #\ Add the event here
-        #\
-        #\ reset the is-just-text flag
-        cache.set("gIsJustText", True)
+        if pleaseLogin(event) is True:
+            #\
+            #\ Add the event here
+            #\
+            #\ reset the is-just-text flag
+            cache.set("gIsJustText", True)
 
 
     elif cache.get("gEvent") == eLineBotEvent.SEARCH.value:
-        pleaseLogin(event)
-        #\
-        #\ Add the event here
-        #\
-        #\ reset the is-just-text flag
-        cache.set("gIsJustText", True)
+        if pleaseLogin(event) is True:
+            #\
+            #\ Add the event here
+            #\
+            #\ reset the is-just-text flag
+            cache.set("gIsJustText", True)
 
 
     elif cache.get("gEvent") == eLineBotEvent.OTHERS.value:
-        pleaseLogin(event)
-        #\
-        #\ Add the event here
-        #\
-        #\ reset the is-just-text flag
-        cache.set("gIsJustText", True)
+        if pleaseLogin(event) is True:
+            #\
+            #\ Add the event here
+            #\
+            #\ reset the is-just-text flag
+            cache.set("gIsJustText", True)
 
 
     else :
@@ -209,6 +209,9 @@ def pleaseLogin(event):
                 event.reply_token,
                 TextSendMessage(text="Please Login first to use this function")
                 )
+        return False
+    else:
+        return True
 
 
 
@@ -232,6 +235,10 @@ def RequestCallback(event):
                                     True)
     print(f"[INFO] DB_Data: {DB_Data}")
 
+    #\ check the return from the database is vaild or not
+    if DB_Data is None:
+        print("[Warning] No DB Data return, skip the requwst ID function")
+
     #\ login
     DragonflyData_session = Login2Web(DB_Data(4), DB_Data(5))
 
@@ -247,7 +254,7 @@ def RequestCallback(event):
         print(f"[INFO] Successfully craw the data")
         gLine_bot_api.push_message(event.source.user_id,
                                     TextSendMessage(text=f"IdNumber : {ID_find_result.IdNumber}\n"+\
-                                                        f"Dates : {ID_find_result.Dates}\n"+\
+                                                         f"Dates : {ID_find_result.Dates}\n"+\
                                                         f"Times : {ID_find_result.Times}\n"+\
                                                         f"Place : {ID_find_result.Place}\n"+\
                                                         f"Altitude : {ID_find_result.Altitude}\n" +\

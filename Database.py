@@ -84,7 +84,6 @@ def ExecuteDB(conn, query):
         cursor.execute(query)
         conn.commit()
         print("[INFO] Successfully execute the database query")
-        CloseDBConnection(conn)
         return cursor
 
     except:
