@@ -94,8 +94,7 @@ def handle_text_message(event):
 
     elif cache.get("gEvent") == eLineBotEvent.REQUEST.value:
         pleaseLogin(event)
-        AskInputID(event)
-        # DragonflyData.DataCrawler(cache.get("Dragonfly_session"), Input_ID)
+        RequestCallback(event)
 
         #\ reset the is-just-text flag
         cache.set("gIsJustText", True)
@@ -151,7 +150,6 @@ def handle_text_message(event):
 
 #\ check the event from the received text
 def CheckEvent(event_text:str):
-    global gSession
     if event_text == "login":
         cache.set("gEvent", eLineBotEvent.LOGIN.value)
         cache.set("gIsJustText", False)
@@ -206,14 +204,52 @@ def AskInputID(event):
         )
 
 
+#\ request command callback
+def RequestCallback(event):
+    AskInputID(event)
+
+    #\ read the data from DB
+    DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
+                                    Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
+                                    True)
+    print(f"[INFO] DB_Data: {DB_Data}")
+
+    #\ login
+    DragonflyData_session = Login2Web(DB_Data(4), DB_Data(5))
+
+    #\ execute the crawler function
+    [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, event.message.text)
+
+    if overflow:
+        print(f"[INFO] The ID is overflow, please use the ID smaller {Max_ID_Num}")
+        gLine_bot_api.push_message(event.source.user_id,
+                            TextSendMessage(text=f"The ID is overflow, please use the ID smaller {Max_ID_Num}")
+                            )
+    else:
+        print(f"[INFO] Successfully craw the data")
+        gLine_bot_api.push_message(event.source.user_id,
+                                    TextSendMessage(text=f"IdNumber : {ID_find_result.IdNumber}\n"+\
+                                                        f"Dates : {ID_find_result.Dates}\n"+\
+                                                        f"Times : {ID_find_result.Times}\n"+\
+                                                        f"Place : {ID_find_result.Place}\n"+\
+                                                        f"Altitude : {ID_find_result.Altitude}\n" +\
+                                                        f"User : {ID_find_result.User}\n"+\
+                                                        f"Latitude : {ID_find_result.Latitude}\n"+\
+                                                        f"Longitude : {ID_find_result.Longitude}\n"\
+                                                        f"Speceis : {ID_find_result.SpeciesList}\n"+\
+                                                        f"Description : {ID_find_result.Description}\n"
+                                                    )
+                                    )
+
+
+
 
 #\ for the first time follow the group
 @gHandler.add(FollowEvent)
 def handle_follow_message(event):
-    cache.set("gEvent", eLineBotEvent.LOGIN.value)
-    cache.set("gIsJustText", False)
+    # cache.set("gEvent", eLineBotEvent.LOGIN.value)
+    # cache.set("gIsJustText", False)
     print("[INFO]: JoinEvent")
-    print(f"[INFO]: {event}")
     for idx in range(len(index.JoinEventText)):
         gLine_bot_api.reply_message(
                         event.reply_token,
@@ -223,17 +259,17 @@ def handle_follow_message(event):
 
 
 #\ login to web
-def Login2Web()->str:
+def Login2Web(login_account:str, login_password:str)->str:
     print("[INFO] Login2Web")
-    login_account = cache.get("gAccount")
-    login_password = cache.get("gPassword")
+
+    #\ Get the login PW and ACCOUNT
     print(f'[INFO] Account: {login_account}, Password: {login_password}')
 
-    #\ main function to login
+    #\ Main function to login
     [Dragonfly_session, Login_Response, Login_state] = DragonflyData.Login_Web(login_account, login_password)
     print(f"[INFO] Login_Response: {Login_Response}, Login_state: {Login_state}")
 
-    #\ check the login state
+    #\ Check the login state
     if (Login_state == False):
         print("[Warning] Warning!!! Account or Password might be incorrect!!!!")  #incorrect account or password
         return "Account or Password might be incorrect!!!!"
@@ -245,12 +281,10 @@ def Login2Web()->str:
     else: #\ Login_state == True and Login_Response not None
         print("[info] Login state success")
 
-        #\ save the login authorization info
-
-        #\ function finish state
+        #\ Function finish state
         cache.set("gLoginStatus", True)
 
-        #\ set the login session
+        #\ Set the login session
         cache.set("Dragonfly_session", Dragonfly_session)
 
         return "Login state success~"
@@ -287,10 +321,9 @@ def LoginProgress(event):
                                         )
 
             #\ Start Login to web method
-            LoginStateMessage = Login2Web()
+            LoginStateMessage = Login2Web(cache.get("gAccount"), cache.get("gPassword"))
             print(f"[INFO] LoginStateMessage: {LoginStateMessage}")
-            gLine_bot_api.push_message(
-                                        event.source.user_id,
+            gLine_bot_api.push_message(event.source.user_id,
                                         TextSendMessage(text=LoginStateMessage)
                                         )
 
