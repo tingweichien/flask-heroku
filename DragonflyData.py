@@ -231,7 +231,7 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
     Max_All_Observation_Data_response_Data = All_Observation_Data_response_Data_Set.find_all('td')
     Max_ID_Num = Max_All_Observation_Data_response_Data[0].text
     #\check if the ID is out of the range
-    if (int(Input_ID) > int(Max_All_Observation_Data_response_Data[0].text) or int(Input_ID) < 0):
+    if (int(Input_ID) > int(Max_ID_Num)) or (int(Input_ID) < 0):
         overflow = True
         ID_find_result = []
     else:

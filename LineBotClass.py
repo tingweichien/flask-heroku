@@ -234,7 +234,7 @@ def RequestCallback(event):
     DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
                                     Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
                                     True)
-    print(f"[INFO] DB_Data: {DB_Data}")
+    # print(f"[INFO] DB_Data: {DB_Data}")
 
     #\ check the return from the database is vaild or not
     if DB_Data is None:
@@ -265,7 +265,8 @@ def RequestCallback(event):
                                                         f"[Latitude]: {ID_find_result.Latitude}\n"+\
                                                         f"[Longitude]: {ID_find_result.Longitude}\n"\
                                                         f"[Speceis]: {', '.join(ID_find_result.SpeciesList)}\n"+\
-                                                        f"[Description]: {ID_find_result.Description}\n"
+                                                        f"[Description]: {ID_find_result.Description}\n",
+                                                    wrap = True
                                                     )
                                     )
         #\ loaction message
