@@ -360,6 +360,11 @@ def LoginProgress(event):
             print("[INFO] Login info user decline")
             cache.set("gEventCnt", 1)
 
+        #\ Exit the login process
+        elif event.message.text == "LOGIN_EXIT":
+            print("[INFO] Exit login")
+            cache.set("gEventCnt", 0)
+
 
     #\ -- gEventCnt = 1 --
     if cache.get("gEventCnt") == 1:
