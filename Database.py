@@ -116,13 +116,15 @@ def ReadFromDB(conn, query, FetchOneOrNot)->tuple:
     cursor = ExecuteDB(conn, query)
     try:
         if FetchOneOrNot:
-            print(f"[INFO] Read from DB : \n{cursor.fetchall()}")
+            returnData = cursor.fetchall()
+            print(f"[INFO] Read from DB : \n{returnData}")
             CloseDBConnection(conn)
-            return cursor.fetchone()
+            return returnData
         else:
-            print(f"[INFO] Read from DB : \n{cursor.fetchall()}")
+            returnData = cursor.fetchall()
+            print(f"[INFO] Read from DB : \n{returnData}")
             CloseDBConnection(conn)
-            return cursor.fetchall()
+            return returnData
 
     except:
         print("[Warning] Read from DB might not have the data or something wrong")

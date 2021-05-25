@@ -192,6 +192,7 @@ def CheckUserInfo(event):
     DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
                                     Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
                                     True)
+    print(f"[INFO] In the CkeckUserInfo() the Data return from the DB is {DB_Data}")
     if DB_Data is not None:
         cache.set("gLoginStatus", True)
         print("[INFO] The User has user info data store in the database")
