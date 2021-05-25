@@ -98,10 +98,11 @@ def handle_text_message(event):
         if pleaseLogin(event) is True:
 
             #\ main function callback
-            RequestCallback(event)
+            finish = RequestCallback(event)
 
             #\ reset the is-just-text flag
-            cache.set("gIsJustText", True)
+            if finish is True:
+                cache.set("gIsJustText", True)
 
 
     elif cache.get("gEvent") == eLineBotEvent.RECORD.value:
@@ -233,6 +234,7 @@ def RequestCallback(event):
 
         #\ message to ask for the request ID
         AskInputID(event)
+        return False
 
     elif tmpCnt == 2:
         #\ read the data from DB
@@ -287,7 +289,7 @@ def RequestCallback(event):
 
         #\ reset the counter
         cache.set("gEventCnt", 0)
-
+        return True
 
 
 
