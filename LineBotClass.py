@@ -194,8 +194,10 @@ def CheckUserInfo(event):
                                     True)
     if DB_Data is not None:
         cache.set("gLoginStatus", True)
+        print("[INFO] The User has user info data store in the database")
         return True
     else :
+        print("[INFO] The User has no user info data store in the database")
         return False
 
 
@@ -212,8 +214,8 @@ def pleaseLogin(event):
 
 #\ Ask the input ID for request
 def AskInputID(event):
-    gLine_bot_api.reply_message(
-        event.reply_token,
+    gLine_bot_api.push_message(
+        event.source.user_id,
         TextSendMessage(text="Please Enter the request ID")
         )
 
