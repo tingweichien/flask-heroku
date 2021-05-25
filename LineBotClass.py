@@ -262,7 +262,7 @@ def RequestCallback(event):
                                                         f"User : {ID_find_result.User}\n"+\
                                                         f"Latitude : {ID_find_result.Latitude}\n"+\
                                                         f"Longitude : {ID_find_result.Longitude}\n"\
-                                                        f"Speceis : {ID_find_result.SpeciesList}\n"+\
+                                                        f"Speceis : {', '.join(ID_find_result.SpeciesList)}\n"+\
                                                         f"Description : {ID_find_result.Description}\n"
                                                     )
                                     )
