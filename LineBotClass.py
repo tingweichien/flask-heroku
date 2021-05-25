@@ -230,6 +230,7 @@ def RequestCallback(event):
 
     tmpCnt = cache.get("gEventCnt")
     tmpCnt += 1
+    cache.set("gEventCnt", tmpCnt)
     if tmpCnt == 1:
 
         #\ message to ask for the request ID
