@@ -73,7 +73,7 @@ def handle_text_message(event):
     #\ Read the text if it meants to trigger some event
     print(f'[INFO] gIsJustText : {cache.get("gIsJustText")}\n[INFO] gEvent : {cache.get("gEvent")}')
     if cache.get("gIsJustText") == True :
-        cache.set("gEventText", event.message.text.lower())
+        cache.set("gEventText", event.message.text.lower().replace(" ", ""))
 
         #\ categorize the text to trigger event
         CheckEvent(cache.get("gEventText"))
