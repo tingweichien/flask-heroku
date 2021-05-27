@@ -231,7 +231,7 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
     Max_All_Observation_Data_response_Data = All_Observation_Data_response_Data_Set.find_all('td')
     Max_ID_Num = Max_All_Observation_Data_response_Data[0].text
     #\check if the ID is out of the range
-    if (int(Input_ID) > int(Max_All_Observation_Data_response_Data[0].text) or int(Input_ID) < 0):
+    if (int(Input_ID) > int(Max_ID_Num)) or (int(Input_ID) < 0):
         overflow = True
         ID_find_result = []
     else:
@@ -240,10 +240,16 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
         soup2 = BeautifulSoup(response_Detailed_discriptions2.text, 'html.parser')
 
         #\ Find the LAT and LNG
-        Longitude = soup2.find(id = 'R_LNG').get('value')
+        # Longitude = soup2.find(id = 'R_LNG').get('value')
         # print('經度 : ' + Longitude)
-        Lateral = soup2.find(id = 'R_LAT').get('value')
+        # Lateral = soup2.find(id = 'R_LAT').get('value')
         # print('緯度 : ' + Lateral)
+
+        #\ find the description
+        # print("\n\n->"+str(soup2.find("textarea", {'id':'R_MEMO'}).text))
+        # print(str(soup2.find(id='R_MEMO').text))
+        Description = soup2.find(id='R_MEMO').text if soup2.find(id='R_MEMO').text is not None else ""
+
 
         #\ Save the info to data class
         ID_find_result = DataClass.DetailedTableInfo(Input_ID,
@@ -259,7 +265,7 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
                                             "",
                                             "",
                                             SpeciesList,
-                                            (soup2.find(id='R_MEMO').get('value') if soup2.find(id='R_MEMO').get('value') is not None else "")
+                                            Description
                                             )
 
     print(f"[INFO] Return Object: {ID_find_result}")
@@ -271,5 +277,5 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
 
 
 #\ for testing
-# [session, Login_Response, Login_state] = Login_Web("----", "-----")
-# DataCrawler(session, "78346")
+# [session, Login_Response, Login_state] = Login_Web("簡庭威", "tim960622")
+# DataCrawler(session, "77257")
