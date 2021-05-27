@@ -98,6 +98,16 @@ LoginCheckText={
         "height": "sm",
         "action": {
           "type": "message",
+          "label": "EXIT",
+          "text": "LOGIN_EXIT"
+        }
+      },
+      {
+        "type": "button",
+        "style": "secondary",
+        "height": "sm",
+        "action": {
+          "type": "message",
           "label": "NO",
           "text": "LOGIN_FAIL"
         }

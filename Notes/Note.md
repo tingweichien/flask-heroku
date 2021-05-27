@@ -206,3 +206,71 @@ i.e.
 
     ![font](https://i.imgur.com/ny1bXZS.png)
 
+### [2021/05/23]
+
+1. Add Heroku Postgres
+2. reference
+   - https://ithelp.ithome.com.tw/articles/10219773
+   - https://docs.postgresql.tw/the-sql-language/data-manipulation/6.1.-xin-zeng-zi-liao
+   - https://docs.postgresql.tw/the-sql-language/data-types/date-time
+   - https://www.postgresqltutorial.com/postgresql-upsert/
+
+3. Insert if non-exist
+
+   - https://stackoverflow.com/questions/4069718/postgres-insert-if-does-not-exist-already
+
+4. Heroku change the timezone
+
+  ```shell
+  heroku config:add TZ="Asia/Taipei"
+  ```
+
+5. Check the free dyno hours
+
+  ```shell
+  heroku ps -a dragonfly-flask-web
+  ```
+
+### [2021/05/24]
+
+1. When using the connection under the local using ```os.popen```, but when deploy to the Heroku, using ```os.system``` instead to
+  get the database URI or infomation
+
+- error log
+  ![error log](https://i.imgur.com/1TBIJ7U.png)
+
+- solving
+  ![solving](https://i.imgur.com/9A8LOBz.png)
+
+
+
+### [2021/05/25]
+
+1. Split the string with something and store to list
+
+  ```python
+  txt = "apple#banana####cherry##orange"
+
+  x = list(filter(None, txt.split("#")))
+  ```
+
+  result
+
+  ```shell
+  ['apple', 'banana', 'cherry', 'orange']
+  ```
+
+2. Turn the list to string
+
+  ```python
+  s_list = ["a", "b", "2", "asd", "rew123"]
+  s = "".join(s_list)
+  s2 = ", ".join(s_list)
+  ```
+
+  result
+
+  ```shell
+  s = 'ab2asdrew123'
+  s2 = 'a, b, 2, asd, rew123'
+  ```

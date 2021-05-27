@@ -1,16 +1,25 @@
+##############################
+#\                          /#
+#\     Line BOt Event       /#
+#\                          /#
+##############################
+#\ This is the main function to handle the line bot e=vent
+
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, FlexSendMessage, PostbackEvent
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, FlexSendMessage, PostbackEvent, LocationSendMessage
 import configparser
 from flask import request, abort
 import index
-from VarIndex import *
+from VarIndex import * #\ remeber to include this to use the cache function
 import LineBotText
 import DragonflyData
+import Database
+import datetime
 
 
 
-#\ Global
+#\ -- Global --
 #\ Line bot basic info
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -20,8 +29,10 @@ gHandler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 
 
 
+#\ ----------------------------------------------------------------------
 
 
+#\ -- Main Function --
 #\ handler. This is the example from the official doc
 def LineBotHandler(app, session):
     #\ get X-Line-Signature header value
@@ -49,66 +60,85 @@ def LineBotHandler(app, session):
 #\ handle the message
 @gHandler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    print("[INFO] TextMessage")
-    print(f"[INFO] Event :{event}")
+    print(f"[INFO] TextMessage\n[INFO] Event :{event}")
+
+    #\ Check if there are user info store in the database, if True, then skip the login check
+    if cache.get("gLoginStatus") is False:
+        CheckUserInfo(event)
 
     #\ workaround for the linebot url verify error
     # if event.source.user_id != "U00a49f1618f9827d4b24f140c2e5f770":
 
-    #\ switch the case of MessageEvent
-    #\ read the text if it meants to trigger some event
-    print(f'[INFO] gIsJustText : {cache.get("gIsJustText")}')
-    print(f'[INFO] gEvent : {cache.get("gEvent")}')
+    #\ Switch the case of MessageEvent
+    #\ Read the text if it meants to trigger some event
+    print(f'[INFO] gIsJustText : {cache.get("gIsJustText")}\n[INFO] gEvent : {cache.get("gEvent")}')
     if cache.get("gIsJustText") == True :
-        cache.set("gEventText", event.message.text.lower())
+        cache.set("gEventText", event.message.text.lower().replace(" ", ""))
 
         #\ categorize the text to trigger event
         CheckEvent(cache.get("gEventText"))
 
 
-    #\ categorize the event and the corresponding action
-    print(f'[INFO] gEvent(after ChekEvent) : {cache.get("gEvent")}')
+    #\ Categorize the event and the corresponding action
+    #\---------------------------------------------------
     if cache.get("gEvent") == eLineBotEvent.LOGIN.value:
         LoginProgress(event)
 
 
     elif cache.get("gEvent") == eLineBotEvent.MENU.value:
-        pleaseLogin(event)
-        #\ reset the is-just-text flag
-        cache.set("gIsJustText", True)
+        if pleaseLogin(event) is True:
+            #\
+            #\ Add the event here
+            #\
+            #\ reset the is-just-text flag
+            cache.set("gIsJustText", True)
 
 
     elif cache.get("gEvent") == eLineBotEvent.REQUEST.value:
-        pleaseLogin(event)
-        AakInputID(event)
-        # DragonflyData.DataCrawler(cache.get("Dragonfly_session"), Input_ID)
+        if pleaseLogin(event) is True:
 
-        #\ reset the is-just-text flag
-        cache.set("gIsJustText", True)
+            #\ main function callback
+            finish = RequestCallback(event)
+
+            #\ reset the is-just-text flag
+            if finish is True:
+                cache.set("gIsJustText", True)
 
 
     elif cache.get("gEvent") == eLineBotEvent.RECORD.value:
-        pleaseLogin(event)
-        #\ reset the is-just-text flag
-        cache.set("gIsJustText", True)
+        if pleaseLogin(event) is True:
+            #\
+            #\ Add the event here
+            #\
+            #\ reset the is-just-text flag
+            cache.set("gIsJustText", True)
 
 
     elif cache.get("gEvent") == eLineBotEvent.SETTING.value:
-        pleaseLogin(event)
-        #\ reset the is-just-text flag
-        cache.set("gIsJustText", True)
+        if pleaseLogin(event) is True:
+            #\
+            #\ Add the event here
+            #\
+            #\ reset the is-just-text flag
+            cache.set("gIsJustText", True)
 
 
     elif cache.get("gEvent") == eLineBotEvent.SEARCH.value:
-        pleaseLogin(event)
-        #\ reset the is-just-text flag
-        cache.set("gIsJustText", True)
+        if pleaseLogin(event) is True:
+            #\
+            #\ Add the event here
+            #\
+            #\ reset the is-just-text flag
+            cache.set("gIsJustText", True)
 
 
     elif cache.get("gEvent") == eLineBotEvent.OTHERS.value:
-        pleaseLogin(event)
-        #\ reset the is-just-text flag
-        cache.set("gIsJustText", True)
+        if pleaseLogin(event) is True:
+            #\
+            #\ Add the event here
+            #\
+            #\ reset the is-just-text flag
+            cache.set("gIsJustText", True)
 
 
     else :
@@ -121,36 +151,57 @@ def handle_text_message(event):
 
 
 
-
-
-#\ check the event from the received text
+#\ Check the event from the received text
 def CheckEvent(event_text:str):
-    global gSession
     if event_text == "login":
         cache.set("gEvent", eLineBotEvent.LOGIN.value)
         cache.set("gIsJustText", False)
+
     elif event_text == "menu" :
         cache.set("gEvent", eLineBotEvent.MENU.value)
         cache.set("gIsJustText", False)
+
     elif event_text == "request" :
         cache.set("gEvent", eLineBotEvent.REQUEST.value)
         cache.set("gIsJustText", False)
+
     elif event_text == "record" :
         cache.set("gEvent", eLineBotEvent.RECORD.value)
         cache.set("gIsJustText", False)
+
     elif event_text == "setting" :
         cache.set("gEvent", eLineBotEvent.SETTING.value)
         cache.set("gIsJustText", False)
+
     elif event_text == "search" :
         cache.set("gEvent", eLineBotEvent.SEARCH.value)
         cache.set("gIsJustText", False)
+
     elif event_text == "others" :
         cache.set("gEvent", eLineBotEvent.OTHERS.value)
         cache.set("gIsJustText", False)
+
     else:
         cache.set("gEvent", eLineBotEvent.NONE.value)
 
     print(f'[INFO] CheckEvent : {event_text}, (gIsJustText : {cache.get("gIsJustText")})')
+
+
+
+#\ Check User Info from database to see if there are any records or not
+def CheckUserInfo(event):
+    DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
+                                    Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
+                                    True)
+    print(f"[INFO] In the CkeckUserInfo() the Data return from the DB is {DB_Data}")
+    if DB_Data is not None:
+        cache.set("gLoginStatus", True)
+        print("[INFO] The User has user info data store in the database")
+        return True
+    else :
+        print("[INFO] The User has no user info data store in the database")
+        return False
+
 
 
 #\ When richmenu event been triggerred, check if the login state vaild
@@ -160,23 +211,95 @@ def pleaseLogin(event):
                 event.reply_token,
                 TextSendMessage(text="Please Login first to use this function")
                 )
+        return False
+    else:
+        return True
+
+
 
 #\ Ask the input ID for request
-def AakInputID(event):
-    gLine_bot_api.reply_message(
-        event.reply_token,
+def AskInputID(event):
+    gLine_bot_api.push_message(
+        event.source.user_id,
         TextSendMessage(text="Please Enter the request ID")
         )
+
+
+#\ request command callback
+def RequestCallback(event):
+
+    tmpCnt = cache.get("gEventCnt")
+    tmpCnt += 1
+    cache.set("gEventCnt", tmpCnt)
+    if tmpCnt == 1:
+
+        #\ message to ask for the request ID
+        AskInputID(event)
+        return False
+
+    elif tmpCnt == 2:
+        #\ read the data from DB
+        DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
+                                        Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
+                                        True)
+        # print(f"[INFO] DB_Data: {DB_Data}")
+
+        #\ check the return from the database is vaild or not
+        if DB_Data is None:
+            print("[Warning] No DB Data return, skip the requwst ID function")
+
+        #\ login
+        DragonflyData_session = Login2Web(DB_Data[4], DB_Data[5])
+
+        #\ execute the crawler function
+        [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, event.message.text)
+
+        if overflow:
+            print(f"[INFO] The ID is overflow, please use the ID smaller {Max_ID_Num}")
+            gLine_bot_api.push_message(event.source.user_id,
+                                TextSendMessage(text=f"The ID is overflow, please use the ID smaller {Max_ID_Num}")
+                                )
+        else:
+            print(f"[INFO] Successfully craw the data")
+            #\ handle the Description to align
+            ID_find_result.Description = f"\n{' '*10}".join(list(ID_find_result.Description.split("\n")))
+            gLine_bot_api.push_message(event.source.user_id,
+                                        TextSendMessage(text=f"[IdNumber]: {ID_find_result.IdNumber}\n"+\
+                                                            f"[Dates]: {ID_find_result.Dates}, {ID_find_result.Times}\n"+\
+                                                            f"[City]: {ID_find_result.City} {ID_find_result.District}\n"+\
+                                                            f"[Place]: {ID_find_result.Place}\n"+\
+                                                            f"[Altitude]: {ID_find_result.Altitude}\n" +\
+                                                            f"[User]: {ID_find_result.User}\n"+\
+                                                            f"[Latitude]: {ID_find_result.Latitude}\n"+\
+                                                            f"[Longitude]: {ID_find_result.Longitude}\n"\
+                                                            f"[Speceis]: {', '.join(ID_find_result.SpeciesList)}\n"+\
+                                                            f"[Description]: {ID_find_result.Description}\n",
+                                                        wrap = True
+                                                        )
+                                        )
+            #\ loaction message
+            gLine_bot_api.push_message(event.source.user_id,
+                                        LocationSendMessage(
+                                                            title=f'# {ID_find_result.IdNumber}',
+                                                            address=f'{ID_find_result.City} {ID_find_result.District} {ID_find_result.Place}',
+                                                            latitude=float(ID_find_result.Latitude),
+                                                            longitude=float(ID_find_result.Longitude)
+                                                            )
+            )
+
+
+        #\ reset the counter
+        cache.set("gEventCnt", 0)
+        return True
 
 
 
 #\ for the first time follow the group
 @gHandler.add(FollowEvent)
 def handle_follow_message(event):
-    cache.set("gEvent", eLineBotEvent.LOGIN.value)
-    cache.set("gIsJustText", False)
+    # cache.set("gEvent", eLineBotEvent.LOGIN.value)
+    # cache.set("gIsJustText", False)
     print("[INFO]: JoinEvent")
-    print(f"[INFO]: {event}")
     for idx in range(len(index.JoinEventText)):
         gLine_bot_api.reply_message(
                         event.reply_token,
@@ -186,17 +309,17 @@ def handle_follow_message(event):
 
 
 #\ login to web
-def Login2Web():
+def Login2Web(login_account:str, login_password:str)->str:
     print("[INFO] Login2Web")
-    login_account = cache.get("gAccount")
-    login_password = cache.get("gPassword")
+
+    #\ Get the login PW and ACCOUNT
     print(f'[INFO] Account: {login_account}, Password: {login_password}')
 
-    #\ main function to login
+    #\ Main function to login
     [Dragonfly_session, Login_Response, Login_state] = DragonflyData.Login_Web(login_account, login_password)
     print(f"[INFO] Login_Response: {Login_Response}, Login_state: {Login_state}")
 
-    #\ check the login state
+    #\ Check the login state
     if (Login_state == False):
         print("[Warning] Warning!!! Account or Password might be incorrect!!!!")  #incorrect account or password
         return "Account or Password might be incorrect!!!!"
@@ -208,12 +331,10 @@ def Login2Web():
     else: #\ Login_state == True and Login_Response not None
         print("[info] Login state success")
 
-        #\ save the login authorization info
-
-        #\ function finish state
+        #\ Function finish state
         cache.set("gLoginStatus", True)
 
-        #\ set the login session
+        #\ Set the login session
         cache.set("Dragonfly_session", Dragonfly_session)
 
         return "Login state success~"
@@ -222,21 +343,26 @@ def Login2Web():
 
 
 
-
 #\Login process
 def LoginProgress(event):
 
+    #\ handle the event count
     if cache.get("gEventCnt") == None:
         tmpCnt = 0
     else :
         tmpCnt = cache.get("gEventCnt")
 
+    #\ Increase the event count
     tmpCnt += 1
     cache.set("gEventCnt", tmpCnt)
     print(f'[EVENT] Login gEventCnt: {cache.get("gEventCnt")}')
 
+
+    #\\\\\\\ The login event \\\\\\\\
+    #\ -- gEventCnt = 4 --
     #\ specified the login event 4 to determin redo login again or not
     if cache.get("gEventCnt") == 4:
+        #\ loginconfirm
         if event.message.text == "LOGIN_CONFIRM":
             print("[INFO] Login info user confirm")
             gLine_bot_api.reply_message(
@@ -245,24 +371,56 @@ def LoginProgress(event):
                                         )
 
             #\ Start Login to web method
-            LoginStateMessage = Login2Web()
+            LoginStateMessage = Login2Web(cache.get("gAccount"), cache.get("gPassword"))
             print(f"[INFO] LoginStateMessage: {LoginStateMessage}")
-            gLine_bot_api.push_message(
-                                        event.source.user_id,
+            gLine_bot_api.push_message(event.source.user_id,
                                         TextSendMessage(text=LoginStateMessage)
                                         )
 
+            #\ Store the user info if success to skip login process
+            if cache.get("gLoginStatus") is True:
+                #\ Connect and Create the database if not exist
+                # Database.ExecuteDB(Database.CreateDBConection(), Database.UserInfo_create_table_query)
 
+                #\ Request the user info
+                #\      self.display_name = display_name
+                #\      self.user_id = user_id
+                #\      self.picture_url = picture_url
+                #\      self.status_message = status_message
+                #\      self.language = language
+                request_userinfo = gLine_bot_api.get_profile(event.source.user_id)
+
+                #\ Data to input
+                InsertData = (
+                    request_userinfo.display_name,
+                    event.source.user_id,
+                    datetime.datetime.now().strftime("%Y-%m-%d"),
+                    cache.get("gAccount"),
+                    cache.get("gPassword")
+                )
+
+                #\ Save the PW and ACCOUNT to the database
+                Database.InsertDB(Database.CreateDBConection(),
+                                    Database.Insert_userinfo_query(index.UserInfoTableName),
+                                    InsertData
+                                )
+
+        #\ Login not confirm
         elif event.message.text == "LOGIN_FAIL":
             print("[INFO] Login info user decline")
             cache.set("gEventCnt", 1)
 
+        #\ Exit the login process
+        elif event.message.text == "LOGIN_EXIT":
+            print("[INFO] Exit login")
+            cache.set("gEventCnt", 0)
 
-    #\ the login event
-    print(f'[EVENT] Login gEventCnt(after gEventCnt 4): {cache.get("gEventCnt")}')
+
+    #\ -- gEventCnt = 1 --
     if cache.get("gEventCnt") == 1:
         gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[0]))
 
+    #\ -- gEventCnt = 2 --
     elif cache.get("gEventCnt") == 2:
         gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=index.LoginEventText[1]))
 
@@ -270,6 +428,7 @@ def LoginProgress(event):
         # gLoginData["Account"] = event.message.text
         cache.set("gAccount", event.message.text)
 
+    #\ -- gEventCnt = 3 --
     elif cache.get("gEventCnt") == 3:
         #\ assign the password
         # gLoginData["Password"] = event.message.text
@@ -287,6 +446,8 @@ def LoginProgress(event):
                         event.reply_token,
                         flex_message
                         )
+
+    #\ -- gEventCnt = else --
     else:
         #\ reset the is-just-text flag and the event count and event
         print("[INFO] RESET event data~~~~~~~~~")

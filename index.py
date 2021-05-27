@@ -3,19 +3,24 @@
 #\   Put the data here      /#
 #\                          /#
 ##############################
-
-
+# ************************** #
+#     Please replace         #
+#    Private_Index.json      #
+# ************************** #
 import json
 
 #\ load data from json file
-with open("Index.json") as f:
+with open("Index.json", encoding="utf-8") as f:
     INDEX = json.load(f)
     # print(f'{"x"*25}\n| [INFO]The Index data |\n{"x"*25}\n{json.dumps(INDEX, indent=4)}')
 
-#\ load the provate data from json file
+#\ load the private data from json file
 with open("Private_Index.json") as p_f:
     INDEX_PRIVATE = json.load(p_f)
 
+
+#\ APP Private Key
+APP_Pri_Key = INDEX_PRIVATE["APP_Pri_Key"]
 
 
 #\ -- OSM API --
@@ -48,3 +53,22 @@ species_all_record_data_first_url = INDEX["DragonflyData"]["URL"]["species_all_r
 species_all_record_data_page_url = INDEX["DragonflyData"]["URL"]["species_all_record_data_page_url"]
 species_all_record_data_species_url = INDEX["DragonflyData"]["URL"]["species_all_record_data_species_url"]
 total_num_species_url = INDEX["DragonflyData"]["URL"]["total_num_species_url"]
+
+
+#\ dragonfly simple info species column name
+dragonfly_simple_info_species_col_name = INDEX["DragonflyData"]["Simple_info_table"]["dragonfly_simple_info_species_col_name"]
+dragonfly_simple_info_city_col_name = INDEX["DragonflyData"]["Simple_info_table"]["dragonfly_simple_info_city_col_name"]
+# print(dragonfly_simple_info_species_col_name)
+
+
+#\ -- DataBase --
+#\ Database info
+host = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["host"]
+Database = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["Database"]
+User = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["User"]
+Port = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["Port"]
+Password = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["Password"]
+URI = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["URI"]
+
+#\ Database table name
+UserInfoTableName = INDEX["DataBase"]["DataBaseTable"]["UserInfoTableName"]

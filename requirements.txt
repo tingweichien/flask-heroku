@@ -9,3 +9,5 @@ proxyscrape == 0.3.0
 requests == 2.24.0
 typing-extensions == 3.7.4.3
 fake-useragent == 0.1.11
+psycopg2 == 2.8.6
+DateTime == 4.3

@@ -136,11 +136,31 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
 
     #\ 執行點入簡述
     # request url = http://dragonfly.idv.tw/dragonfly/view_data.php?id=65431
-    '''
-    id = 65431
-    response_Brief_discriptions = session.post(general_url + Brief_discriptions_url + str(id), headers=headers)
-    print(response_Brief_discriptions.text)
-    '''
+
+    # id = 65431
+    response_Brief_discriptions = session.post(index.general_url + index.Brief_discriptions_url + str(Input_ID), headers=headers)
+    response_Brief_discriptions_text = BeautifulSoup(response_Brief_discriptions.text, 'html.parser')
+    Max_All_Observation_Data_response_Data = response_Brief_discriptions_text.find_all('td')
+
+    """print the colume in sequence
+    for i in range(len(Max_All_Observation_Data_response_Data)):
+        print(f"({i})\t"+Max_All_Observation_Data_response_Data[i].text)
+    """
+    for idx in range(len(Max_All_Observation_Data_response_Data)):
+        #\ Find the Species list
+        if Max_All_Observation_Data_response_Data[idx].text == index.dragonfly_simple_info_species_col_name:
+            SpeciesList = Max_All_Observation_Data_response_Data[idx+1].text.split(' ')
+            SpeciesList = list(filter(None, SpeciesList))#\ filter out the empty list
+            # print(f"[INFO] Species for ID : {Input_ID} -> {SpeciesList}")
+
+        #\ Find the city and district
+        if Max_All_Observation_Data_response_Data[idx].text == index.dragonfly_simple_info_city_col_name:
+            CityDistrict = Max_All_Observation_Data_response_Data[idx+1].text.split(' - ')[0]
+            City = CityDistrict[:3]
+            District = CityDistrict[3:]
+            # print(f"[INFO] City for ID : {Input_ID} -> {City}\n[INFO] District for ID : {Input_ID} -> {District}")
+
+
 
 
 
@@ -211,22 +231,32 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
     Max_All_Observation_Data_response_Data = All_Observation_Data_response_Data_Set.find_all('td')
     Max_ID_Num = Max_All_Observation_Data_response_Data[0].text
     #\check if the ID is out of the range
-    if (int(Input_ID) > int(Max_All_Observation_Data_response_Data[0].text) or int(Input_ID) < 0):
+    if (int(Input_ID) > int(Max_ID_Num)) or (int(Input_ID) < 0):
         overflow = True
         ID_find_result = []
     else:
         #\ 執行
         response_Detailed_discriptions2 = session.post(index.general_url + index.Detailed_discriptions_url + Input_ID, headers=headers)
         soup2 = BeautifulSoup(response_Detailed_discriptions2.text, 'html.parser')
-        Longitude = soup2.find(id = 'R_LNG').get('value')
-        print('經度 : ' + Longitude)
-        Lateral = soup2.find(id = 'R_LAT').get('value')
-        print('緯度 : ' + Lateral)
+
+        #\ Find the LAT and LNG
+        # Longitude = soup2.find(id = 'R_LNG').get('value')
+        # print('經度 : ' + Longitude)
+        # Lateral = soup2.find(id = 'R_LAT').get('value')
+        # print('緯度 : ' + Lateral)
+
+        #\ find the description
+        # print("\n\n->"+str(soup2.find("textarea", {'id':'R_MEMO'}).text))
+        # print(str(soup2.find(id='R_MEMO').text))
+        Description = soup2.find(id='R_MEMO').text if soup2.find(id='R_MEMO').text is not None else ""
+
+
+        #\ Save the info to data class
         ID_find_result = DataClass.DetailedTableInfo(Input_ID,
                                             soup2.find(id='日期').get('value'),
                                             soup2.find(id='時間').get('value'),
-                                            "",
-                                            "",
+                                            City,
+                                            District,
                                             soup2.find(id='地點').get('value'),
                                             soup2.find(id='R_ELEVATION').get('value'),
                                             soup2.find(id='紀錄者').get('value'),
@@ -234,8 +264,11 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
                                             soup2.find(id='R_LNG').get('value'),
                                             "",
                                             "",
-                                            soup2.find(id='R_MEMO').get('value'))
+                                            SpeciesList,
+                                            Description
+                                            )
 
+    print(f"[INFO] Return Object: {ID_find_result}")
     return [ID_find_result, overflow, int(Max_ID_Num)]
 
 
@@ -243,5 +276,6 @@ def DataCrawler(Login_Response, Input_ID:str)->list:
 
 
 
-#\ for testing 
-# Login_Web("xxxx", "xxxxxx")
+#\ for testing
+# [session, Login_Response, Login_state] = Login_Web("簡庭威", "tim960622")
+# DataCrawler(session, "77257")
