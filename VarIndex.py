@@ -8,11 +8,6 @@ from flask_caching import Cache
 cache = Cache()
 
 
-#\ Login info
-gLoginData = {"Account":"",
-            "Password":""}
-
-
 #\ Line bot Event
 class eLineBotEvent(IntEnum):
     NONE    = 0
@@ -23,14 +18,3 @@ class eLineBotEvent(IntEnum):
     SETTING = 5
     SEARCH  = 6
     OTHERS  = 7
-
-
-
-
-# #\ global event
-# session["gEventText"] = ""
-# session["gEvent"] = None
-# session["gEventCnt"] = 0
-# session["gIsJustText"] = True
-# #\ message text
-# session["gLoginDataConfirm"] = False

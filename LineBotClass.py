@@ -12,7 +12,7 @@ import configparser
 from flask import request, abort
 import index
 from VarIndex import * #\ remeber to include this to use the cache function
-import LineBotText
+import LineBotMessageHandler
 import DragonflyData
 import Database
 import datetime
@@ -225,7 +225,7 @@ def AskInputID(event):
         )
 
 
-#\ request command callback
+#\ request command callback, when type or push "request" button
 def RequestCallback(event):
 
     tmpCnt = cache.get("gEventCnt")
@@ -343,7 +343,7 @@ def Login2Web(login_account:str, login_password:str)->str:
 
 
 
-#\Login process
+#\ Login process
 def LoginProgress(event):
 
     #\ handle the event count
@@ -435,12 +435,12 @@ def LoginProgress(event):
         cache.set("gPassword", event.message.text)
 
         #\ Text to print on Flex message for re-checking the user login info
-        LineBotText.LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = cache.get("gAccount")
-        LineBotText.LoginCheckText["body"]["contents"][1]["contents"][1]["contents"][1]["text"] = cache.get("gPassword")
+        LineBotMessageHandler.LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = cache.get("gAccount")
+        LineBotMessageHandler.LoginCheckText["body"]["contents"][1]["contents"][1]["contents"][1]["text"] = cache.get("gPassword")
 
         #\ Check if the user confirm the login info
         flex_message = FlexSendMessage(alt_text=f'Hi, Check again for the login info:\nAccount: {cache.get("gAccount")}\nPassword: {cache.get("gPassword")}',
-                                        contents=LineBotText.LoginCheckText
+                                        contents=LineBotMessageHandler.LoginCheckText
                                         )
         gLine_bot_api.reply_message(
                         event.reply_token,
