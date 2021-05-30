@@ -7,6 +7,8 @@ import LineBotClass
 import index
 from VarIndex import cache, eLineBotEvent
 import Database
+import LineBotMsgHandler
+from LineBotClass import gLine_bot_api
 
 
 
@@ -37,6 +39,10 @@ cache.set("gAccount", None)
 cache.set("gPassword", None)
 cache.set("Dragonfly_session", None)
 cache.set("DBInfo", Database.InitDBInfo())
+cache.set("RichMenuID", LineBotMsgHandler.Get_RichMenu(gLine_bot_api))
+
+#\ Init default richmenu
+gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Login Richmenu"])
 
 #\ for testing
 # Database.InsertDB(Database.CreateDBConection(), Database.Insert_userinfo_query(index.UserInfoTableName), ("Tim", "123456789", "2021-05-24", "xxxx", "ooooo"))
@@ -108,7 +114,7 @@ def user():
 #\ echo
 @app.route("/LineBotEcho", methods=['POST'])
 def LineBotEcho():
-    LineBotClass.LineBotHandler(app,session)
+    LineBotClass.LineBotHandler(app)
     return "ok"
 
 

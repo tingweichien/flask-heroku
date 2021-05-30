@@ -12,10 +12,11 @@ import configparser
 from flask import request, abort
 import index
 from VarIndex import * #\ remeber to include this to use the cache function
-import LineBotMessageHandler
+import LineBotMsgHandler
 import DragonflyData
 import Database
 import datetime
+import LineBotMsgHandler
 
 
 
@@ -34,7 +35,7 @@ gHandler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 
 #\ -- Main Function --
 #\ handler. This is the example from the official doc
-def LineBotHandler(app, session):
+def LineBotHandler(app):
     #\ get X-Line-Signature header value
     #\ 如果該HTTP POST訊息是來自LINE平台，在HTTP請求標頭中一定會包括X-Line-Signature項目，
     #\ 該項目的內容值是即為數位簽章。例如：
@@ -63,8 +64,10 @@ def handle_text_message(event):
     print(f"[INFO] TextMessage\n[INFO] Event :{event}")
 
     #\ Check if there are user info store in the database, if True, then skip the login check
-    if cache.get("gLoginStatus") is False:
-        CheckUserInfo(event)
+    if cache.get("gLoginStatus") is False or cache.get("gLoginStatus") is None:
+        #\ If the user info had been created
+        if CheckUserInfo(event) is True:
+            gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Main Richmenu"])
 
     #\ workaround for the linebot url verify error
     # if event.source.user_id != "U00a49f1618f9827d4b24f140c2e5f770":
@@ -82,11 +85,19 @@ def handle_text_message(event):
     #\ Categorize the event and the corresponding action
     #\---------------------------------------------------
     if cache.get("gEvent") == eLineBotEvent.LOGIN.value:
-        LoginProgress(event)
+        #\ Check if there are user info store in the database, if True, then skip the login check
+        #\ If the user info had been created
+        if cache.get("gLoginStatus") is False :
+            gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text="Already Login"))
+            gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Main Richmenu"])
+
+        #\ The user info havn't been created, then start the login process
+        else :
+            LoginProgress(event)
 
 
     elif cache.get("gEvent") == eLineBotEvent.MENU.value:
-        if pleaseLogin(event) is True:
+        if pleaseLogin(event) is True :
             #\
             #\ Add the event here
             #\
@@ -95,7 +106,7 @@ def handle_text_message(event):
 
 
     elif cache.get("gEvent") == eLineBotEvent.REQUEST.value:
-        if pleaseLogin(event) is True:
+        if pleaseLogin(event) is True :
 
             #\ main function callback
             finish = RequestCallback(event)
@@ -106,7 +117,7 @@ def handle_text_message(event):
 
 
     elif cache.get("gEvent") == eLineBotEvent.RECORD.value:
-        if pleaseLogin(event) is True:
+        if pleaseLogin(event) is True :
             #\
             #\ Add the event here
             #\
@@ -115,7 +126,7 @@ def handle_text_message(event):
 
 
     elif cache.get("gEvent") == eLineBotEvent.SETTING.value:
-        if pleaseLogin(event) is True:
+        if pleaseLogin(event) is True :
             #\
             #\ Add the event here
             #\
@@ -124,7 +135,7 @@ def handle_text_message(event):
 
 
     elif cache.get("gEvent") == eLineBotEvent.SEARCH.value:
-        if pleaseLogin(event) is True:
+        if pleaseLogin(event) is True :
             #\
             #\ Add the event here
             #\
@@ -133,7 +144,7 @@ def handle_text_message(event):
 
 
     elif cache.get("gEvent") == eLineBotEvent.OTHERS.value:
-        if pleaseLogin(event) is True:
+        if pleaseLogin(event) is True :
             #\
             #\ Add the event here
             #\
@@ -362,7 +373,7 @@ def LoginProgress(event):
     #\ -- gEventCnt = 4 --
     #\ specified the login event 4 to determin redo login again or not
     if cache.get("gEventCnt") == 4:
-        #\ loginconfirm
+        #\ Button loginc onfirm
         if event.message.text == "LOGIN_CONFIRM":
             print("[INFO] Login info user confirm")
             gLine_bot_api.reply_message(
@@ -377,6 +388,7 @@ def LoginProgress(event):
                                         TextSendMessage(text=LoginStateMessage)
                                         )
 
+            #\ Login Success
             #\ Store the user info if success to skip login process
             if cache.get("gLoginStatus") is True:
                 #\ Connect and Create the database if not exist
@@ -405,12 +417,16 @@ def LoginProgress(event):
                                     InsertData
                                 )
 
-        #\ Login not confirm
+                #\ Set the default richmenu
+                gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Main Richmenu"])
+
+
+        #\ Button Login not confirm
         elif event.message.text == "LOGIN_FAIL":
             print("[INFO] Login info user decline")
             cache.set("gEventCnt", 1)
 
-        #\ Exit the login process
+        #\ Button Exit the login process
         elif event.message.text == "LOGIN_EXIT":
             print("[INFO] Exit login")
             cache.set("gEventCnt", 0)
@@ -435,12 +451,12 @@ def LoginProgress(event):
         cache.set("gPassword", event.message.text)
 
         #\ Text to print on Flex message for re-checking the user login info
-        LineBotMessageHandler.LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = cache.get("gAccount")
-        LineBotMessageHandler.LoginCheckText["body"]["contents"][1]["contents"][1]["contents"][1]["text"] = cache.get("gPassword")
+        LineBotMsgHandler.LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = cache.get("gAccount")
+        LineBotMsgHandler.LoginCheckText["body"]["contents"][1]["contents"][1]["contents"][1]["text"] = cache.get("gPassword")
 
         #\ Check if the user confirm the login info
         flex_message = FlexSendMessage(alt_text=f'Hi, Check again for the login info:\nAccount: {cache.get("gAccount")}\nPassword: {cache.get("gPassword")}',
-                                        contents=LineBotMessageHandler.LoginCheckText
+                                        contents=LineBotMsgHandler.LoginCheckText
                                         )
         gLine_bot_api.reply_message(
                         event.reply_token,
@@ -454,7 +470,6 @@ def LoginProgress(event):
         cache.set("gIsJustText", True)
         cache.set("gEventCnt", 0)
         cache.set("gEvent", eLineBotEvent.NONE.value)
-
 
 
 
