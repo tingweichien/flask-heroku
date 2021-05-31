@@ -42,8 +42,7 @@ cache.set("DBInfo", Database.InitDBInfo())
 cache.set("RichMenuID", LineBotMsgHandler.Get_RichMenu(gLine_bot_api))
 
 #\ Init default richmenu
-tmp_richmenu = cache.get("RichMenuID")
-gLine_bot_api.set_default_rich_menu(tmp_richmenu["Login Richmenu"])
+# gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Login Richmenu"])
 
 #\ for testing
 # Database.InsertDB(Database.CreateDBConection(), Database.Insert_userinfo_query(index.UserInfoTableName), ("Tim", "123456789", "2021-05-24", "xxxx", "ooooo"))

@@ -67,8 +67,7 @@ def handle_text_message(event):
     if cache.get("gLoginStatus") is False or cache.get("gLoginStatus") is None:
         #\ If the user info had been created
         if CheckUserInfo(event) is True:
-            tmp_richmenu = cache.get("RichMenuID")
-            gLine_bot_api.set_default_rich_menu(tmp_richmenu["Main Richmenu"])
+            gLine_bot_api.link_rich_menu_to_user(event.source.user_id, cache.get("RichMenuID")["Main Richmenu"])
 
     #\ workaround for the linebot url verify error
     # if event.source.user_id != "U00a49f1618f9827d4b24f140c2e5f770":
@@ -90,8 +89,7 @@ def handle_text_message(event):
         #\ If the user info had been created
         if cache.get("gLoginStatus") is False :
             gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text="Already Login"))
-            tmp_richmenu = cache.get("RichMenuID")
-            gLine_bot_api.set_default_rich_menu(tmp_richmenu["Main Richmenu"])
+            gLine_bot_api.link_rich_menu_to_user(event.source.user_id, cache.get("RichMenuID")["Main Richmenu"])
 
         #\ The user info havn't been created, then start the login process
         else :
@@ -318,6 +316,8 @@ def handle_follow_message(event):
                         event.reply_token,
                         TextSendMessage(text=index.JoinEventText[idx])
                         )
+    #\Set the richmenu
+    OEMSetDefaultRichmenu(gLine_bot_api, event)
 
 
 
@@ -420,8 +420,7 @@ def LoginProgress(event):
                                 )
 
                 #\ Set the default richmenu
-                tmp_richmenu = cache.get("RichMenuID")
-                gLine_bot_api.set_default_rich_menu(tmp_richmenu["Main Richmenu"])
+                gLine_bot_api.link_rich_menu_to_user(event.source.user_id, cache.get("RichMenuID")["Main Richmenu"])
 
 
         #\ Button Login not confirm
@@ -475,6 +474,11 @@ def LoginProgress(event):
         cache.set("gEvent", eLineBotEvent.NONE.value)
 
 
+
+#\ Set default richmenu
+def OEMSetDefaultRichmenu(linebot_api, event):
+    LoginState = CheckUserInfo(event)
+    LineBotMsgHandler.DefaultRichMenu(linebot_api, LoginState)
 
 
 # #\ handle post back event
