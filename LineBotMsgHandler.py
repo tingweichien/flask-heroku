@@ -6,7 +6,7 @@
 #\  2. https://medium.com/@marstseng/line-flex-message-b83b33483f9d
 
 
-from linebot.models import RichMenu, RichMenuSize, RichMenuArea, RichMenuBounds, PostbackAction, MessageAction
+from linebot.models import RichMenu, RichMenuSize, RichMenuArea, RichMenuBounds, PostbackAction, MessageAction, URIAction
 from linebot import LineBotApi
 import configparser
 import index
@@ -189,7 +189,7 @@ def Get_RichMenu(line_bot_api):
 #\ Delete richmenu
 # rich_menu_list = gLine_bot_api.get_rich_menu_list()
 #for i in [0,1]:
-# gLine_bot_api.delete_rich_menu(rich_menu_list[1].rich_menu_id)
+# gLine_bot_api.delete_rich_menu(Get_RichMenu(gLine_bot_api)["Main Richmenu"])
 
 
 
@@ -261,8 +261,8 @@ RichMenu_Create_MainMenu = RichMenu(size=RichMenuSize(width=2500, height=1686),
                                                         action=MessageAction(label="Record",
                                                                               text="Record")),
                                            RichMenuArea(bounds=RichMenuBounds(x=1666, y=0, width=833, height=843),
-                                                        action=MessageAction(label="Setting",
-                                                                              text="Setting")),
+                                                        action=URIAction(label="DragonflyWeb",
+                                                                          uri="https://liff.line.me/1656015794-QgErjV75")),
                                            RichMenuArea(bounds=RichMenuBounds(x=0, y=843, width=833, height=843),
                                                         action=MessageAction(label="Search",
                                                                               text="Search")),
@@ -270,8 +270,8 @@ RichMenu_Create_MainMenu = RichMenu(size=RichMenuSize(width=2500, height=1686),
                                                         action=MessageAction(label="Others",
                                                                               text="Others")),
                                            RichMenuArea(bounds=RichMenuBounds(x=1666, y=843, width=833, height=843),
-                                                        action=MessageAction(label="DragonflyWeb",
-                                                                              text="DragonflyWeb")),
+                                                        action=URIAction(label="DragonflyWeb",
+                                                                          uri="http://dragonfly.idv.tw/dragonfly/member_center.php")),
                                            ]
                                     )
 
@@ -280,11 +280,11 @@ RichMenu_Create_MainMenu = RichMenu(size=RichMenuSize(width=2500, height=1686),
 RichMenu_Main_ID = gLine_bot_api.create_rich_menu(rich_menu=RichMenu_Create_MainMenu)
 print(f"[INFO] RichMenu_Login_ID : {RichMenu_Main_ID}")
 
-"""
+
 #\ Upload the menu
-# UploadRichMenu(gLine_bot_api, index.MainRichMenuImgPath, Get_RichMenu(gLine_bot_api)["Main Richmenu"], "image/jpeg")
+UploadRichMenu(gLine_bot_api, index.MainRichMenuImgPath, Get_RichMenu(gLine_bot_api)["Main Richmenu"], "image/jpeg")
 
-
+"""
 
 
 

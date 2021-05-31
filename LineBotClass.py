@@ -64,7 +64,8 @@ def handle_text_message(event):
     print(f"[INFO] TextMessage\n[INFO] Event :{event}")
 
     #\ Check if there are user info store in the database, if True, then skip the login check
-    if cache.get("gLoginStatus") is False or cache.get("gLoginStatus") is None:
+    print(f'[INFO] gIsJustText : {cache.get("gIsJustText")}\n[INFO] gEvent : {cache.get("gEvent")}')
+    if cache.get("gLoginStatus") is False :
         #\ If the user info had been created
         if CheckUserInfo(event) is True:
             gLine_bot_api.link_rich_menu_to_user(event.source.user_id, cache.get("RichMenuID")["Main Richmenu"])
@@ -74,7 +75,6 @@ def handle_text_message(event):
 
     #\ Switch the case of MessageEvent
     #\ Read the text if it meants to trigger some event
-    print(f'[INFO] gIsJustText : {cache.get("gIsJustText")}\n[INFO] gEvent : {cache.get("gEvent")}')
     if cache.get("gIsJustText") == True :
         cache.set("gEventText", event.message.text.lower().replace(" ", ""))
 
