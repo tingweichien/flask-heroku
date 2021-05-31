@@ -153,11 +153,11 @@ print(LoginCheckText)
 #\ Init the line bot api
 #\ ---------------------------------------
 #\required
-"""
+
 config = configparser.ConfigParser()
 config.read('config.ini')
 gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
-"""
+
 
 
 #\ Richmenu general setting
@@ -211,8 +211,10 @@ def DefaultRichMenu(linebot_api, LoginState):
   rich_menu_dict = Get_RichMenu(linebot_api)
   if LoginState is True:
     linebot_api.set_default_rich_menu(rich_menu_dict["Main Richmenu"])
+    print("[INFO] Set the Richmenu to Main Richmenu")
   else:
     linebot_api.set_default_rich_menu(rich_menu_dict["Login Richmenu"])
+    print("[INFO] Set the Richmenu to Login Richmenu")
 
 
 #\ Richmenu for login
@@ -278,9 +280,9 @@ RichMenu_Create_MainMenu = RichMenu(size=RichMenuSize(width=2500, height=1686),
 RichMenu_Main_ID = gLine_bot_api.create_rich_menu(rich_menu=RichMenu_Create_MainMenu)
 print(f"[INFO] RichMenu_Login_ID : {RichMenu_Main_ID}")
 
-#\ Upload the menu
-UploadRichMenu(gLine_bot_api, index.MainRichMenuImgPath, RichMenu_Main_ID, "image/jpeg")
 """
+#\ Upload the menu
+# UploadRichMenu(gLine_bot_api, index.MainRichMenuImgPath, Get_RichMenu(gLine_bot_api)["Main Richmenu"], "image/jpeg")
 
 
 
