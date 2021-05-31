@@ -90,6 +90,7 @@ def handle_text_message(event):
         if cache.get("gLoginStatus") is True :
             gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text="Already Login"))
             gLine_bot_api.link_rich_menu_to_user(event.source.user_id, cache.get("RichMenuID")["Main Richmenu"])
+            cache.set("gIsJustText", True)
 
         #\ The user info havn't been created, then start the login process
         else :
