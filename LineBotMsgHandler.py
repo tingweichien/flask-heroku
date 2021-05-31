@@ -179,7 +179,7 @@ def Get_RichMenu(line_bot_api):
 
   return return_rich_menu_list
 
-# Get_RichMenu(gLine_bot_api)
+# print(Get_RichMenu(gLine_bot_api))
 
 
 #\ Set default richmenu

@@ -67,7 +67,8 @@ def handle_text_message(event):
     if cache.get("gLoginStatus") is False or cache.get("gLoginStatus") is None:
         #\ If the user info had been created
         if CheckUserInfo(event) is True:
-            gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Main Richmenu"])
+            tmp_richmenu = cache.get("RichMenuID")
+            gLine_bot_api.set_default_rich_menu(tmp_richmenu["Main Richmenu"])
 
     #\ workaround for the linebot url verify error
     # if event.source.user_id != "U00a49f1618f9827d4b24f140c2e5f770":
@@ -89,7 +90,8 @@ def handle_text_message(event):
         #\ If the user info had been created
         if cache.get("gLoginStatus") is False :
             gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text="Already Login"))
-            gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Main Richmenu"])
+            tmp_richmenu = cache.get("RichMenuID")
+            gLine_bot_api.set_default_rich_menu(tmp_richmenu["Main Richmenu"])
 
         #\ The user info havn't been created, then start the login process
         else :
@@ -418,7 +420,8 @@ def LoginProgress(event):
                                 )
 
                 #\ Set the default richmenu
-                gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Main Richmenu"])
+                tmp_richmenu = cache.get("RichMenuID")
+                gLine_bot_api.set_default_rich_menu(tmp_richmenu["Main Richmenu"])
 
 
         #\ Button Login not confirm
