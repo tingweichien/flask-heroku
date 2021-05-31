@@ -64,7 +64,7 @@ def handle_text_message(event):
     print(f"[INFO] TextMessage\n[INFO] Event :{event}")
 
     #\ Check if there are user info store in the database, if True, then skip the login check
-    print(f'[INFO] gIsJustText : {cache.get("gIsJustText")}\n[INFO] gEvent : {cache.get("gEvent")}')
+    print(f'[INFO] gIsJustText : {cache.get("gIsJustText")}\n[INFO] gEvent : {cache.get("gEvent")}\n[INFO] gLoginStatus: {cache.get("gLoginStatus")}')
     if cache.get("gLoginStatus") is False :
         #\ If the user info had been created
         if CheckUserInfo(event) is True:
@@ -87,7 +87,7 @@ def handle_text_message(event):
     if cache.get("gEvent") == eLineBotEvent.LOGIN.value:
         #\ Check if there are user info store in the database, if True, then skip the login check
         #\ If the user info had been created
-        if cache.get("gLoginStatus") is False :
+        if cache.get("gLoginStatus") is True :
             gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text="Already Login"))
             gLine_bot_api.link_rich_menu_to_user(event.source.user_id, cache.get("RichMenuID")["Main Richmenu"])
 
