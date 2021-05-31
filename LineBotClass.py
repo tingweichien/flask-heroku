@@ -316,6 +316,10 @@ def handle_follow_message(event):
                         event.reply_token,
                         TextSendMessage(text=index.JoinEventText[idx])
                         )
+
+    #\ re intialize the cache
+    InitCache(cache)
+
     #\Set the richmenu
     OEMSetDefaultRichmenu(gLine_bot_api, event)
 
@@ -479,6 +483,21 @@ def LoginProgress(event):
 def OEMSetDefaultRichmenu(linebot_api, event):
     LoginState = CheckUserInfo(event)
     LineBotMsgHandler.DefaultRichMenu(linebot_api, LoginState)
+
+
+#\ Init the cache data
+def InitCache(_cache):
+    _cache.set("gEventText", None)
+    _cache.set("gEvent", eLineBotEvent.NONE.value)
+    _cache.set("gEventCnt", 0)
+    _cache.set("gIsJustText", True)
+    _cache.set("gLoginDataConfirm", False)
+    _cache.set("gLoginStatus", False)
+    _cache.set("gAccount", None)
+    _cache.set("gPassword", None)
+    _cache.set("Dragonfly_session", None)
+    _cache.set("DBInfo", Database.InitDBInfo())
+    _cache.set("RichMenuID", LineBotMsgHandler.Get_RichMenu(gLine_bot_api))
 
 
 # #\ handle post back event
