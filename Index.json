@@ -11,7 +11,8 @@
         "RichMenu" : {
             "MenuImgPath" : {
                 "LoginRichMenuImgPath" : "./Notes/image/richmenu_login.jpg",
-                "MainRichMenuImgPath" : "./Notes/image/richmenu_main.jpg"
+                "MainRichMenuImgPath" : "./Notes/image/richmenu_main.jpg",
+                "Main2RichMenuImgPath" : "./Notes/image/richmenu_main2.jpg"
             }
         }
     },

@@ -106,11 +106,11 @@ def handle_text_message(event):
             cache.set("gIsJustText", True)
 
 
-    elif cache.get("gEvent") == eLineBotEvent.REQUEST.value:
+    elif cache.get("gEvent") == eLineBotEvent.IDREQUEST.value:
         if pleaseLogin(event) is True :
 
             #\ main function callback
-            finish = RequestCallback(event)
+            finish = IDRequestCallback(event)
 
             #\ reset the is-just-text flag
             if finish is True:
@@ -144,15 +144,6 @@ def handle_text_message(event):
             cache.set("gIsJustText", True)
 
 
-    elif cache.get("gEvent") == eLineBotEvent.OTHERS.value:
-        if pleaseLogin(event) is True :
-            #\
-            #\ Add the event here
-            #\
-            #\ reset the is-just-text flag
-            cache.set("gIsJustText", True)
-
-
     else :
         print("[EVENT] Echo")
         cache.set("gEvent", eLineBotEvent.NONE.value)
@@ -173,8 +164,8 @@ def CheckEvent(event_text:str):
         cache.set("gEvent", eLineBotEvent.MENU.value)
         cache.set("gIsJustText", False)
 
-    elif event_text == "request" :
-        cache.set("gEvent", eLineBotEvent.REQUEST.value)
+    elif event_text == "idrequest" :
+        cache.set("gEvent", eLineBotEvent.IDREQUEST.value)
         cache.set("gIsJustText", False)
 
     elif event_text == "record" :
@@ -187,10 +178,6 @@ def CheckEvent(event_text:str):
 
     elif event_text == "search" :
         cache.set("gEvent", eLineBotEvent.SEARCH.value)
-        cache.set("gIsJustText", False)
-
-    elif event_text == "others" :
-        cache.set("gEvent", eLineBotEvent.OTHERS.value)
         cache.set("gIsJustText", False)
 
     else:
@@ -238,7 +225,7 @@ def AskInputID(event):
 
 
 #\ request command callback, when type or push "request" button
-def RequestCallback(event):
+def IDRequestCallback(event):
 
     tmpCnt = cache.get("gEventCnt")
     tmpCnt += 1
@@ -501,23 +488,29 @@ def InitCache(_cache):
     _cache.set("RichMenuID", LineBotMsgHandler.Get_RichMenu(gLine_bot_api))
 
 
-# #\ handle post back event
-# @gHandler.add(PostbackEvent)
-# def handle_postback_event(event):
-#     global gLoginDataConfirm, gIsJustText, gEventCnt, gEvent
-#     print("[EVENT] PostbackEvent")
-#     if event.postback.data == "login_ok":
-#         gLine_bot_api.reply_message(
-#                 event.reply_token,
-#                 TextSendMessage(text="Start to Login~")
-#                 )
-#         Login2Web()
-#         #\ reset the is-just-text flag and the event count and event
-#         gIsJustText = True
-#         gEventCnt = 0
-#         gEvent = None
-#     elif event.postback.data == "login_fail":
-#         gEventCnt = 0
+#\ handle post back event
+@gHandler.add(PostbackEvent)
+def handle_postback_event(event):
+    PostbackEvent = CheckPostEvent(event.postback.data.lower().replace(" ", ""))
+
+    #\ Go to second main richmenu
+    if PostbackEvent == eLineBotPostEvent.OTHERS.value:
+        gLine_bot_api.link_rich_menu_to_user(event.source.user_id,cache.get("RichMenuID")["Main2 Richmenu"])
+        print("[INFO] Switch to the Main2 Richmenu")
+    elif PostbackEvent == eLineBotPostEvent.GOBACKMAIN.value:
+        gLine_bot_api.link_rich_menu_to_user(event.source.user_id,cache.get("RichMenuID")["Main Richmenu"])
+        print("[INFO] Go back to the Main Richmenu")
+    else :
+        pass
 
 
+#\ Check the post event
+def CheckPostEvent(event_text:str):
+    if event_text == "others":
+        return eLineBotPostEvent.OTHERS.value
 
+    elif event_text == "gobackmain":
+        return eLineBotPostEvent.GOBACKMAIN.value
+
+    else:
+        return eLineBotPostEvent.NONE.value

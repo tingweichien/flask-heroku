@@ -47,6 +47,7 @@ LoginEventText = INDEX['LineBot']['EventText']['LoginEventText']
 #\ Rich menu image path
 LoginRichMenuImgPath = INDEX['LineBot']['RichMenu']['MenuImgPath']['LoginRichMenuImgPath']
 MainRichMenuImgPath = INDEX['LineBot']['RichMenu']['MenuImgPath']['MainRichMenuImgPath']
+Main2RichMenuImgPath = INDEX['LineBot']['RichMenu']['MenuImgPath']['Main2RichMenuImgPath']
 
 
 

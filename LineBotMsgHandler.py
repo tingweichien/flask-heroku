@@ -147,13 +147,15 @@ print(LoginCheckText)
 #\ RICH-MENU
 ##########################################################################################################################
 #\ Update the richmenu name and ID here
-#\ Login Richmenu : richmenu-e0edbad344efd7d9615a8f0823f64725
-#\ Main Richmenu : richmenu-949ea5b9377082c825caff1f14fa3fc1
+#\**************************************************************
+#\    Login Richmenu : richmenu-e0edbad344efd7d9615a8f0823f64725
+#\    Main Richmenu  : richmenu-12d493f90495ed870eb95bfaaf00e6da
+#\    Main2 Richmenu : richmenu-57131e8a4d29787163eb5cb180504363
+#\***************************************************************
 
 #\ Init the line bot api
 #\ ---------------------------------------
 #\required
-
 config = configparser.ConfigParser()
 config.read('config.ini')
 gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
@@ -179,7 +181,7 @@ def Get_RichMenu(line_bot_api):
 
   return return_rich_menu_list
 
-# print(Get_RichMenu(gLine_bot_api))
+print(Get_RichMenu(gLine_bot_api))
 
 
 #\ Set default richmenu
@@ -218,7 +220,6 @@ def DefaultRichMenu(linebot_api, LoginState):
 
 
 #\ Richmenu for login
-#\ ID : richmenu-e0edbad344efd7d9615a8f0823f64725
 #\ ---------------------------------------
 #\ Create menu
 """
@@ -246,7 +247,6 @@ UploadRichMenu(gLine_bot_api, index.LoginRichMenuImgPath, RichMenu_Login_ID, "im
 
 
 #\ Richmenu for mainpage
-#\ ID : richmenu-949ea5b9377082c825caff1f14fa3fc1g
 #\ ---------------------------------------
 #\ Create menu
 """
@@ -267,8 +267,9 @@ RichMenu_Create_MainMenu = RichMenu(size=RichMenuSize(width=2500, height=1686),
                                                         action=MessageAction(label="Search",
                                                                               text="Search")),
                                            RichMenuArea(bounds=RichMenuBounds(x=833, y=843, width=833, height=843),
-                                                        action=MessageAction(label="Others",
-                                                                              text="Others")),
+                                                        action=PostbackAction(label="Others",
+                                                                              data="Others",
+                                                                              display_text="Others")),
                                            RichMenuArea(bounds=RichMenuBounds(x=1666, y=843, width=833, height=843),
                                                         action=URIAction(label="DragonflyWeb",
                                                                           uri="http://dragonfly.idv.tw/dragonfly/member_center.php")),
@@ -283,14 +284,42 @@ print(f"[INFO] RichMenu_Login_ID : {RichMenu_Main_ID}")
 
 #\ Upload the menu
 UploadRichMenu(gLine_bot_api, index.MainRichMenuImgPath, Get_RichMenu(gLine_bot_api)["Main Richmenu"], "image/jpeg")
-
 """
 
 
 
 
 
+#\ Richmenu of the second main page
+#\ ---------------------------------------
+#\ Create menu
+"""
+RichMenu_Create_MainMenu2 = RichMenu(size=RichMenuSize(width=2500, height=843),
+                                    selected=False,
+                                    name="Main2 Richmenu",
+                                    chat_bar_text="Menu2",
+                                    areas=[RichMenuArea(bounds=RichMenuBounds(x=0, y=0, width=833, height=843),
+                                                        action=MessageAction(label="GoBackMain",
+                                                                              text="GoBackMain")),
+                                           RichMenuArea(bounds=RichMenuBounds(x=833, y=0, width=833, height=843),
+                                                        action=MessageAction(label="Menu2-1",
+                                                                              text="Menu2-1")),
+                                           RichMenuArea(bounds=RichMenuBounds(x=1666, y=0, width=833, height=843),
+                                                        action=MessageAction(label="Menu2-2",
+                                                                              text="Menu2-2")),
+                                           ]
+                                    )
 
+
+#\ ID
+RichMenu_Main2_ID = gLine_bot_api.create_rich_menu(rich_menu=RichMenu_Create_MainMenu2)
+print(f"[INFO] RichMenu_Login_ID : {RichMenu_Main2_ID}")
+
+
+#\ Upload the menu
+UploadRichMenu(gLine_bot_api, index.Main2RichMenuImgPath, Get_RichMenu(gLine_bot_api)["Main2 Richmenu"], "image/jpeg")
+
+"""
 
 
 
