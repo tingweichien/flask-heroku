@@ -399,7 +399,8 @@ RequestDataMsgText = {
                 "size": "md",
                 "color": "#555555",
                 "weight": "bold",
-                "offsetBottom": "sm"
+                "offsetBottom": "sm",
+                "offsetTop": "xs"
               },
               {
                 "type": "text",
@@ -428,7 +429,8 @@ RequestDataMsgText = {
             "size": "md",
             "flex": 0,
             "weight": "bold",
-            "offsetBottom": "sm"
+            "offsetBottom": "sm",
+            "offsetTop": "xs"
           },
           {
             "type": "text",
