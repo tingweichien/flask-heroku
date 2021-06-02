@@ -7,7 +7,7 @@
 
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, FlexSendMessage, PostbackEvent, LocationSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, FlexSendMessage, PostbackEvent, LocationSendMessage, flex_message
 import configparser
 from flask import request, abort
 import index
@@ -110,10 +110,10 @@ def handle_text_message(event):
         if pleaseLogin(event) is True :
 
             #\ main function callback
-            finish = IDRequestCallback(event)
+            IDRequestfinish = IDRequestCallback(event)
 
             #\ reset the is-just-text flag
-            if finish is True:
+            if IDRequestfinish is True:
                 cache.set("gIsJustText", True)
 
 
@@ -137,9 +137,13 @@ def handle_text_message(event):
 
     elif cache.get("gEvent") == eLineBotEvent.SEARCH.value:
         if pleaseLogin(event) is True :
-            #\
-            #\ Add the event here
-            #\
+            search_flex_message = FlexSendMessage(alt_text="Please type IDRequest or Advance Search",
+                                                  contents=LineBotMsgHandler.Search_event_text
+                                                  )
+            gLine_bot_api.reply_message(
+                            event.reply_token,
+                            search_flex_message
+                            )
             #\ reset the is-just-text flag
             cache.set("gIsJustText", True)
 
@@ -262,20 +266,37 @@ def IDRequestCallback(event):
             print(f"[INFO] Successfully craw the data")
             #\ handle the Description to align
             ID_find_result.Description = f"\n{' '*10}".join(list(ID_find_result.Description.split("\n")))
+            # gLine_bot_api.push_message(event.source.user_id,
+            #                             TextSendMessage(text=f"[IdNumber]: {ID_find_result.IdNumber}\n"+\
+            #                                                 f"[Dates]: {ID_find_result.Dates}, {ID_find_result.Times}\n"+\
+            #                                                 f"[City]: {ID_find_result.City} {ID_find_result.District}\n"+\
+            #                                                 f"[Place]: {ID_find_result.Place}\n"+\
+            #                                                 f"[Altitude]: {ID_find_result.Altitude}\n" +\
+            #                                                 f"[User]: {ID_find_result.User}\n"+\
+            #                                                 f"[Latitude]: {ID_find_result.Latitude}\n"+\
+            #                                                 f"[Longitude]: {ID_find_result.Longitude}\n"\
+            #                                                 f"[Speceis]: {', '.join(ID_find_result.SpeciesList)}\n"+\
+            #                                                 f"[Description]: {ID_find_result.Description}\n",
+            #                                             wrap = True
+            #                                             )
+            #                             )
+            #\ Flex message template
+            RequestDataText = FlexSendMessage(alt_text=f"[IdNumber]: {ID_find_result.IdNumber}\n"+\
+                                                        f"[Dates]: {ID_find_result.Dates}, {ID_find_result.Times}\n"+\
+                                                        f"[City]: {ID_find_result.City} {ID_find_result.District}\n"+\
+                                                        f"[Place]: {ID_find_result.Place}\n"+\
+                                                        f"[Altitude]: {ID_find_result.Altitude}\n" +\
+                                                        f"[User]: {ID_find_result.User}\n"+\
+                                                        f"[Latitude]: {ID_find_result.Latitude}\n"+\
+                                                        f"[Longitude]: {ID_find_result.Longitude}\n"\
+                                                        f"[Speceis]: {', '.join(ID_find_result.SpeciesList)}\n"+\
+                                                        f"[Description]: {ID_find_result.Description}\n",
+                                            contents=LineBotMsgHandler.RequestDataMsgText_handler(ID_find_result))
+
             gLine_bot_api.push_message(event.source.user_id,
-                                        TextSendMessage(text=f"[IdNumber]: {ID_find_result.IdNumber}\n"+\
-                                                            f"[Dates]: {ID_find_result.Dates}, {ID_find_result.Times}\n"+\
-                                                            f"[City]: {ID_find_result.City} {ID_find_result.District}\n"+\
-                                                            f"[Place]: {ID_find_result.Place}\n"+\
-                                                            f"[Altitude]: {ID_find_result.Altitude}\n" +\
-                                                            f"[User]: {ID_find_result.User}\n"+\
-                                                            f"[Latitude]: {ID_find_result.Latitude}\n"+\
-                                                            f"[Longitude]: {ID_find_result.Longitude}\n"\
-                                                            f"[Speceis]: {', '.join(ID_find_result.SpeciesList)}\n"+\
-                                                            f"[Description]: {ID_find_result.Description}\n",
-                                                        wrap = True
-                                                        )
+                                       RequestDataText
                                         )
+
             #\ loaction message
             gLine_bot_api.push_message(event.source.user_id,
                                         LocationSendMessage(
@@ -284,7 +305,7 @@ def IDRequestCallback(event):
                                                             latitude=float(ID_find_result.Latitude),
                                                             longitude=float(ID_find_result.Longitude)
                                                             )
-            )
+                                        )
 
 
         #\ reset the counter

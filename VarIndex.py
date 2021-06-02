@@ -25,5 +25,4 @@ class eLineBotPostEvent(IntEnum):
     GOBACKMAIN  = 2
 
 
-print(eLineBotPostEvent.NONE.value)
 

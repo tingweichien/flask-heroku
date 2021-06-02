@@ -74,6 +74,9 @@ dragonfly_simple_info_city_col_name = INDEX["DragonflyData"]["Simple_info_table"
 # print(dragonfly_simple_info_species_col_name)
 
 
+#\ LAT LNG precision
+PositionPrecision = INDEX["DragonflyData"]["PositionPrecision"]
+
 
 #\ ---- DataBase ----
 #\ Database info

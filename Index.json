@@ -17,7 +17,7 @@
         }
     },
 
-    "DragonflyData": {
+    "DragonflyData" : {
         "re_try_limit" : 4,
         "URL": {
             "general_url" : "http://dragonfly.idv.tw/dragonfly/",
@@ -32,10 +32,11 @@
             "species_all_record_data_species_url" : "&type=total_kind&kind=",
             "total_num_species_url" : "kind_total_records.php"
         },
-        "Simple_info_table":{
+        "Simple_info_table" : {
             "dragonfly_simple_info_species_col_name" : "蜓　種",
             "dragonfly_simple_info_city_col_name" : "地　點"
-        }
+        },
+        "PositionPrecision" : 4
     },
 
     "DataBase":{
