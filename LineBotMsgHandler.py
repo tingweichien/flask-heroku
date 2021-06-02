@@ -424,11 +424,11 @@ RequestDataMsgText = {
 
 #\ handle the RequestDataMsgText
 def RequestDataMsgText_handler(DrgonflyData:DetailedTableInfo)->str :
-  RequestDataMsgText["body"]["contents"][0]["text"] = DrgonflyData.ID
+  RequestDataMsgText["body"]["contents"][0]["text"] = DrgonflyData.IdNumber
   RequestDataMsgText["body"]["contents"][1]["text"] = f"{DrgonflyData.Dates}, {DrgonflyData.Times}"
   RequestDataMsgText["body"]["contents"][3]["contents"][0]["contents"][1]["text"] = DrgonflyData.User
   RequestDataMsgText["body"]["contents"][3]["contents"][1]["contents"][1]["text"] = f"{DrgonflyData.City} {DrgonflyData.District} {DrgonflyData.Place}"
-  RequestDataMsgText["body"]["contents"][3]["contents"][2]["contents"][1]["text"] = f"({round(int(DrgonflyData.LAT), index.PositionPrecision)}, {round(int(DrgonflyData.LNG), index.PositionPrecision)})"
+  RequestDataMsgText["body"]["contents"][3]["contents"][2]["contents"][1]["text"] = f"({round(int(DrgonflyData.Latitude), index.PositionPrecision)}, {round(int(DrgonflyData.Longitude), index.PositionPrecision)})"
   RequestDataMsgText["body"]["contents"][3]["contents"][4]["contents"][1]["text"] = DrgonflyData.Species
   RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DrgonflyData.Description
   return RequestDataMsgText
