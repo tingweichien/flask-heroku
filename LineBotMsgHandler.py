@@ -185,6 +185,7 @@ Search_event_text={
           },
           {
             "type": "button",
+            "style": "primary",
             "action": {
               "type": "message",
               "label": "GO",
@@ -242,6 +243,7 @@ Search_event_text={
           },
           {
             "type": "button",
+            "style": "primary",
             "action": {
               "type": "message",
               "label": "GO",
@@ -429,7 +431,7 @@ def RequestDataMsgText_handler(DrgonflyData:DetailedTableInfo)->str :
   RequestDataMsgText["body"]["contents"][3]["contents"][0]["contents"][1]["text"] = DrgonflyData.User
   RequestDataMsgText["body"]["contents"][3]["contents"][1]["contents"][1]["text"] = f"{DrgonflyData.City} {DrgonflyData.District} {DrgonflyData.Place}"
   RequestDataMsgText["body"]["contents"][3]["contents"][2]["contents"][1]["text"] = f"({round(float(DrgonflyData.Latitude), index.PositionPrecision)}, {round(float(DrgonflyData.Longitude), index.PositionPrecision)})"
-  RequestDataMsgText["body"]["contents"][3]["contents"][4]["contents"][1]["text"] = DrgonflyData.Species
+  RequestDataMsgText["body"]["contents"][3]["contents"][4]["contents"][1]["text"] = ', '.join(DrgonflyData.SpeciesList)
   RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DrgonflyData.Description
   return RequestDataMsgText
 
