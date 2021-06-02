@@ -186,6 +186,7 @@ Search_event_text={
           {
             "type": "button",
             "style": "primary",
+            "height": "sm",
             "action": {
               "type": "message",
               "label": "GO",
@@ -244,6 +245,7 @@ Search_event_text={
           {
             "type": "button",
             "style": "primary",
+            "height": "sm",
             "action": {
               "type": "message",
               "label": "GO",
@@ -279,7 +281,8 @@ RequestDataMsgText = {
         "text": "ID",
         "weight": "bold",
         "size": "xxl",
-        "margin": "md"
+        "margin": "md",
+        "offsetBottom": "sm"
       },
       {
         "type": "text",
@@ -316,6 +319,24 @@ RequestDataMsgText = {
                 "size": "sm",
                 "color": "#111111",
                 "align": "end"
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "horizontal",
+            "contents": [
+              {
+                "type": "text",
+                "text": "縣市區",
+                "weight": "bold"
+              },
+              {
+                "type": "text",
+                "text": "City, District",
+                "align": "end",
+                "size": "sm",
+                "color": "#111111"
               }
             ]
           },
@@ -377,7 +398,8 @@ RequestDataMsgText = {
                 "text": "蜓種",
                 "size": "md",
                 "color": "#555555",
-                "weight": "bold"
+                "weight": "bold",
+                "offsetBottom": "sm"
               },
               {
                 "type": "text",
@@ -405,7 +427,8 @@ RequestDataMsgText = {
             "text": "描述",
             "size": "md",
             "flex": 0,
-            "weight": "bold"
+            "weight": "bold",
+            "offsetBottom": "sm"
           },
           {
             "type": "text",
@@ -429,9 +452,10 @@ def RequestDataMsgText_handler(DrgonflyData:DetailedTableInfo)->str :
   RequestDataMsgText["body"]["contents"][0]["text"] = DrgonflyData.IdNumber
   RequestDataMsgText["body"]["contents"][1]["text"] = f"{DrgonflyData.Dates}, {DrgonflyData.Times}"
   RequestDataMsgText["body"]["contents"][3]["contents"][0]["contents"][1]["text"] = DrgonflyData.User
-  RequestDataMsgText["body"]["contents"][3]["contents"][1]["contents"][1]["text"] = f"{DrgonflyData.City} {DrgonflyData.District} {DrgonflyData.Place}"
-  RequestDataMsgText["body"]["contents"][3]["contents"][2]["contents"][1]["text"] = f"({round(float(DrgonflyData.Latitude), index.PositionPrecision)}, {round(float(DrgonflyData.Longitude), index.PositionPrecision)})"
-  RequestDataMsgText["body"]["contents"][3]["contents"][4]["contents"][1]["text"] = ', '.join(DrgonflyData.SpeciesList)
+  RequestDataMsgText["body"]["contents"][3]["contents"][1]["contents"][1]["text"] = f"{DrgonflyData.City} {DrgonflyData.District}"
+  RequestDataMsgText["body"]["contents"][3]["contents"][2]["contents"][1]["text"] = DrgonflyData.Place
+  RequestDataMsgText["body"]["contents"][3]["contents"][3]["contents"][1]["text"] = f"({round(float(DrgonflyData.Latitude), index.PositionPrecision)}, {round(float(DrgonflyData.Longitude), index.PositionPrecision)})"
+  RequestDataMsgText["body"]["contents"][3]["contents"][5]["contents"][1]["text"] = ', '.join(DrgonflyData.SpeciesList)
   RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DrgonflyData.Description
   return RequestDataMsgText
 
