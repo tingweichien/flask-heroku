@@ -148,6 +148,14 @@ def handle_text_message(event):
             cache.set("gIsJustText", True)
 
 
+    elif cache.get("gEvent") == eLineBotEvent.TODAYDATA.value:
+        if pleaseLogin(event) is True :
+            #\
+            #\ Add the event here
+            #\
+            #\ reset the is-just-text flag
+            cache.set("gIsJustText", True)
+
     else :
         print("[EVENT] Echo")
         cache.set("gEvent", eLineBotEvent.NONE.value)
@@ -182,6 +190,10 @@ def CheckEvent(event_text:str):
 
     elif event_text == "search" :
         cache.set("gEvent", eLineBotEvent.SEARCH.value)
+        cache.set("gIsJustText", False)
+
+    elif event_text == "todaydata" :
+        cache.set("gEvent", eLineBotEvent.TODAYDATA.value)
         cache.set("gIsJustText", False)
 
     else:
@@ -241,21 +253,11 @@ def IDRequestCallback(event):
         return False
 
     elif tmpCnt == 2:
-        #\ read the data from DB
-        DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
-                                        Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
-                                        True)
-        # print(f"[INFO] DB_Data: {DB_Data}")
-
-        #\ check the return from the database is vaild or not
-        if DB_Data is None:
-            print("[Warning] No DB Data return, skip the requwst ID function")
-
-        #\ login
-        DragonflyData_session = Login2Web(DB_Data[4], DB_Data[5])
+        #\ Get the dragonfly request session
+        DragonflyData_session = CreateWebSession(event)
 
         #\ execute the crawler function
-        [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, event.message.text)
+        [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, int(event.message.text))
 
         if overflow:
             print(f"[INFO] The ID is overflow, please use the ID smaller {Max_ID_Num}")
@@ -311,6 +313,23 @@ def IDRequestCallback(event):
         #\ reset the counter
         cache.set("gEventCnt", 0)
         return True
+
+
+#\ create web session
+def CreateWebSession(event):
+    #\ read the data from DB
+    DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
+                                    Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
+                                    True)
+    # print(f"[INFO] DB_Data: {DB_Data}")
+
+    #\ check the return from the database is vaild or not
+    if DB_Data is None:
+        print("[Warning] No DB Data return, skip the requwst ID function")
+
+    #\ return session
+    return Login2Web(DB_Data[4], DB_Data[5])
+
 
 
 
@@ -494,6 +513,13 @@ def OEMSetDefaultRichmenu(linebot_api, event):
     LineBotMsgHandler.DefaultRichMenu(linebot_api, LoginState)
 
 
+#\ Callback for today's Data
+def GetTodayData(event):
+    DragonflyData_session = CreateWebSession(event)
+    DragonflyData.CrawTodayData(DragonflyData_session, cache.get("DataBaseVariable")["LatestDataID"], index.DefaultFilterObject)
+
+
+
 #\ Init the cache data
 def InitCache(_cache):
     _cache.set("gEventText", None)
@@ -507,6 +533,11 @@ def InitCache(_cache):
     _cache.set("Dragonfly_session", None)
     _cache.set("DBInfo", Database.InitDBInfo())
     _cache.set("RichMenuID", LineBotMsgHandler.Get_RichMenu(gLine_bot_api))
+    _cache.set("DataBaseVariable", Database.TupleList2Dict(Database.ReadFromDB(Database.CreateDBConection(),
+                                                                               Database.Read_all_query(index.VariableTableName),
+                                                                               False)
+                                                           )
+               )
 
 
 #\ handle post back event

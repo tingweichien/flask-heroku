@@ -541,6 +541,9 @@ def DefaultRichMenu(linebot_api, LoginState):
     print("[INFO] Set the Richmenu to Login Richmenu")
 
 
+
+
+##############################################################################################################################
 #\ Richmenu for login
 #\ ---------------------------------------
 #\ Create menu

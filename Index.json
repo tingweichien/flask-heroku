@@ -41,7 +41,8 @@
 
     "DataBase":{
         "DataBaseTable":{
-            "UserInfoTableName": "UserInfo"
+            "UserInfoTableName": "UserInfo",
+            "VariableTableName": "Varaible"
         }
     }
 }
