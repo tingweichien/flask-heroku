@@ -241,10 +241,11 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None)->list:
         #\ find the description
         # print("\n\n->"+str(soup2.find("textarea", {'id':'R_MEMO'}).text))
         # print(str(soup2.find(id='R_MEMO').text))
-        if soup2.find(id='R_MEMO').text is not None or soup2.find(id='R_MEMO').text is not "":
+        if soup2.find(id='R_MEMO').text is not None or len(soup2.find(id='R_MEMO').text.replace(" ", "")) is not 0:
             Description = soup2.find(id='R_MEMO').text
         else:
             Description = "None"
+        print(f"[INFO] Description = {Description}")
 
         #\ Find the city and district
         response_Brief_discriptions = session.post(index.general_url + index.Brief_discriptions_url + str(Input_ID), headers=headers)
