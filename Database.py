@@ -215,8 +215,12 @@ Read_userinfo_query = lambda Table, userid : f"SELECT * FROM {Table} WHERE useri
 
 
 #\ --- Variable table ---
-#\ insert
+#\ Insert
 Insert_variable_query =  lambda Table : f"INSERT INTO {Table} (var_name, var_value) VALUES (%s, %s)"
 
 #\ Read the userinfo
 Read_variable_query = lambda Table, var_name : f"SELECT * FROM {Table} WHERE var_name = '{var_name}';"
+
+#\ Update
+#\ i.e. UPDATE public.variable	SET var_value = '79166'	WHERE var_name = 'LatestDataID';
+Update_varaible_query = lambda Table : f"UPDATE {Table} SET var_value=%s WHERE var_name=%s"

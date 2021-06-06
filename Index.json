@@ -2,6 +2,7 @@
     "OSM": {
         "bAPIon" : false
     },
+
     "Server": "https://dragonfly-flask-web.herokuapp.com/",
     "LineBot": {
         "EventText" :{
@@ -41,15 +42,30 @@
 
     "DataBase":{
         "DataBaseTable":{
-            "UserInfoTableName": "UserInfo",
-            "VariableTableName": "Varaible"
+            "UserInfoTable": {
+                "TableName" : "UserInfo"
+            },
+            "VariableTable": {
+                "TableName" : "Varaible",
+                "TableVar"  : {
+                    "LatestDataID" : "LatestDataID"
+                }
+            }
         }
     },
-    "WakeUpAlarm" : {
-        "HourFrom": "5",
-        "HourEnd": "21",
-        "IntervalPerHour": "1",
-        "IntervalPerMin": ""
+
+    "Alarm":{
+        "WakeUpAlarm" : {
+            "HourFrom": "5",
+            "HourEnd": "21",
+            "IntervalPerHour": "1",
+            "IntervalPerMin": ""
+        },
+        "DailyUpdate" : {
+            "Hour" : "0",
+            "Minute" : "0",
+            "Second" : "0"
+        }
     }
 
 }

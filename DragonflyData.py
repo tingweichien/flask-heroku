@@ -111,7 +111,7 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None)->list:
 
 
     #\ 執行進入"蜓種觀察資料查詢作業"
-    All_Observation_Data_response = session.post(index.All_Observation_Data_url, headers=headers)
+    # All_Observation_Data_response = session.post(index.All_Observation_Data_url, headers=headers)
 
 
     #\ 下一頁
@@ -216,10 +216,11 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None)->list:
     #\ Design to let the function not getting max number again when in the loop.
     overflow = False
     if InputMaxID is None:
-        soup_ID_check = BeautifulSoup(All_Observation_Data_response.text, 'html.parser')
-        All_Observation_Data_response_Data_Set = soup_ID_check.find(id='theRow')
-        Max_All_Observation_Data_response_Data = All_Observation_Data_response_Data_Set.find_all('td')
-        Max_ID_Num = Max_All_Observation_Data_response_Data[0].text
+        # soup_ID_check = BeautifulSoup(All_Observation_Data_response.text, 'html.parser')
+        # All_Observation_Data_response_Data_Set = soup_ID_check.find(id='theRow')
+        # Max_All_Observation_Data_response_Data = All_Observation_Data_response_Data_Set.find_all('td')
+        # Max_ID_Num = Max_All_Observation_Data_response_Data[0].text
+        Max_ID_Num, All_Observation_Data_response = GetMaxID(session)
     else:
         Max_ID_Num = InputMaxID
 
@@ -285,6 +286,23 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None)->list:
 
     print(f"[INFO] Return Object: {ID_find_result}")
     return [ID_find_result, overflow, int(Max_ID_Num)]
+
+
+#\ Get max ID number
+def GetMaxID(session):
+    """
+    params:
+        session for login
+    return :
+        Max id number,
+        All_Observation_Data_response
+    """
+    All_Observation_Data_response = session.post(index.All_Observation_Data_url, headers=headers)
+    soup_ID_check = BeautifulSoup(All_Observation_Data_response.text, 'html.parser')
+    All_Observation_Data_response_Data_Set = soup_ID_check.find(id='theRow')
+    Max_All_Observation_Data_response_Data = All_Observation_Data_response_Data_Set.find_all('td')
+    return Max_All_Observation_Data_response_Data[0].text, All_Observation_Data_response
+
 
 #\ ------------------------------------------------------------------------------
 #\ for testing

@@ -17,6 +17,7 @@ import DragonflyData
 import Database
 import datetime
 import LineBotMsgHandler
+import random
 
 
 
@@ -317,19 +318,38 @@ def IDRequestCallback(event):
 
 
 #\ create web session
-def CreateWebSession(event):
+def CreateWebSession(event=None):
+    """
+    params :
+        event: to get the user info based on user id, if None, then fetchall
+    """
+    if event is not None:
+        read_query = Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id)
+        fetchone = True
+    else:
+        read_query = Database.Read_all_query(index.UserInfoTableName)
+        fetchone = False
+
     #\ read the data from DB
     DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
-                                    Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
-                                    True)
+                                    read_query,
+                                    fetchone
+                                    )
     # print(f"[INFO] DB_Data: {DB_Data}")
 
     #\ check the return from the database is vaild or not
     if DB_Data is None:
         print("[Warning] No DB Data return, skip the requwst ID function")
 
+    #\ handle the account and password read from the database with fetchone and fetchall
+    if event is not None or len(DB_Data) == 1:
+        ACC, PW = DB_Data[4], DB_Data[5]
+    else:
+        idx = random.randint(0, len(DB_Data)-1)
+        ACC, PW = DB_Data[idx][4], DB_Data[idx][1]
+
     #\ return session
-    return Login2Web(DB_Data[4], DB_Data[5])
+    return Login2Web(ACC, PW)
 
 
 
@@ -560,6 +580,7 @@ def InitCache(_cache):
                                                                                False)
                                                            )
                )
+    _cache.set("DAYAlarm", index.DAYAlarm)
 
 
 #\ handle post back event

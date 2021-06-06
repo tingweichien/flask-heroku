@@ -91,9 +91,9 @@ Password = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["Password"]
 URI = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["URI"]
 
 #\ Database table name
-UserInfoTableName = INDEX["DataBase"]["DataBaseTable"]["UserInfoTableName"]
-VariableTableName = INDEX["DataBase"]["DataBaseTable"]["VariableTableName"]
-
+UserInfoTableName = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableName"]
+VariableTableName = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableName"]
+VarLatestDataID = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVar"]["LatestDataID"]
 
 
 
@@ -101,10 +101,13 @@ VariableTableName = INDEX["DataBase"]["DataBaseTable"]["VariableTableName"]
 DefaultFilterObject = [None, None, None]
 
 #\ Alarm
-HourFrom = INDEX["WakeUpAlarm"]["HourFrom"]
-HourEnd = INDEX["WakeUpAlarm"]["HourEnd"]
+HourFrom = INDEX["Alarm"]["WakeUpAlarm"]["HourFrom"]
+HourEnd = INDEX["Alarm"]["WakeUpAlarm"]["HourEnd"]
 HourRange = f"{HourFrom}-{HourEnd}"
-IntervalPerHour = INDEX["WakeUpAlarm"]["IntervalPerHour"]
-IntervalPerMin = INDEX["WakeUpAlarm"]["IntervalPerMin"]
-HOUR = {"hour" : HourRange+"/"+IntervalPerHour} if IntervalPerHour != "" else {"minute" : "*/"+IntervalPerMin}
+IntervalPerHour = INDEX["Alarm"]["WakeUpAlarm"]["IntervalPerHour"]
+IntervalPerMin = INDEX["Alarm"]["WakeUpAlarm"]["IntervalPerMin"]
+HOURAlarm = {"hour" : HourRange+"/"+IntervalPerHour} if IntervalPerHour != "" else {"minute" : "*/"+IntervalPerMin}
+
+#\ Daily routin
+DAYAlarm = {"hour": INDEX["DailyUpdate"]["Hour"], "minute": INDEX["DailyUpdate"]["Minute"], "second": INDEX["DailyUpdate"]["Second"]}
 
