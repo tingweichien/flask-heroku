@@ -564,6 +564,7 @@ def GetTodayData(event):
         content_list.append(content)
 
     #\ Handling the carsoul text message
+    print(f"[INFO] in GetTodayData()\n{content_list}")
     Msgtext = FlexSendMessage(alt_text="No data",
                               contents=LineBotMsgHandler.MultiRequestDataMsgText(content_list)
                               )

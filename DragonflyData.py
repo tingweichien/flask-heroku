@@ -245,7 +245,6 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None)->list:
             Description = soup2.find(id='R_MEMO').text
         else:
             Description = "None"
-        print(f"[INFO] Description = {Description}")
 
         #\ Find the city and district
         response_Brief_discriptions = session.post(index.general_url + index.Brief_discriptions_url + str(Input_ID), headers=headers)
