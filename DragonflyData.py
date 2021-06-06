@@ -447,7 +447,7 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->l
         if Start_ID >= End_ID:
             #\ Filter out the unwanted info
             if DataFilter(User_filter, Species_filter, KeepOrFilter):
-                result_list.append([ID_find_result])
+                result_list.append(ID_find_result)
 
         else :
             condition = False
