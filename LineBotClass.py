@@ -150,9 +150,10 @@ def handle_text_message(event):
 
     elif cache.get("gEvent") == eLineBotEvent.TODAYDATA.value:
         if pleaseLogin(event) is True :
-            #\
-            #\ Add the event here
-            #\
+
+            #\ Get today's data
+            GetTodayData(event)
+
             #\ reset the is-just-text flag
             cache.set("gIsJustText", True)
 
@@ -515,8 +516,29 @@ def OEMSetDefaultRichmenu(linebot_api, event):
 
 #\ Callback for today's Data
 def GetTodayData(event):
+
+    gLine_bot_api.reply_message(event.reply_token,
+                                "Please be patient, it might take a while~~"
+                                )
+
+    #\ Get the data
     DragonflyData_session = CreateWebSession(event)
-    DragonflyData.CrawTodayData(DragonflyData_session, cache.get("DataBaseVariable")["LatestDataID"], index.DefaultFilterObject)
+    TodayDataList = DragonflyData.CrawTodayData(DragonflyData_session, cache.get("DataBaseVariable")["LatestDataID"], index.DefaultFilterObject)
+
+    #\ Handling the data for the bubble in the carsoul message
+    content_list = []
+    for data in TodayDataList:
+        content = LineBotMsgHandler.RequestDataMsgText_handler(data)
+        content_list.append(content)
+
+    #\ Handling the carsoul text message
+    Msgtext = FlexSendMessage(alt_text="No data",
+                              contents=LineBotMsgHandler.MultiRequestDataMsgText(content_list)
+                              )
+
+    gLine_bot_api.push_message(event.source.user_id,
+                               Msgtext
+                               )
 
 
 

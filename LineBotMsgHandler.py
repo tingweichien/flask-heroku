@@ -464,6 +464,26 @@ def RequestDataMsgText_handler(DrgonflyData:DetailedTableInfo)->str :
 # print(RequestDataMsgText_handler("123", "123","123","123","123","123","123","123","123","123","123"))
 
 
+
+#\ Carousel for the multiple data
+#\ i.e. content+list = [RequestDataMsgText0, RequestDataMsgText1, RequestDataMsgText2, ......]
+MultiRequestDataMsgText = lambda content_list:{
+  "type": "carousel",
+  "contents": content_list
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 #\ RICH-MENU
 ##########################################################################################################################
 #\ Update the richmenu name and ID here

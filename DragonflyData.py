@@ -438,7 +438,7 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->l
 #\ Craw today's data
 def CrawTodayData(session, TodayFirstID:int, filter_object:list):
     #CrawDataByDate(session, datetime.now(), datetime.now())
-    CrawlDataByIDRange(session, None, TodayFirstID, filter_object)
+    return CrawlDataByIDRange(session, None, TodayFirstID, filter_object)
 
 
 #\ Test
