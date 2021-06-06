@@ -50,7 +50,7 @@ def UpdateDataBase_job():
             retry += 1
 
     #\ Get the latest ID
-    Max_ID_num, _ = DragonflyData.GetMaxID(session)
+    Max_ID_num = DragonflyData.GetMaxID(session)
 
     #\ write back to the database
     Update_Data = (index.VarLatestDataID, Max_ID_num)
