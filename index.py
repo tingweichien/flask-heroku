@@ -35,6 +35,9 @@ APP_Pri_Key = INDEX_PRIVATE["APP_Pri_Key"]
 bAPIon = INDEX['OSM']['bAPIon']
 GMAPapikey = INDEX_PRIVATE['OSM']['GMAPapikey']
 
+#\ -- Server url--
+ServerURL = INDEX["Server"]
+
 
 
 #\ ---- Line Bot ----
@@ -96,3 +99,12 @@ VariableTableName = INDEX["DataBase"]["DataBaseTable"]["VariableTableName"]
 
 #\ Filter object [User_filter, Species_filter, KeepOrFilter]
 DefaultFilterObject = [None, None, None]
+
+#\ Alarm
+HourFrom = INDEX["WakeUpAlarm"]["HourFrom"]
+HourEnd = INDEX["WakeUpAlarm"]["HourEnd"]
+HourRange = f"{HourFrom}-{HourEnd}"
+IntervalPerHour = INDEX["WakeUpAlarm"]["IntervalPerHour"]
+IntervalPerMin = INDEX["WakeUpAlarm"]["IntervalPerMin"]
+HOUR = {"hour" : HourRange+"/"+IntervalPerHour} if IntervalPerHour != "" else {"minute" : "*/"+IntervalPerMin}
+
