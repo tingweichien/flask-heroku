@@ -109,5 +109,5 @@ IntervalPerMin = INDEX["Alarm"]["WakeUpAlarm"]["IntervalPerMin"]
 HOURAlarm = {"hour" : HourRange+"/"+IntervalPerHour} if IntervalPerHour != "" else {"minute" : "*/"+IntervalPerMin}
 
 #\ Daily routin
-DAYAlarm = {"hour": INDEX["DailyUpdate"]["Hour"], "minute": INDEX["DailyUpdate"]["Minute"], "second": INDEX["DailyUpdate"]["Second"]}
+DAYAlarm = {"hour": INDEX["Alarm"]["DailyUpdate"]["Hour"], "minute": INDEX["Alarm"]["DailyUpdate"]["Minute"], "second": INDEX["Alarm"]["DailyUpdate"]["Second"]}
 

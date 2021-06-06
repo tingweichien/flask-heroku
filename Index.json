@@ -46,7 +46,7 @@
                 "TableName" : "UserInfo"
             },
             "VariableTable": {
-                "TableName" : "Varaible",
+                "TableName" : "Variable",
                 "TableVar"  : {
                     "LatestDataID" : "LatestDataID"
                 }

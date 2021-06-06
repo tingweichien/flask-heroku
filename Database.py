@@ -150,13 +150,13 @@ def CloseDBConnection(conn):
 
 
 #\ handle the variable store in the "Variable table" in database from list of tuple to dict
-def TupleList2Dict(list_tuple:List(tuple))->dict:
-    return_dict = dict()
-    for t in list_tuple:
-        return_dict = dict((k, v) for k, v in t)
+# def TupleList2Dict(list_tuple:list)->dict:
+#     return_dict = dict()
+#     for t in list_tuple:
+#         return_dict = dict((k, v) for (k, v) in t)
 
-    print(f"[INFO]The result of transferring from list of tuple to dictionary is\n{return_dict}")
-    return return_dict
+#     print(f"[INFO]The result of transferring from list of tuple to dictionary is\n{return_dict}")
+#     return return_dict
 
 
 

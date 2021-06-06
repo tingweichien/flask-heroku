@@ -575,10 +575,10 @@ def InitCache(_cache):
     _cache.set("Dragonfly_session", None)
     _cache.set("DBInfo", Database.InitDBInfo())
     _cache.set("RichMenuID", LineBotMsgHandler.Get_RichMenu(gLine_bot_api))
-    _cache.set("DataBaseVariable", Database.TupleList2Dict(Database.ReadFromDB(Database.CreateDBConection(),
-                                                                               Database.Read_all_query(index.VariableTableName),
-                                                                               False)
-                                                           )
+    _cache.set("DataBaseVariable", dict((Database.ReadFromDB(Database.CreateDBConection(),
+                                                            Database.Read_all_query(index.VariableTableName),
+                                                            False)
+                                        ))
                )
     _cache.set("DAYAlarm", index.DAYAlarm)
 
