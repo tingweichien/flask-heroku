@@ -555,7 +555,7 @@ def GetTodayData(event):
 
     #\ Get the data
     DragonflyData_session = CreateWebSession(event)
-    TodayDataList = DragonflyData.CrawTodayData(DragonflyData_session, cache.get("DataBaseVariable")["LatestDataID"], index.DefaultFilterObject)
+    TodayDataList = DragonflyData.CrawTodayData(DragonflyData_session, int(cache.get("DataBaseVariable")["LatestDataID"]), index.DefaultFilterObject)
 
     #\ Handling the data for the bubble in the carsoul message
     content_list = []
