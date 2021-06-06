@@ -349,7 +349,7 @@ def CreateWebSession(event=None):
         ACC, PW = DB_Data[idx][4], DB_Data[idx][1]
 
     #\ return session
-    return Login2Web(ACC, PW)
+    return DragonflyData.Login_Web(ACC, PW)
 
 
 
@@ -375,8 +375,8 @@ def handle_follow_message(event):
 
 
 #\ login to web
-def Login2Web(login_account:str, login_password:str)->str:
-    print("[INFO] Login2Web")
+def LineBotLogin2Web(login_account:str, login_password:str)->str:
+    print("[INFO] LineBotLogin2Web")
 
     #\ Get the login PW and ACCOUNT
     print(f'[INFO] Account: {login_account}, Password: {login_password}')
@@ -437,7 +437,7 @@ def LoginProgress(event):
                                         )
 
             #\ Start Login to web method
-            LoginStateMessage = Login2Web(cache.get("gAccount"), cache.get("gPassword"))
+            LoginStateMessage = LineBotLogin2Web(cache.get("gAccount"), cache.get("gPassword"))
             print(f"[INFO] LoginStateMessage: {LoginStateMessage}")
             gLine_bot_api.push_message(event.source.user_id,
                                         TextSendMessage(text=LoginStateMessage)

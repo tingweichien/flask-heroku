@@ -220,7 +220,7 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None)->list:
         # All_Observation_Data_response_Data_Set = soup_ID_check.find(id='theRow')
         # Max_All_Observation_Data_response_Data = All_Observation_Data_response_Data_Set.find_all('td')
         # Max_ID_Num = Max_All_Observation_Data_response_Data[0].text
-        Max_ID_Num, All_Observation_Data_response = GetMaxID(session)
+        Max_ID_Num = GetMaxID(session)
     else:
         Max_ID_Num = InputMaxID
 
@@ -301,7 +301,7 @@ def GetMaxID(session):
     soup_ID_check = BeautifulSoup(All_Observation_Data_response.text, 'html.parser')
     All_Observation_Data_response_Data_Set = soup_ID_check.find(id='theRow')
     Max_All_Observation_Data_response_Data = All_Observation_Data_response_Data_Set.find_all('td')
-    return Max_All_Observation_Data_response_Data[0].text, All_Observation_Data_response
+    return Max_All_Observation_Data_response_Data[0].text
 
 
 #\ ------------------------------------------------------------------------------
