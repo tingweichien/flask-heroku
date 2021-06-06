@@ -395,9 +395,9 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
     """
     Filter_State = False
 
-    #\ No input
-    if user_filter is None and species_filter is None and KeepOrFilter is None:
-        return Filter_State
+    #\ No input then return True, since nothing is going to filter
+    if user_filter is None and species_filter is None:
+        return True
 
     #\ user filter
     if user_filter is not None:
