@@ -451,7 +451,7 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->l
 
         else :
             condition = False
-
+    print(f"[INFO] In CrawlDataByIDRange() the result list is {result_list}")
     return result_list
 
 

@@ -560,6 +560,7 @@ def GetTodayData(event):
     #\ Handling the data for the bubble in the carsoul message
     content_list = []
     for data in TodayDataList:
+        print(f"[INFO] In GetTodayData() data = {data}")
         content = LineBotMsgHandler.RequestDataMsgText_handler(data)
         content_list.append(content)
 
