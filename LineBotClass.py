@@ -277,7 +277,8 @@ def IDRequestCallback(event):
         else:
             print(f"[INFO] Successfully craw the data")
             #\ handle the Description to align
-            ID_find_result.Description = f"\n{' '*10}".join(list(ID_find_result.Description.split("\n")))
+            if ID_find_result.Description is not None:
+                ID_find_result.Description = f"\n{' '*10}".join(list(ID_find_result.Description.split("\n")))
             # gLine_bot_api.push_message(event.source.user_id,
             #                             TextSendMessage(text=f"[IdNumber]: {ID_find_result.IdNumber}\n"+\
             #                                                 f"[Dates]: {ID_find_result.Dates}, {ID_find_result.Times}\n"+\
