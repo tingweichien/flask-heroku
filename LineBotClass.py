@@ -303,7 +303,8 @@ def IDRequestCallback(event):
                                                         f"[Longitude]: {ID_find_result.Longitude}\n"\
                                                         f"[Speceis]: {', '.join(ID_find_result.SpeciesList)}\n"+\
                                                         f"[Description]: {ID_find_result.Description}\n",
-                                            contents=LineBotMsgHandler.RequestDataMsgText_handler(ID_find_result))
+                                                contents=LineBotMsgHandler.RequestDataMsgText_handler(ID_find_result)
+                                            )
 
             gLine_bot_api.push_message(event.source.user_id,
                                        RequestDataText
@@ -311,8 +312,7 @@ def IDRequestCallback(event):
 
             #\ loaction message
             gLine_bot_api.push_message(event.source.user_id,
-                                        LocationSendMessage(
-                                                            title=f'# {ID_find_result.IdNumber}',
+                                        LocationSendMessage(title=f'# {ID_find_result.IdNumber}',
                                                             address=f'{ID_find_result.City} {ID_find_result.District} {ID_find_result.Place}',
                                                             latitude=float(ID_find_result.Latitude),
                                                             longitude=float(ID_find_result.Longitude)
