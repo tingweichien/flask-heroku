@@ -259,7 +259,15 @@ def IDRequestCallback(event):
         DragonflyData_session = CreateWebSession(event)
 
         #\ execute the crawler function
-        [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, int(event.message.text))
+        try :
+            IDNumber = int(event.message.text)
+        except:
+            gLine_bot_api.push_message(event.source.user_id, "Input ID number is not integer !!!!!!!!!!!")
+            print("[Warning] Input ID number is not integer")
+            cache.set("gEventCnt", 0)
+            return False
+
+        [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, IDNumber)
 
         if overflow:
             print(f"[INFO] The ID is overflow, please use the ID smaller {Max_ID_Num}")
