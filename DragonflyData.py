@@ -289,7 +289,7 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None)->list:
 
 
 #\ Get max ID number
-def GetMaxID(session):
+def GetMaxID(session)->int:
     """
     params:
         session for login
@@ -301,7 +301,7 @@ def GetMaxID(session):
     soup_ID_check = BeautifulSoup(All_Observation_Data_response.text, 'html.parser')
     All_Observation_Data_response_Data_Set = soup_ID_check.find(id='theRow')
     Max_All_Observation_Data_response_Data = All_Observation_Data_response_Data_Set.find_all('td')
-    return Max_All_Observation_Data_response_Data[0].text
+    return int(Max_All_Observation_Data_response_Data[0].text)
 
 
 #\ ------------------------------------------------------------------------------
