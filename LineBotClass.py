@@ -550,7 +550,7 @@ def OEMSetDefaultRichmenu(linebot_api, event):
 def GetTodayData(event):
 
     gLine_bot_api.reply_message(event.reply_token,
-                                "Please be patient, it might take a while~~"
+                                TextSendMessage(text="Please be patient, it might take a while~~")
                                 )
 
     #\ Get the data
