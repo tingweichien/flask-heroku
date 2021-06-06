@@ -32,8 +32,8 @@ APP_Pri_Key = INDEX_PRIVATE["APP_Pri_Key"]
 
 
 #\ ---- OSM API ----
-bAPIon = INDEX['OSM']['bAPIon']
-GMAPapikey = INDEX_PRIVATE['OSM']['GMAPapikey']
+bAPIon = INDEX["OSM"]["bAPIon"]
+GMAPapikey = INDEX_PRIVATE["OSM"]["GMAPapikey"]
 
 #\ -- Server url--
 ServerURL = INDEX["Server"]
@@ -42,16 +42,18 @@ ServerURL = INDEX["Server"]
 
 #\ ---- Line Bot ----
 #\ Line Bot join group Text
-JoinEventText = INDEX['LineBot']['EventText']['JoinEventText']
+JoinEventText = INDEX["LineBot"]["EventText"]["JoinEventText"]
 
 #\ Login info
-LoginEventText = INDEX['LineBot']['EventText']['LoginEventText']
+LoginEventText = INDEX["LineBot"]["EventText"]["LoginEventText"]
 
 #\ Rich menu image path
-LoginRichMenuImgPath = INDEX['LineBot']['RichMenu']['MenuImgPath']['LoginRichMenuImgPath']
-MainRichMenuImgPath = INDEX['LineBot']['RichMenu']['MenuImgPath']['MainRichMenuImgPath']
-Main2RichMenuImgPath = INDEX['LineBot']['RichMenu']['MenuImgPath']['Main2RichMenuImgPath']
+LoginRichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["LoginRichMenuImgPath"]
+MainRichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["MainRichMenuImgPath"]
+Main2RichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["Main2RichMenuImgPath"]
 
+#\ Carsoul Bubble Limit number due to line bot api limitation
+CarsoulBubbleLimit = INDEX["LineBot"]["CarsoulBubbleLimit"]
 
 
 #\ ---- Dragonfly ----

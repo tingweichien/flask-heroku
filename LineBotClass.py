@@ -563,15 +563,23 @@ def GetTodayData(event):
         content = LineBotMsgHandler.RequestDataMsgText_handler(data)
         content_list.append(content)
 
-    #\ Handling the carsoul text message
-    print(f"[INFO] in GetTodayData()\n{content_list}")
-    Msgtext = FlexSendMessage(alt_text="No data",
-                              contents=LineBotMsgHandler.MultiRequestDataMsgText(content_list)
-                              )
+    #\ Handling the carsoul text message with limitation number by line api
+    # print(f"[INFO] in GetTodayData()\n{content_list}")
+    for content_idx in range(0, len(content_list), index.CarsoulBubbleLimit):
+        end = content_idx + index.CarsoulBubbleLimit
+        #\ handle overflow
+        if end > len(content_list):
+            content_limit_list = content_list[content_idx:]
+        else:
+            content_limit_list = content_list[content_idx:end]
 
-    gLine_bot_api.push_message(event.source.user_id,
-                               Msgtext
-                               )
+        Msgtext = FlexSendMessage(alt_text="No data",
+                                contents=LineBotMsgHandler.MultiRequestDataMsgText(content_limit_list)
+                                )
+
+        gLine_bot_api.push_message(event.source.user_id,
+                                Msgtext
+                                )
 
 
 

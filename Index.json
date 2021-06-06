@@ -15,7 +15,8 @@
                 "MainRichMenuImgPath" : "./Notes/image/richmenu_main.jpg",
                 "Main2RichMenuImgPath" : "./Notes/image/richmenu_main2.jpg"
             }
-        }
+        },
+        "CarsoulBubbleLimit" : 12
     },
 
     "DragonflyData" : {
