@@ -561,8 +561,8 @@ def GetTodayData(event):
     content_list = []
     for data in TodayDataList:
         print(f"[INFO] In GetTodayData() data = {data}")
-        content = LineBotMsgHandler.RequestDataMsgText_handler(data)
-        content_list.append(content)
+        content_list.append(LineBotMsgHandler.RequestDataMsgText_handler(data))
+        print("[INFO] Append")
 
     #\ Handling the carsoul text message with limitation number by line api
     print(f"[INFO] in GetTodayData() content list\n{content_list}")
