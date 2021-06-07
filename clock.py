@@ -24,7 +24,7 @@ sched = BlockingScheduler()
 #\ testing
 @sched.scheduled_job('cron', second="*/2")
 def testing():
-    print(f"[INFO]{datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
+    print(f"[INFO] scheduled_job: {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
 
 
 #\ Set the timer to update the datebase
@@ -73,4 +73,4 @@ def StartAlarm():
 
 
 #\ start the clock
-# StartAlarm()
+StartAlarm()
