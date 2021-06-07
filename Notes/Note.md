@@ -279,3 +279,27 @@ i.e.
 1. Alarm to do action in schedule
 
 - <https://ithelp.ithome.com.tw/articles/10218874>
+
+
+### [2021/06/07]
+
+1. Add the richmenu function
+
+2. Copy for the dictionary to the list (please use deepcopy if the object are 2D +)
+
+  ```python
+  >>> l = [[1,2,3],[4,5,6,[7,8,9]],10,11,[12,13]]
+  >>> l
+  [[1, 2, 3], [4, 5, 6, [7, 8, 9]], 10, 11, [12, 13]]
+  >>> import copy
+  >>> ll = l.copy()
+  >>> lll = copy.deepcopy(l)
+  >>> l[0][0] = 25532
+  >>> l
+  [[25532, 2, 3], [4, 5, 6, [7, 8, 9]], 10, 11, [12, 13]]
+  >>> ll
+  [[25532, 2, 3], [4, 5, 6, [7, 8, 9]], 10, 11, [12, 13]]
+  >>> lll
+  [[1, 2, 3], [4, 5, 6, [7, 8, 9]], 10, 11, [12, 13]]
+  >>>
+  ```
