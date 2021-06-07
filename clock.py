@@ -2,10 +2,9 @@
 #\ also put the daily update for the dragonfly info here in set schedule
 #\ ref: https://ithelp.ithome.com.tw/articles/10218874
 from apscheduler.schedulers.blocking import BlockingScheduler
-import requests
 import index
 import datetime
-from VarIndex import *
+from VarIndex import cache
 import random
 import DragonflyData
 import LineBotClass
@@ -22,28 +21,33 @@ sched = BlockingScheduler()
 #     for key, value in conn.getheaders():
 #         print(key, value)
 
+
+
 #\ testing
-@sched.scheduled_job('cron', second="*/2")
+@sched.scheduled_job('cron', second="*/30")
 def testing():
-    print(f"[INFO]{datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
+    print(f"[INFO] scheduled_job: {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
 
 
 #\ Set the timer to update the datebase
 #\ this will be trigger every
 @sched.scheduled_job('cron', hour=0, minute=0, second=0)
 def SetTimer2Update_job():
-    #index.HOURAlarm["hour"] #\ we set the hour at 0 and let the minute and second to be random
+    print(f"[INFO] SetTimer2Update_job start: {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
+    #index.DAYAlarm["hour"] #\ we set the hour at 0 and let the minute and second to be random
 
     #\ Start from 1 min is because this function will be triggerred at 00:00:00, avoid conflict with this function with UpdateDataBase_job()
     #\ The reason to set the minutes boundary to 30 is due to the heroku free dyno will sleep every 30 minutes idling.
-    index.HOURAlarm["minute"] = random.randint(1, 30)
-    index.HOURAlarm["second"] = random.randint(0, 60)
-    cache.set("DAYAlarm", index.HOURAlarm)
+    index.DAYAlarm["minute"] = random.randint(1, 30)
+    index.DAYAlarm["second"] = random.randint(0, 60)
+    # cache.set("DAYAlarm", index.HOURAlarm)
+    sched.reschedule_job("UpdateDataBase_job_ID", trigger='cron', **index.HOURAlarm)
     print(f"[INFO] In SetTimer2Update_job() set the timer to update : {cache.get('DAYAlarm')}")
 
 
 #\ This is to update the database's TodayID eveyday midnight
-@sched.scheduled_job('cron', **cache.get("DAYAlarm"))
+# @sched.scheduled_job('cron', **cache.get("DAYAlarm"))
+@sched.scheduled_job('cron', id="UpdateDataBase_job_ID", **index.DAYAlarm)
 def UpdateDataBase_job():
     print(f"[INFO] In UpdateDataBase_job() Update the database latest ID at {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
     retry = 0

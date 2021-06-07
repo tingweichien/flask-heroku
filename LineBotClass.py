@@ -236,8 +236,8 @@ def pleaseLogin(event):
 
 #\ Ask the input ID for request
 def AskInputID(event):
-    gLine_bot_api.push_message(
-        event.source.user_id,
+    gLine_bot_api.reply_message(
+        event.reply_token,
         TextSendMessage(text="Please Enter the request ID")
         )
 
@@ -262,7 +262,7 @@ def IDRequestCallback(event):
         try :
             IDNumber = int(event.message.text)
         except:
-            gLine_bot_api.push_message(event.source.user_id, "Input ID number is not integer !!!!!!!!!!!")
+            gLine_bot_api.reply_message(event.reply_token, "Input ID number is not integer !!!!!!!!!!!")
             print("[Warning] Input ID number is not integer")
             cache.set("gEventCnt", 0)
             return False
@@ -271,7 +271,7 @@ def IDRequestCallback(event):
 
         if overflow:
             print(f"[INFO] The ID is overflow, please use the ID smaller {Max_ID_Num}")
-            gLine_bot_api.push_message(event.source.user_id,
+            gLine_bot_api.reply_message(event.reply_token,
                                 TextSendMessage(text=f"The ID is overflow, please use the ID smaller {Max_ID_Num}")
                                 )
         else:
@@ -307,7 +307,7 @@ def IDRequestCallback(event):
                                                 contents=LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText,ID_find_result)
                                             )
 
-            gLine_bot_api.push_message(event.source.user_id,
+            gLine_bot_api.reply_message(event.reply_token,
                                        RequestDataText
                                         )
 
