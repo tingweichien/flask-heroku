@@ -452,17 +452,19 @@ RequestDataMsgText = {
 
 #\ handle the RequestDataMsgText
 def RequestDataMsgText_handler(DrgonflyData:DetailedTableInfo) :
-  #_RequestDataMsgText = cache.get("RequestDataMsgText")
-  RequestDataMsgText["body"]["contents"][0]["text"] = DrgonflyData.IdNumber
-  RequestDataMsgText["body"]["contents"][1]["text"] = f"{DrgonflyData.Dates}, {DrgonflyData.Times}"
-  RequestDataMsgText["body"]["contents"][3]["contents"][0]["contents"][1]["text"] = DrgonflyData.User
-  RequestDataMsgText["body"]["contents"][3]["contents"][1]["contents"][1]["text"] = f"{DrgonflyData.City} {DrgonflyData.District}"
-  RequestDataMsgText["body"]["contents"][3]["contents"][2]["contents"][1]["text"] = DrgonflyData.Place
-  RequestDataMsgText["body"]["contents"][3]["contents"][3]["contents"][1]["text"] = f"({round(float(DrgonflyData.Latitude), index.PositionPrecision)}, {round(float(DrgonflyData.Longitude), index.PositionPrecision)})"
-  RequestDataMsgText["body"]["contents"][3]["contents"][5]["contents"][1]["text"] = ', '.join(DrgonflyData.SpeciesList)
-  RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DrgonflyData.Description
-  print(f"[INFO] In RequestDataMsgText_handler()\n{RequestDataMsgText}")
-  return RequestDataMsgText
+  #\ if use this function in the loop all the RequestDataMsgText will point to the same dictionary
+  #\ When changing the value all the dict point to this will change 
+  #\ Therefore, use copy to copy to a new dict as local variable
+  _RequestDataMsgText = RequestDataMsgText.copy()
+  _RequestDataMsgText["body"]["contents"][0]["text"] = DrgonflyData.IdNumber
+  _RequestDataMsgText["body"]["contents"][1]["text"] = f"{DrgonflyData.Dates}, {DrgonflyData.Times}"
+  _RequestDataMsgText["body"]["contents"][3]["contents"][0]["contents"][1]["text"] = DrgonflyData.User
+  _RequestDataMsgText["body"]["contents"][3]["contents"][1]["contents"][1]["text"] = f"{DrgonflyData.City} {DrgonflyData.District}"
+  _RequestDataMsgText["body"]["contents"][3]["contents"][2]["contents"][1]["text"] = DrgonflyData.Place
+  _RequestDataMsgText["body"]["contents"][3]["contents"][3]["contents"][1]["text"] = f"({round(float(DrgonflyData.Latitude), index.PositionPrecision)}, {round(float(DrgonflyData.Longitude), index.PositionPrecision)})"
+  _RequestDataMsgText["body"]["contents"][3]["contents"][5]["contents"][1]["text"] = ', '.join(DrgonflyData.SpeciesList)
+  _RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DrgonflyData.Description
+  return _RequestDataMsgText
 
 # print(RequestDataMsgText_handler("123", "123","123","123","123","123","123","123","123","123","123"))
 
