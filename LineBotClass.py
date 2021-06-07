@@ -304,7 +304,7 @@ def IDRequestCallback(event):
                                                         f"[Longitude]: {ID_find_result.Longitude}\n"\
                                                         f"[Speceis]: {', '.join(ID_find_result.SpeciesList)}\n"+\
                                                         f"[Description]: {ID_find_result.Description}\n",
-                                                contents=LineBotMsgHandler.RequestDataMsgText_handler(ID_find_result)
+                                                contents=LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText,ID_find_result)
                                             )
 
             gLine_bot_api.push_message(event.source.user_id,
@@ -560,7 +560,7 @@ def GetTodayData(event):
     #\ Handling the data for the bubble in the carsoul message
     content_list = []
     for data in TodayDataList:
-        bubble_content = LineBotMsgHandler.RequestDataMsgText_handler(data)
+        bubble_content = LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, data)
         content_list.append(bubble_content.copy())
         print("[INFO] Append")
         print(f"[INFO] content list\n{content_list}")

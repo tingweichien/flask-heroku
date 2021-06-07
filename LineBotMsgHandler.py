@@ -451,11 +451,11 @@ RequestDataMsgText = {
 }
 
 #\ handle the RequestDataMsgText
-def RequestDataMsgText_handler(DrgonflyData:DetailedTableInfo) :
+def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTableInfo) :
   #\ if use this function in the loop all the RequestDataMsgText will point to the same dictionary
   #\ When changing the value all the dict point to this will change 
   #\ Therefore, use copy to copy to a new dict as local variable
-  _RequestDataMsgText = RequestDataMsgText.copy()
+  # _RequestDataMsgText = RequestDataMsgText.copy()
   _RequestDataMsgText["body"]["contents"][0]["text"] = DrgonflyData.IdNumber
   _RequestDataMsgText["body"]["contents"][1]["text"] = f"{DrgonflyData.Dates}, {DrgonflyData.Times}"
   _RequestDataMsgText["body"]["contents"][3]["contents"][0]["contents"][1]["text"] = DrgonflyData.User
