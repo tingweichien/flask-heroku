@@ -102,7 +102,7 @@ VarLatestDataID = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVar"
 #\ Filter object [User_filter, Species_filter, KeepOrFilter]
 DefaultFilterObject = [None, None, None]
 
-#\ Alarm
+#\ Alarm (This is for wake the free dyno Heroku up)
 HourFrom = INDEX["Alarm"]["WakeUpAlarm"]["HourFrom"]
 HourEnd = INDEX["Alarm"]["WakeUpAlarm"]["HourEnd"]
 HourRange = f"{HourFrom}-{HourEnd}"
