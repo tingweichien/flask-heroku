@@ -561,7 +561,7 @@ def GetTodayData(event):
     content_list = []
     for data in TodayDataList:
         bubble_content = LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, data)
-        content_list.append(bubble_content.copy())
+        content_list.append(bubble_content)
         print("[INFO] Append")
         print(f"[INFO] content list\n{content_list}")
 

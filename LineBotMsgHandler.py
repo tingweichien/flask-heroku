@@ -12,6 +12,7 @@ import configparser
 import index
 from DataClass import DetailedTableInfo
 from VarIndex import *
+import copy
 
 
 #\ FLEX-MESSAGE
@@ -453,20 +454,28 @@ RequestDataMsgText = {
 #\ handle the RequestDataMsgText
 def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTableInfo) :
   #\ if use this function in the loop all the RequestDataMsgText will point to the same dictionary
-  #\ When changing the value all the dict point to this will change 
+  #\ When changing the value all the dict point to this will change
   #\ Therefore, use copy to copy to a new dict as local variable
-  # _RequestDataMsgText = RequestDataMsgText.copy()
-  _RequestDataMsgText["body"]["contents"][0]["text"] = DrgonflyData.IdNumber
-  _RequestDataMsgText["body"]["contents"][1]["text"] = f"{DrgonflyData.Dates}, {DrgonflyData.Times}"
-  _RequestDataMsgText["body"]["contents"][3]["contents"][0]["contents"][1]["text"] = DrgonflyData.User
-  _RequestDataMsgText["body"]["contents"][3]["contents"][1]["contents"][1]["text"] = f"{DrgonflyData.City} {DrgonflyData.District}"
-  _RequestDataMsgText["body"]["contents"][3]["contents"][2]["contents"][1]["text"] = DrgonflyData.Place
-  _RequestDataMsgText["body"]["contents"][3]["contents"][3]["contents"][1]["text"] = f"({round(float(DrgonflyData.Latitude), index.PositionPrecision)}, {round(float(DrgonflyData.Longitude), index.PositionPrecision)})"
-  _RequestDataMsgText["body"]["contents"][3]["contents"][5]["contents"][1]["text"] = ', '.join(DrgonflyData.SpeciesList)
-  _RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DrgonflyData.Description
-  return _RequestDataMsgText
+  local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
+  local_RequestDataMsgText["body"]["contents"][0]["text"] = DrgonflyData.IdNumber
+  local_RequestDataMsgText["body"]["contents"][1]["text"] = f"{DrgonflyData.Dates}, {DrgonflyData.Times}"
+  local_RequestDataMsgText["body"]["contents"][3]["contents"][0]["contents"][1]["text"] = DrgonflyData.User
+  local_RequestDataMsgText["body"]["contents"][3]["contents"][1]["contents"][1]["text"] = f"{DrgonflyData.City} {DrgonflyData.District}"
+  local_RequestDataMsgText["body"]["contents"][3]["contents"][2]["contents"][1]["text"] = DrgonflyData.Place
+  local_RequestDataMsgText["body"]["contents"][3]["contents"][3]["contents"][1]["text"] = f"({round(float(DrgonflyData.Latitude), index.PositionPrecision)}, {round(float(DrgonflyData.Longitude), index.PositionPrecision)})"
+  local_RequestDataMsgText["body"]["contents"][3]["contents"][5]["contents"][1]["text"] = ', '.join(DrgonflyData.SpeciesList)
+  local_RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DrgonflyData.Description
+  return local_RequestDataMsgText
 
-# print(RequestDataMsgText_handler("123", "123","123","123","123","123","123","123","123","123","123"))
+#\ testing
+# l = []
+# test = [DetailedTableInfo("123", "123","123","123","123","123","123","123","123","123","123","123","123","123","123"),
+#         DetailedTableInfo("00000", "00000","00000","00000","00000","00000","00000","00000","00000","00000","00000","00000","00000","00000","00000")]
+# for i in range(0,2):
+#   content = RequestDataMsgText_handler(RequestDataMsgText, test[i]).copy()
+#   l.append(content)
+# print("\n\n")
+# print(l)
 
 
 
