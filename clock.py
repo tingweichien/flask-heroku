@@ -72,4 +72,4 @@ def StartAlarm():
 
 
 #\ start the clock
-StartAlarm()
+# StartAlarm()

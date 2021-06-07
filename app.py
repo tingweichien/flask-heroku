@@ -9,6 +9,7 @@ from VarIndex import cache, eLineBotEvent
 import Database
 import LineBotMsgHandler
 from LineBotClass import gLine_bot_api
+import clock
 
 
 
@@ -24,7 +25,6 @@ Session(app)
 app.secret_key = index.APP_Pri_Key
 app.permanent_session_lifetime = timedelta(seconds=5)
 
-
 #\ cache for global variable
 cache.init_app(app=app, config={"CACHE_TYPE": "filesystem", "CACHE_DIR":"/tmp"})
 
@@ -33,6 +33,10 @@ LineBotClass.InitCache(cache)
 
 #\ Init default richmenu
 # gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Login Richmenu"])
+
+
+#\ Init the Alarm
+clock.StartAlarm()
 
 
 ################################################################################
