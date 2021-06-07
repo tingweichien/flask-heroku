@@ -7,6 +7,7 @@ import os
 import psycopg2
 import urllib.parse as urlparse
 from VarIndex import *
+from typing import List
 
 
 #\ Init the database info
@@ -68,6 +69,7 @@ def CreateDBConection():
             conn = psycopg2.connect(**cache.get("DBInfo"), sslmode='require')
         except:
             conn = psycopg2.connect(cache.get("DBInfo")["DBURI"], sslmode='require')#\ This is for the local DB connection
+            #conn = psycopg2.connect(DBURI, sslmode='require')#\ This is for the local DB connection
 
         print("[INFO] Successfully create the connection to the database")
         return conn
@@ -112,7 +114,11 @@ def UpdateDB(conn, query, data):
 
 
 #\ Read the data
-def ReadFromDB(conn, query, FetchOneOrNot)->tuple:
+def ReadFromDB(conn, query, FetchOneOrNot):
+    """
+    fetchone : return tuple
+    fetchall : return list of tuple
+    """
     cursor = ExecuteDB(conn, query)
     try:
         if FetchOneOrNot:
@@ -143,10 +149,24 @@ def CloseDBConnection(conn):
         print("[WARNING] Unable to close the database connection")
 
 
+#\ handle the variable store in the "Variable table" in database from list of tuple to dict
+# def TupleList2Dict(list_tuple:list)->dict:
+#     return_dict = dict()
+#     for t in list_tuple:
+#         return_dict = dict((k, v) for (k, v) in t)
+
+#     print(f"[INFO]The result of transferring from list of tuple to dictionary is\n{return_dict}")
+#     return return_dict
+
+
+
+
+
+
 ###################################################################################################
 #\ --- SQL query ---
 
-#\ Create data base
+#\ Create data base table(user info)
 #\  SERIAL : is not a true data type, but is simply shorthand notation that tells Postgres to create a auto incremented,
 #\              unique identifier for the specified column.
 UserInfo_create_table_query = '''CREATE TABLE IF NOT EXISTS UserInfo(
@@ -159,7 +179,29 @@ UserInfo_create_table_query = '''CREATE TABLE IF NOT EXISTS UserInfo(
 );'''
 
 
-#\ Insert query
+
+#\ Create data base table(Variable)
+#\ store the variable here
+Variable_create_table_query = '''CREATE TABLE IF NOT EXISTS Variable(
+    variable_no serial PRIMARY KEY,
+    var_name VARCHAR (50) NOT NULL,
+    var_value VARCHAR (50) NOT NULL
+);'''
+
+
+#\ Testing
+#\ Execute create connection
+# PG_DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a dragonfly-flask-web').read()[:-1]
+# conn = psycopg2.connect(PG_DATABASE_URL, sslmode='require')
+# ExecuteDB(conn, Variable_create_table_query)
+
+
+#\ Read all query
+Read_all_query = lambda Table : f"SELECT * FROM {Table}"
+
+
+#\ Insert query and Read query
+#\ --- User info table ---
 #\ i.e. INSERT INTO products (product_no, name, price) VALUES (1, 'Cheese', 9.99);
 Insert_query = lambda Table, name, value : f"INSERT INTO {Table} {name} VALUES {value};"
 
@@ -167,9 +209,18 @@ Insert_query = lambda Table, name, value : f"INSERT INTO {Table} {name} VALUES {
 #\ value should be "(XXX, XXX, XXXX, XX, XXXXX, .....)"
 Insert_userinfo_query = lambda Table : f"INSERT INTO {Table} (name, userid, join_date, account, password) VALUES (%s, %s, %s, %s, %s) ON CONFLICT ON CONSTRAINT userinfo_userid_key DO UPDATE SET name = EXCLUDED.name, join_date=EXCLUDED.join_date, account=EXCLUDED.account, password=EXCLUDED.password ;"
 
-
 #\ Read the userinfo
 Read_userinfo_query = lambda Table, userid : f"SELECT * FROM {Table} WHERE userid = '{userid}';"
 
-#\ -- For testing --
 
+
+#\ --- Variable table ---
+#\ Insert
+Insert_variable_query =  lambda Table : f"INSERT INTO {Table} (var_name, var_value) VALUES (%s, %s)"
+
+#\ Read the userinfo
+Read_variable_query = lambda Table, var_name : f"SELECT * FROM {Table} WHERE var_name = '{var_name}';"
+
+#\ Update
+#\ i.e. UPDATE public.variable	SET var_value = '79166'	WHERE var_name = 'LatestDataID';
+Update_varaible_query = lambda Table : f"UPDATE {Table} SET var_value=%s WHERE var_name=%s"

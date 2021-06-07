@@ -7,6 +7,8 @@ import LineBotClass
 import index
 from VarIndex import cache, eLineBotEvent
 import Database
+import LineBotMsgHandler
+from LineBotClass import gLine_bot_api
 
 
 
@@ -27,19 +29,10 @@ app.permanent_session_lifetime = timedelta(seconds=5)
 cache.init_app(app=app, config={"CACHE_TYPE": "filesystem", "CACHE_DIR":"/tmp"})
 
 #\set cache data
-cache.set("gEventText", None)
-cache.set("gEvent", eLineBotEvent.NONE.value)
-cache.set("gEventCnt", 0)
-cache.set("gIsJustText", True)
-cache.set("gLoginDataConfirm", False)
-cache.set("gLoginStatus", False)
-cache.set("gAccount", None)
-cache.set("gPassword", None)
-cache.set("Dragonfly_session", None)
-cache.set("DBInfo", Database.InitDBInfo())
+LineBotClass.InitCache(cache)
 
-#\ for testing
-# Database.InsertDB(Database.CreateDBConection(), Database.Insert_userinfo_query(index.UserInfoTableName), ("Tim", "123456789", "2021-05-24", "xxxx", "ooooo"))
+#\ Init default richmenu
+# gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Login Richmenu"])
 
 
 ################################################################################
@@ -108,9 +101,8 @@ def user():
 #\ echo
 @app.route("/LineBotEcho", methods=['POST'])
 def LineBotEcho():
-    LineBotClass.LineBotHandler(app,session)
+    LineBotClass.LineBotHandler(app)
     return "ok"
-
 
 
 #\ handle the message
