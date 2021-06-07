@@ -17,6 +17,7 @@ class eLineBotEvent(IntEnum):
     RECORD      = 4
     SETTING     = 5
     SEARCH      = 6
+    TODAYDATA   = 7
 
 
 class eLineBotPostEvent(IntEnum):

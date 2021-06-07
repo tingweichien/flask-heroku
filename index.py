@@ -32,23 +32,28 @@ APP_Pri_Key = INDEX_PRIVATE["APP_Pri_Key"]
 
 
 #\ ---- OSM API ----
-bAPIon = INDEX['OSM']['bAPIon']
-GMAPapikey = INDEX_PRIVATE['OSM']['GMAPapikey']
+bAPIon = INDEX["OSM"]["bAPIon"]
+GMAPapikey = INDEX_PRIVATE["OSM"]["GMAPapikey"]
+
+#\ -- Server url--
+ServerURL = INDEX["Server"]
 
 
 
 #\ ---- Line Bot ----
 #\ Line Bot join group Text
-JoinEventText = INDEX['LineBot']['EventText']['JoinEventText']
+JoinEventText = INDEX["LineBot"]["EventText"]["JoinEventText"]
 
 #\ Login info
-LoginEventText = INDEX['LineBot']['EventText']['LoginEventText']
+LoginEventText = INDEX["LineBot"]["EventText"]["LoginEventText"]
 
 #\ Rich menu image path
-LoginRichMenuImgPath = INDEX['LineBot']['RichMenu']['MenuImgPath']['LoginRichMenuImgPath']
-MainRichMenuImgPath = INDEX['LineBot']['RichMenu']['MenuImgPath']['MainRichMenuImgPath']
-Main2RichMenuImgPath = INDEX['LineBot']['RichMenu']['MenuImgPath']['Main2RichMenuImgPath']
+LoginRichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["LoginRichMenuImgPath"]
+MainRichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["MainRichMenuImgPath"]
+Main2RichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["Main2RichMenuImgPath"]
 
+#\ Carsoul Bubble Limit number due to line bot api limitation
+CarsoulBubbleLimit = INDEX["LineBot"]["CarsoulBubbleLimit"]
 
 
 #\ ---- Dragonfly ----
@@ -59,7 +64,7 @@ re_try_limit = INDEX["DragonflyData"]["re_try_limit"]
 general_url = INDEX["DragonflyData"]["URL"]["general_url"]
 Login_url = general_url + INDEX["DragonflyData"]["URL"]["Login_url"]
 All_Observation_Data_url = general_url + INDEX["DragonflyData"]["URL"]["All_Observation_Data_url"]
-Next_page_url = general_url + INDEX["DragonflyData"]["URL"]["Next_page_url"]
+Next_page_url = INDEX["DragonflyData"]["URL"]["Next_page_url"]
 Brief_discriptions_url = INDEX["DragonflyData"]["URL"]["Brief_discriptions_url"]
 Detailed_discriptions_url = INDEX["DragonflyData"]["URL"]["Detailed_discriptions_url"]
 map_info_url = INDEX["DragonflyData"]["URL"]["map_info_url"]
@@ -88,4 +93,23 @@ Password = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["Password"]
 URI = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["URI"]
 
 #\ Database table name
-UserInfoTableName = INDEX["DataBase"]["DataBaseTable"]["UserInfoTableName"]
+UserInfoTableName = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableName"]
+VariableTableName = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableName"]
+VarLatestDataID = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVar"]["LatestDataID"]
+
+
+
+#\ Filter object [User_filter, Species_filter, KeepOrFilter]
+DefaultFilterObject = [None, None, None]
+
+#\ Alarm
+HourFrom = INDEX["Alarm"]["WakeUpAlarm"]["HourFrom"]
+HourEnd = INDEX["Alarm"]["WakeUpAlarm"]["HourEnd"]
+HourRange = f"{HourFrom}-{HourEnd}"
+IntervalPerHour = INDEX["Alarm"]["WakeUpAlarm"]["IntervalPerHour"]
+IntervalPerMin = INDEX["Alarm"]["WakeUpAlarm"]["IntervalPerMin"]
+HOURAlarm = {"hour" : HourRange+"/"+IntervalPerHour} if IntervalPerHour != "" else {"minute" : "*/"+IntervalPerMin}
+
+#\ Daily routin
+DAYAlarm = {"hour": INDEX["Alarm"]["DailyUpdate"]["Hour"], "minute": INDEX["Alarm"]["DailyUpdate"]["Minute"], "second": INDEX["Alarm"]["DailyUpdate"]["Second"]}
+

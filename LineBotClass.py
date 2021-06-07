@@ -17,6 +17,7 @@ import DragonflyData
 import Database
 import datetime
 import LineBotMsgHandler
+import random
 
 
 
@@ -148,6 +149,15 @@ def handle_text_message(event):
             cache.set("gIsJustText", True)
 
 
+    elif cache.get("gEvent") == eLineBotEvent.TODAYDATA.value:
+        if pleaseLogin(event) is True :
+
+            #\ Get today's data
+            GetTodayData(event)
+
+            #\ reset the is-just-text flag
+            cache.set("gIsJustText", True)
+
     else :
         print("[EVENT] Echo")
         cache.set("gEvent", eLineBotEvent.NONE.value)
@@ -182,6 +192,10 @@ def CheckEvent(event_text:str):
 
     elif event_text == "search" :
         cache.set("gEvent", eLineBotEvent.SEARCH.value)
+        cache.set("gIsJustText", False)
+
+    elif event_text == "todaydata" :
+        cache.set("gEvent", eLineBotEvent.TODAYDATA.value)
         cache.set("gIsJustText", False)
 
     else:
@@ -241,21 +255,19 @@ def IDRequestCallback(event):
         return False
 
     elif tmpCnt == 2:
-        #\ read the data from DB
-        DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
-                                        Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
-                                        True)
-        # print(f"[INFO] DB_Data: {DB_Data}")
-
-        #\ check the return from the database is vaild or not
-        if DB_Data is None:
-            print("[Warning] No DB Data return, skip the requwst ID function")
-
-        #\ login
-        DragonflyData_session = Login2Web(DB_Data[4], DB_Data[5])
+        #\ Get the dragonfly request session
+        DragonflyData_session = CreateWebSession(event)
 
         #\ execute the crawler function
-        [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, event.message.text)
+        try :
+            IDNumber = int(event.message.text)
+        except:
+            gLine_bot_api.push_message(event.source.user_id, "Input ID number is not integer !!!!!!!!!!!")
+            print("[Warning] Input ID number is not integer")
+            cache.set("gEventCnt", 0)
+            return False
+
+        [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, IDNumber)
 
         if overflow:
             print(f"[INFO] The ID is overflow, please use the ID smaller {Max_ID_Num}")
@@ -265,7 +277,8 @@ def IDRequestCallback(event):
         else:
             print(f"[INFO] Successfully craw the data")
             #\ handle the Description to align
-            ID_find_result.Description = f"\n{' '*10}".join(list(ID_find_result.Description.split("\n")))
+            if ID_find_result.Description is not None:
+                ID_find_result.Description = f"\n{' '*10}".join(list(ID_find_result.Description.split("\n")))
             # gLine_bot_api.push_message(event.source.user_id,
             #                             TextSendMessage(text=f"[IdNumber]: {ID_find_result.IdNumber}\n"+\
             #                                                 f"[Dates]: {ID_find_result.Dates}, {ID_find_result.Times}\n"+\
@@ -291,7 +304,8 @@ def IDRequestCallback(event):
                                                         f"[Longitude]: {ID_find_result.Longitude}\n"\
                                                         f"[Speceis]: {', '.join(ID_find_result.SpeciesList)}\n"+\
                                                         f"[Description]: {ID_find_result.Description}\n",
-                                            contents=LineBotMsgHandler.RequestDataMsgText_handler(ID_find_result))
+                                                contents=LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText,ID_find_result)
+                                            )
 
             gLine_bot_api.push_message(event.source.user_id,
                                        RequestDataText
@@ -299,8 +313,7 @@ def IDRequestCallback(event):
 
             #\ loaction message
             gLine_bot_api.push_message(event.source.user_id,
-                                        LocationSendMessage(
-                                                            title=f'# {ID_find_result.IdNumber}',
+                                        LocationSendMessage(title=f'# {ID_find_result.IdNumber}',
                                                             address=f'{ID_find_result.City} {ID_find_result.District} {ID_find_result.Place}',
                                                             latitude=float(ID_find_result.Latitude),
                                                             longitude=float(ID_find_result.Longitude)
@@ -311,6 +324,45 @@ def IDRequestCallback(event):
         #\ reset the counter
         cache.set("gEventCnt", 0)
         return True
+
+
+#\ create web session
+def CreateWebSession(event=None):
+    """
+    params :
+        event: to get the user info based on user id, if None, then fetchall
+    """
+    if event is not None:
+        read_query = Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id)
+        fetchone = True
+    else:
+        read_query = Database.Read_all_query(index.UserInfoTableName)
+        fetchone = False
+
+    #\ read the data from DB
+    DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
+                                    read_query,
+                                    fetchone
+                                    )
+    # print(f"[INFO] DB_Data: {DB_Data}")
+
+    #\ check the return from the database is vaild or not
+    if DB_Data is None:
+        print("[Warning] No DB Data return, skip the requwst ID function")
+
+    #\ handle the account and password read from the database with fetchone and fetchall
+    if event is not None or len(DB_Data) == 1:
+        ACC, PW = DB_Data[4], DB_Data[5]
+    else:
+        idx = random.randint(0, len(DB_Data)-1)
+        ACC, PW = DB_Data[idx][4], DB_Data[idx][1]
+
+    #\ return session
+    [session, _, Login_state] = DragonflyData.Login_Web(ACC, PW)
+    if Login_state is False:
+        print("[Warning] In CreateWebSession() Login_state is False")
+    return session
+
 
 
 
@@ -335,8 +387,8 @@ def handle_follow_message(event):
 
 
 #\ login to web
-def Login2Web(login_account:str, login_password:str)->str:
-    print("[INFO] Login2Web")
+def LineBotLogin2Web(login_account:str, login_password:str)->str:
+    print("[INFO] LineBotLogin2Web")
 
     #\ Get the login PW and ACCOUNT
     print(f'[INFO] Account: {login_account}, Password: {login_password}')
@@ -397,7 +449,7 @@ def LoginProgress(event):
                                         )
 
             #\ Start Login to web method
-            LoginStateMessage = Login2Web(cache.get("gAccount"), cache.get("gPassword"))
+            LoginStateMessage = LineBotLogin2Web(cache.get("gAccount"), cache.get("gPassword"))
             print(f"[INFO] LoginStateMessage: {LoginStateMessage}")
             gLine_bot_api.push_message(event.source.user_id,
                                         TextSendMessage(text=LoginStateMessage)
@@ -494,6 +546,43 @@ def OEMSetDefaultRichmenu(linebot_api, event):
     LineBotMsgHandler.DefaultRichMenu(linebot_api, LoginState)
 
 
+#\ Callback for today's Data
+def GetTodayData(event):
+
+    gLine_bot_api.reply_message(event.reply_token,
+                                TextSendMessage(text="Please be patient, it might take a while~~")
+                                )
+
+    #\ Get the data
+    DragonflyData_session = CreateWebSession(event)
+    TodayDataList = DragonflyData.CrawTodayData(DragonflyData_session, int(cache.get("DataBaseVariable")["LatestDataID"]), index.DefaultFilterObject)
+
+    #\ Handling the data for the bubble in the carsoul message
+    content_list = []
+    for data in TodayDataList:
+        bubble_content = LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, data)
+        content_list.append(bubble_content)
+
+    #\ Handling the carsoul text message with limitation number by line api
+    # print(f"[INFO] in GetTodayData() content list\n{content_list}")
+    for content_idx in range(0, len(content_list), index.CarsoulBubbleLimit):
+        end = content_idx + index.CarsoulBubbleLimit
+        #\ handle overflow
+        if end > len(content_list):
+            content_limit_list = content_list[content_idx:]
+        else:
+            content_limit_list = content_list[content_idx:end]
+
+        Msgtext = FlexSendMessage(alt_text="No data",
+                                contents=LineBotMsgHandler.MultiRequestDataMsgText(content_limit_list)
+                                )
+
+        gLine_bot_api.push_message(event.source.user_id,
+                                Msgtext
+                                )
+
+
+
 #\ Init the cache data
 def InitCache(_cache):
     _cache.set("gEventText", None)
@@ -507,6 +596,12 @@ def InitCache(_cache):
     _cache.set("Dragonfly_session", None)
     _cache.set("DBInfo", Database.InitDBInfo())
     _cache.set("RichMenuID", LineBotMsgHandler.Get_RichMenu(gLine_bot_api))
+    _cache.set("DataBaseVariable", dict((Database.ReadFromDB(Database.CreateDBConection(),
+                                                            Database.Read_all_query(index.VariableTableName),
+                                                            False)
+                                        ))
+               )
+    _cache.set("DAYAlarm", index.DAYAlarm)
 
 
 #\ handle post back event

@@ -274,3 +274,8 @@ i.e.
   s = 'ab2asdrew123'
   s2 = 'a, b, 2, asd, rew123'
   ```
+### [2021/05/21]
+
+1. Alarm to do action in schedule
+
+- <https://ithelp.ithome.com.tw/articles/10218874>

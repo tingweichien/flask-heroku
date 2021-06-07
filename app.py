@@ -29,24 +29,10 @@ app.permanent_session_lifetime = timedelta(seconds=5)
 cache.init_app(app=app, config={"CACHE_TYPE": "filesystem", "CACHE_DIR":"/tmp"})
 
 #\set cache data
-# cache.set("gEventText", None)
-# cache.set("gEvent", eLineBotEvent.NONE.value)
-# cache.set("gEventCnt", 0)
-# cache.set("gIsJustText", True)
-# cache.set("gLoginDataConfirm", False)
-# cache.set("gLoginStatus", False)
-# cache.set("gAccount", None)
-# cache.set("gPassword", None)
-# cache.set("Dragonfly_session", None)
-# cache.set("DBInfo", Database.InitDBInfo())
-# cache.set("RichMenuID", LineBotMsgHandler.Get_RichMenu(gLine_bot_api))
 LineBotClass.InitCache(cache)
 
 #\ Init default richmenu
 # gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Login Richmenu"])
-
-#\ for testing
-# Database.InsertDB(Database.CreateDBConection(), Database.Insert_userinfo_query(index.UserInfoTableName), ("Tim", "123456789", "2021-05-24", "xxxx", "ooooo"))
 
 
 ################################################################################

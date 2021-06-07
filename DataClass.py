@@ -37,7 +37,7 @@ class DetailedTableInfo(simplifyTableInfo):
 
         #\ handle the Description to make it print better
         self.Description = list(self.Description.split("\n"))
-        self.Description = f"\n{' '*18}".join(self.Description)
+        self.Description = f"\n{' '*21}".join(self.Description)
 
 
 
@@ -50,18 +50,18 @@ class DetailedTableInfo(simplifyTableInfo):
                 '\t[Description]: ' + self.Description)
         '''
         return  f'\n[----- {__name__} -----]' + \
-                '\n-->[IdNumber]: ' + self.IdNumber + \
-                '\n-->[Dates]: ' + self.Dates + \
-                '\n-->[Times]: ' + self.Times + \
-                '\n-->[City]: ' + self.City + \
-                '\n-->[District]: ' + self.District + \
-                '\n-->[Altitude]: ' + self.Altitude + \
-                '\n-->[Place]: ' + self.Place + \
-                '\n-->[User]:' + self.User + \
-                '\n-->[Latitude]: ' + self.Latitude + \
-                '\n-->[Longitude]: ' + self.Longitude + \
-                '\n-->[Species]: ' + self.Species + \
-                '\n-->[SpeciesFamily]: ' + self.SpeciesFamily + \
-                '\n-->[SpeciesList]: ' + ", ".join(self.SpeciesList) + \
-                '\n-->[Description]: ' + self.Description + \
-                '\n-->[weather]: ' + self.weather
+                '\n-->[IdNumber]:       ' + self.IdNumber + \
+                '\n-->[Dates]:          ' + self.Dates + \
+                '\n-->[Times]:          ' + self.Times + \
+                '\n-->[City]:           ' + self.City + \
+                '\n-->[District]:       ' + self.District + \
+                '\n-->[Altitude]:       ' + self.Altitude + \
+                '\n-->[Place]:          ' + self.Place + \
+                '\n-->[User]:           ' + self.User + \
+                '\n-->[Latitude]:       ' + self.Latitude + \
+                '\n-->[Longitude]:      ' + self.Longitude + \
+                '\n-->[Species]:        ' + self.Species + \
+                '\n-->[SpeciesFamily]:  ' + self.SpeciesFamily + \
+                '\n-->[SpeciesList]:    ' + ", ".join(self.SpeciesList) + \
+                '\n-->[Description]:    ' + self.Description + \
+                '\n-->[weather]:        ' + self.weather
