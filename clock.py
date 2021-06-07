@@ -21,10 +21,12 @@ sched = BlockingScheduler()
 #     for key, value in conn.getheaders():
 #         print(key, value)
 
+
+
 #\ testing
-@sched.scheduled_job('cron', second="*/2")
-def testing():
-    print(f"[INFO] scheduled_job: {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
+# @sched.scheduled_job('cron', second="*/2")
+# def testing():
+#     print(f"[INFO] scheduled_job: {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
 
 
 #\ Set the timer to update the datebase

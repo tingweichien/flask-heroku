@@ -119,8 +119,5 @@ if __name__ == "__main__":
     #\ auto reload page
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-    #\ Start Alarm
-    clock.StartAlarm()
-
     #\ 啟動伺服器
     app.run(debug=True)
