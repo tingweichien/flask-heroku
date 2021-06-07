@@ -5,10 +5,7 @@ from flask_session import Session
 from datetime import timedelta
 import LineBotClass
 import index
-from VarIndex import cache, eLineBotEvent
-import Database
-import LineBotMsgHandler
-from LineBotClass import gLine_bot_api
+from VarIndex import cache
 import clock
 
 
@@ -33,10 +30,6 @@ LineBotClass.InitCache(cache)
 
 #\ Init default richmenu
 # gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Login Richmenu"])
-
-
-#\ Init the Alarm
-clock.StartAlarm()
 
 
 ################################################################################
@@ -123,9 +116,11 @@ def LineBotEcho():
 ################################################################################
 #\ start the server
 if __name__ == "__main__":
-    # auto reload page
+    #\ auto reload page
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 
+    #\ Start Alarm
+    clock.StartAlarm()
 
-    #啟動伺服器
+    #\ 啟動伺服器
     app.run(debug=True)

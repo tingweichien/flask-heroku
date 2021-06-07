@@ -5,7 +5,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 import requests
 import index
 import datetime
-from VarIndex import *
+from VarIndex import cache
 import random
 import DragonflyData
 import LineBotClass
