@@ -11,6 +11,7 @@ from linebot import LineBotApi
 import configparser
 import index
 from DataClass import DetailedTableInfo
+from VarIndex import *
 
 
 #\ FLEX-MESSAGE
@@ -450,7 +451,8 @@ RequestDataMsgText = {
 }
 
 #\ handle the RequestDataMsgText
-def RequestDataMsgText_handler(DrgonflyData:DetailedTableInfo)->str :
+def RequestDataMsgText_handler(DrgonflyData:DetailedTableInfo) :
+  #_RequestDataMsgText = cache.get("RequestDataMsgText")
   RequestDataMsgText["body"]["contents"][0]["text"] = DrgonflyData.IdNumber
   RequestDataMsgText["body"]["contents"][1]["text"] = f"{DrgonflyData.Dates}, {DrgonflyData.Times}"
   RequestDataMsgText["body"]["contents"][3]["contents"][0]["contents"][1]["text"] = DrgonflyData.User
@@ -459,6 +461,7 @@ def RequestDataMsgText_handler(DrgonflyData:DetailedTableInfo)->str :
   RequestDataMsgText["body"]["contents"][3]["contents"][3]["contents"][1]["text"] = f"({round(float(DrgonflyData.Latitude), index.PositionPrecision)}, {round(float(DrgonflyData.Longitude), index.PositionPrecision)})"
   RequestDataMsgText["body"]["contents"][3]["contents"][5]["contents"][1]["text"] = ', '.join(DrgonflyData.SpeciesList)
   RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DrgonflyData.Description
+  print(f"[INFO] In RequestDataMsgText_handler()\n{RequestDataMsgText}")
   return RequestDataMsgText
 
 # print(RequestDataMsgText_handler("123", "123","123","123","123","123","123","123","123","123","123"))

@@ -565,7 +565,7 @@ def GetTodayData(event):
         content_list.append(content)
 
     #\ Handling the carsoul text message with limitation number by line api
-    # print(f"[INFO] in GetTodayData()\n{content_list}")
+    print(f"[INFO] in GetTodayData() content list\n{content_list}")
     for content_idx in range(0, len(content_list), index.CarsoulBubbleLimit):
         end = content_idx + index.CarsoulBubbleLimit
         #\ handle overflow
