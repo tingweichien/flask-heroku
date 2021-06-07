@@ -562,11 +562,9 @@ def GetTodayData(event):
     for data in TodayDataList:
         bubble_content = LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, data)
         content_list.append(bubble_content)
-        print("[INFO] Append")
-        print(f"[INFO] content list\n{content_list}")
 
     #\ Handling the carsoul text message with limitation number by line api
-    print(f"[INFO] in GetTodayData() content list\n{content_list}")
+    # print(f"[INFO] in GetTodayData() content list\n{content_list}")
     for content_idx in range(0, len(content_list), index.CarsoulBubbleLimit):
         end = content_idx + index.CarsoulBubbleLimit
         #\ handle overflow
