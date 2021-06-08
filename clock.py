@@ -24,7 +24,7 @@ def testing():
 
 #\ Set the timer to update the datebase
 #\ this will be trigger every
-@sched.scheduled_job('cron', hour=11, minute=53, second=0)
+@sched.scheduled_job('cron', hour=0, minute=0, second=0)
 def SetTimer2Update_job():
     print(f"[INFO] SetTimer2Update_job start: {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
     #index.DAYAlarm["hour"] #\ we set the hour at 0 and let the minute and second to be random
