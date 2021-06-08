@@ -5,10 +5,6 @@
 #\  1. https://developers.line.biz/flex-simulator/
 #\  2. https://medium.com/@marstseng/line-flex-message-b83b33483f9d
 
-
-from linebot.models import RichMenu, RichMenuSize, RichMenuArea, RichMenuBounds, PostbackAction, MessageAction, URIAction
-from linebot import LineBotApi
-import configparser
 import index
 from DataClass import DetailedTableInfo
 from VarIndex import *
