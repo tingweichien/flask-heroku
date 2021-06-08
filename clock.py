@@ -63,8 +63,8 @@ def UpdateDataBase_job():
 
 
 #\ use this function to start the alarm
-def StartAlarm():
-    sched.start()
+# def StartAlarm():
+#     sched.start()
 
 
 
