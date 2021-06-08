@@ -24,7 +24,7 @@ sched = BlockingScheduler()
 
 
 #\ testing
-@sched.scheduled_job('cron', minute="*/10")
+@sched.scheduled_job('cron', second="*/30")
 def testing():
     print(f"[INFO] scheduled_job: {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
 
@@ -33,6 +33,7 @@ def testing():
 #\ this will be trigger every
 @sched.scheduled_job('cron', hour=0, minute=0, second=0)
 def SetTimer2Update_job():
+    print(f"[INFO] SetTimer2Update_job start: {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
     #index.DAYAlarm["hour"] #\ we set the hour at 0 and let the minute and second to be random
 
     #\ Start from 1 min is because this function will be triggerred at 00:00:00, avoid conflict with this function with UpdateDataBase_job()
@@ -75,4 +76,4 @@ def StartAlarm():
 
 
 #\ start the clock
-# StartAlarm()
+StartAlarm()
