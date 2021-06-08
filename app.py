@@ -120,7 +120,7 @@ if __name__ == "__main__":
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 
     #\ clock start
-    # clock.StartAlarm()
+    clock.StartAlarm()
 
     #\ 啟動伺服器
     app.run(debug=True)
