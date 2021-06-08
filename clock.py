@@ -69,4 +69,4 @@ def StartAlarm():
 
 
 #\ start the clock
-StartAlarm()
+sched.start()

@@ -123,4 +123,4 @@ if __name__ == "__main__":
     # clock.StartAlarm()
 
     #\ 啟動伺服器
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=False)
