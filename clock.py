@@ -13,13 +13,6 @@ import Database
 
 sched = BlockingScheduler()
 
-#\ The schedule to wake the herok, since for the free dyno, it'll begin to sleep if idling for 30 minutes
-# @sched.scheduled_job('cron', **index.HOURAlarm)
-# def scheduled_job():
-#     conn = requests.get(index.ServerURL)
-
-#     for key, value in conn.getheaders():
-#         print(key, value)
 
 
 
