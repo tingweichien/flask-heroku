@@ -361,7 +361,7 @@ def CreateWebSession(event=None):
     else:
         idx = random.randint(0, len(DB_Data)-1)
         ACC, PW = DB_Data[idx][4], DB_Data[idx][5]
-    print(f"[INFO] ACC :{ACC}, PW :{PW}")
+    # print(f"[INFO] ACC :{ACC}, PW :{PW}")
 
     #\ return session
     [session, _, Login_state] = DragonflyData.Login_Web(ACC, PW)
