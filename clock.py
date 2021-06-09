@@ -22,14 +22,14 @@ def testing():
 
 #\ Set the timer to update the datebase
 #\ this will be trigger every
-@sched.scheduled_job('cron', hour=0, minute=0, second=0)
+@sched.scheduled_job('cron', hour=21, minute=59, second=0)
 def SetTimer2Update_job():
     print(f"[INFO] SetTimer2Update_job start: {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
-    index.DAYAlarm["hour"] = 21 #\ we set the hour at 0 and let the minute and second to be random
+    index.DAYAlarm["hour"] = 22 #\ we set the hour at 0 and let the minute and second to be random
 
     #\ Start from 1 min is because this function will be triggerred at 00:00:00, avoid conflict with this function with UpdateDataBase_job()
     #\ The reason to set the minutes boundary to 30 is due to the heroku free dyno will sleep every 30 minutes idling.
-    index.DAYAlarm["minute"] = 55#random.randint(1, 30)
+    index.DAYAlarm["minute"] = 0#random.randint(1, 30)
     index.DAYAlarm["second"] = 0#random.randint(0, 60)
     # cache.set("DAYAlarm", index.HOURAlarm)
     sched.reschedule_job("UpdateDataBase_job_ID", trigger='cron', **index.HOURAlarm)
