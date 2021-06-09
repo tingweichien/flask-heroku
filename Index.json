@@ -64,7 +64,7 @@
         },
         "DailyUpdate" : {
             "Hour" : "0",
-            "Minute" : "0",
+            "Minute" : "1",
             "Second" : "0"
         }
     }

@@ -97,6 +97,10 @@ def user():
 #\ echo
 @app.route("/LineBotEcho", methods=['POST'])
 def LineBotEcho():
+    #\ Init the cache
+    if cache.get("gIsJustText") is None:
+        LineBotClass.InitCache(cache)
+    #\ handler
     LineBotClass.LineBotHandler(app)
     return "ok"
 
