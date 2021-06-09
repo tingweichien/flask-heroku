@@ -65,12 +65,13 @@ def CreateDBConection():
         #         port=port
         #         )
         #\ for the clock.py program, since it run at itself, set this to reload the DBInfo
-        print(cache.get("DBInfo"))
-        if cache.get("DBInfo") == None:
-            cache.set("DBInfo", InitDBInfo())
+
 
         try:
-            conn = psycopg2.connect(**cache.get("DBInfo"), sslmode='require')
+            try:
+                conn = psycopg2.connect(**cache.get("DBInfo"), sslmode='require')
+            except:
+                conn = psycopg2.connect(**InitDBInfo(), sslmode='require')
         except:
             conn = psycopg2.connect(cache.get("DBInfo")["DBURI"], sslmode='require')#\ This is for the local DB connection
             #conn = psycopg2.connect(DBURI, sslmode='require')#\ This is for the local DB connection
