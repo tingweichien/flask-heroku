@@ -29,7 +29,7 @@ def SetTimer2Update_job():
 
     #\ Start from 1 min is because this function will be triggerred at 00:00:00, avoid conflict with this function with UpdateDataBase_job()
     #\ The reason to set the minutes boundary to 30 is due to the heroku free dyno will sleep every 30 minutes idling.
-    index.DAYAlarm["minute"] = 50#random.randint(1, 30)
+    index.DAYAlarm["minute"] = 55#random.randint(1, 30)
     index.DAYAlarm["second"] = 0#random.randint(0, 60)
     # cache.set("DAYAlarm", index.HOURAlarm)
     sched.reschedule_job("UpdateDataBase_job_ID", trigger='cron', **index.HOURAlarm)
