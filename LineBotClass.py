@@ -327,10 +327,11 @@ def IDRequestCallback(event):
 
 
 #\ create web session
-def CreateWebSession(event=None):
+def CreateWebSession(event=None, CloseDBConn=True):
     """
     params :
         event: to get the user info based on user id, if None, then fetchall
+        CloseDBConn: default True to close DB connection after it.
     return:
         session
         conn
@@ -347,7 +348,8 @@ def CreateWebSession(event=None):
     conn = Database.CreateDBConection()
     DB_Data = Database.ReadFromDB(conn,
                                     read_query,
-                                    fetchone
+                                    fetchone,
+                                    CloseDBConn
                                     )
     # print(f"[INFO] DB_Data: {DB_Data}")
 

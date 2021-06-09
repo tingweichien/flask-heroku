@@ -44,10 +44,10 @@
     "DataBase":{
         "DataBaseTable":{
             "UserInfoTable": {
-                "TableName" : "UserInfo"
+                "TableName" : "userInfo"
             },
             "VariableTable": {
-                "TableName" : "Variable",
+                "TableName" : "variable",
                 "TableVar"  : {
                     "LatestDataID" : "LatestDataID"
                 }
