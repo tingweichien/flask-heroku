@@ -22,7 +22,7 @@ def testing():
 
 #\ Set the timer to update the datebase
 #\ this will be trigger every
-@sched.scheduled_job('cron', hour=1, minute=46, second=0)
+@sched.scheduled_job('cron', hour=1, minute=53, second=0)
 def SetTimer2Update_job():
     global sched
     print(f"[INFO] SetTimer2Update_job start: {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
@@ -30,7 +30,7 @@ def SetTimer2Update_job():
 
     #\ Start from 1 min is because this function will be triggerred at 00:00:00, avoid conflict with this function with UpdateDataBase_job()
     #\ The reason to set the minutes boundary to 30 is due to the heroku free dyno will sleep every 30 minutes idling.
-    index.DAYAlarm["minute"] = 47#random.randint(1, 30)
+    index.DAYAlarm["minute"] = 54#random.randint(1, 30)
     index.DAYAlarm["second"] = 0#random.randint(0, 60)
     # cache.set("DAYAlarm", index.HOURAlarm)
     sched.reschedule_job("UpdateDataBase_job_ID", trigger='cron', **index.DAYAlarm)
@@ -52,9 +52,12 @@ def UpdateDataBase_job():
     #\ write back to the database
     Update_Data = (Max_ID_num, index.VarLatestDataID)
     Database.InsertDB(conn,
-                      Database.Update_varaible_query,
+                      Database.Update_varaible_query(index.VariableTableName),
                       Update_Data
                       )
+
+
+
 
 
 #\ use this function to start the alarm
