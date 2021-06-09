@@ -44,10 +44,10 @@ def UpdateDataBase_job():
     print(f"[INFO] In UpdateDataBase_job() Update the database latest ID at {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
     retry = 0
     while retry < index.re_try_limit:
-        [session, _, Login_state] = DragonflyData.Login_Web(LineBotClass.CreateWebSession(None))
+        session, conn = LineBotClass.CreateWebSession(None)
 
         #\ if fail then retry
-        if Login_state is False:
+        if session is None:
             retry += 1
 
     #\ Get the latest ID
@@ -55,7 +55,7 @@ def UpdateDataBase_job():
 
     #\ write back to the database
     Update_Data = (index.VarLatestDataID, Max_ID_num)
-    Database.InsertDB(Database.CreateDBConection(),
+    Database.InsertDB(conn,
                       Database.Update_varaible_query,
                       Update_Data
                       )

@@ -256,7 +256,7 @@ def IDRequestCallback(event):
 
     elif tmpCnt == 2:
         #\ Get the dragonfly request session
-        DragonflyData_session = CreateWebSession(event)
+        DragonflyData_session, _ = CreateWebSession(event)
 
         #\ execute the crawler function
         try :
@@ -331,6 +331,9 @@ def CreateWebSession(event=None):
     """
     params :
         event: to get the user info based on user id, if None, then fetchall
+    return:
+        session
+        conn
     """
     if event is not None:
         read_query = Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id)
@@ -341,7 +344,8 @@ def CreateWebSession(event=None):
     print(f"[INFO] in CrateWebSession read query : {read_query}")
 
     #\ read the data from DB
-    DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
+    conn = Database.CreateDBConection()
+    DB_Data = Database.ReadFromDB(conn,
                                     read_query,
                                     fetchone
                                     )
@@ -362,7 +366,10 @@ def CreateWebSession(event=None):
     [session, _, Login_state] = DragonflyData.Login_Web(ACC, PW)
     if Login_state is False:
         print("[Warning] In CreateWebSession() Login_state is False")
-    return session
+        return None, None
+    else:
+        print("[INFO] In CreateWebSession() successfully login")
+        return session, conn
 
 
 
@@ -555,7 +562,7 @@ def GetTodayData(event):
                                 )
 
     #\ Get the data
-    DragonflyData_session = CreateWebSession(event)
+    DragonflyData_session, _ = CreateWebSession(event)
     TodayDataList = DragonflyData.CrawTodayData(DragonflyData_session, int(cache.get("DataBaseVariable")["LatestDataID"]), index.DefaultFilterObject)
 
     #\ Handling the data for the bubble in the carsoul message
