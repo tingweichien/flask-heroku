@@ -356,7 +356,7 @@ def CreateWebSession(event=None):
         print("[Warning] No DB Data return, skip the requwst ID function")
 
     #\ handle the account and password read from the database with fetchone and fetchall
-    if event is not None or len(DB_Data) == 1:
+    if event is not None and fetchone is True:
         ACC, PW = DB_Data[4], DB_Data[5]
     else:
         idx = random.randint(0, len(DB_Data)-1)
