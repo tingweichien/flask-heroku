@@ -64,9 +64,14 @@ def CreateDBConection():
         #         host=host,
         #         port=port
         #         )
+        #\ for the clock.py program, since it run at itself, set this to reload the DBInfo
+
+
         try:
-            # print(cache.get("DBInfo"))
-            conn = psycopg2.connect(**cache.get("DBInfo"), sslmode='require')
+            try:
+                conn = psycopg2.connect(**cache.get("DBInfo"), sslmode='require')
+            except:
+                conn = psycopg2.connect(**InitDBInfo(), sslmode='require')
         except:
             conn = psycopg2.connect(cache.get("DBInfo")["DBURI"], sslmode='require')#\ This is for the local DB connection
             #conn = psycopg2.connect(DBURI, sslmode='require')#\ This is for the local DB connection
@@ -114,7 +119,7 @@ def UpdateDB(conn, query, data):
 
 
 #\ Read the data
-def ReadFromDB(conn, query, FetchOneOrNot):
+def ReadFromDB(conn, query, FetchOneOrNot, CloseConn=True):
     """
     fetchone : return tuple
     fetchall : return list of tuple
@@ -124,13 +129,15 @@ def ReadFromDB(conn, query, FetchOneOrNot):
         if FetchOneOrNot:
             returnData = cursor.fetchone()
             print(f"[INFO] Read from DB : \n{returnData}")
-            CloseDBConnection(conn)
-            return returnData
         else:
             returnData = cursor.fetchall()
             print(f"[INFO] Read from DB : \n{returnData}")
+
+        #\ Don't Close connection
+        if CloseConn is True:
             CloseDBConnection(conn)
-            return returnData
+
+        return returnData
 
     except:
         print("[Warning] Read from DB might not have the data or something wrong")
@@ -223,4 +230,4 @@ Read_variable_query = lambda Table, var_name : f"SELECT * FROM {Table} WHERE var
 
 #\ Update
 #\ i.e. UPDATE public.variable	SET var_value = '79166'	WHERE var_name = 'LatestDataID';
-Update_varaible_query = lambda Table : f"UPDATE {Table} SET var_value=%s WHERE var_name=%s"
+Update_varaible_query = lambda Table : f"UPDATE {Table} SET var_value=%s WHERE var_name=%s;"

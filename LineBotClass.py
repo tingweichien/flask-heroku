@@ -256,7 +256,7 @@ def IDRequestCallback(event):
 
     elif tmpCnt == 2:
         #\ Get the dragonfly request session
-        DragonflyData_session = CreateWebSession(event)
+        DragonflyData_session, _ = CreateWebSession(event)
 
         #\ execute the crawler function
         try :
@@ -327,10 +327,14 @@ def IDRequestCallback(event):
 
 
 #\ create web session
-def CreateWebSession(event=None):
+def CreateWebSession(event=None, CloseDBConn=True):
     """
     params :
         event: to get the user info based on user id, if None, then fetchall
+        CloseDBConn: default True to close DB connection after it.
+    return:
+        session
+        conn
     """
     if event is not None:
         read_query = Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id)
@@ -338,11 +342,14 @@ def CreateWebSession(event=None):
     else:
         read_query = Database.Read_all_query(index.UserInfoTableName)
         fetchone = False
+    print(f"[INFO] in CrateWebSession read query : {read_query}")
 
     #\ read the data from DB
-    DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
+    conn = Database.CreateDBConection()
+    DB_Data = Database.ReadFromDB(conn,
                                     read_query,
-                                    fetchone
+                                    fetchone,
+                                    CloseDBConn
                                     )
     # print(f"[INFO] DB_Data: {DB_Data}")
 
@@ -351,17 +358,21 @@ def CreateWebSession(event=None):
         print("[Warning] No DB Data return, skip the requwst ID function")
 
     #\ handle the account and password read from the database with fetchone and fetchall
-    if event is not None or len(DB_Data) == 1:
+    if event is not None and fetchone is True:
         ACC, PW = DB_Data[4], DB_Data[5]
     else:
         idx = random.randint(0, len(DB_Data)-1)
-        ACC, PW = DB_Data[idx][4], DB_Data[idx][1]
+        ACC, PW = DB_Data[idx][4], DB_Data[idx][5]
+    # print(f"[INFO] ACC :{ACC}, PW :{PW}")
 
     #\ return session
     [session, _, Login_state] = DragonflyData.Login_Web(ACC, PW)
     if Login_state is False:
         print("[Warning] In CreateWebSession() Login_state is False")
-    return session
+        return None, None
+    else:
+        print("[INFO] In CreateWebSession() successfully login")
+        return session, conn
 
 
 
@@ -554,7 +565,7 @@ def GetTodayData(event):
                                 )
 
     #\ Get the data
-    DragonflyData_session = CreateWebSession(event)
+    DragonflyData_session, _ = CreateWebSession(event)
     TodayDataList = DragonflyData.CrawTodayData(DragonflyData_session, int(cache.get("DataBaseVariable")["LatestDataID"]), index.DefaultFilterObject)
 
     #\ Handling the data for the bubble in the carsoul message

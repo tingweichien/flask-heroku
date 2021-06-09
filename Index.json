@@ -44,10 +44,10 @@
     "DataBase":{
         "DataBaseTable":{
             "UserInfoTable": {
-                "TableName" : "UserInfo"
+                "TableName" : "userInfo"
             },
             "VariableTable": {
-                "TableName" : "Variable",
+                "TableName" : "variable",
                 "TableVar"  : {
                     "LatestDataID" : "LatestDataID"
                 }
@@ -64,7 +64,7 @@
         },
         "DailyUpdate" : {
             "Hour" : "0",
-            "Minute" : "0",
+            "Minute" : "1",
             "Second" : "0"
         }
     }
