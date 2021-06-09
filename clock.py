@@ -26,7 +26,7 @@ def testing():
 def SetTimer2Update_job():
     global sched
     print(f"[INFO] SetTimer2Update_job start: {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
-    index.DAYAlarm["hour"] = 0 #\ we set the hour at 0 and let the minute and second to be random
+    index.DAYAlarm["hour"] = 1 #\ we set the hour at 0 and let the minute and second to be random
 
     #\ Start from 1 min is because this function will be triggerred at 00:00:00, avoid conflict with this function with UpdateDataBase_job()
     #\ The reason to set the minutes boundary to 30 is due to the heroku free dyno will sleep every 30 minutes idling.
