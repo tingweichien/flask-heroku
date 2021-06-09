@@ -48,9 +48,11 @@ def UpdateDataBase_job():
 
     #\ Get the latest ID
     Max_ID_num = DragonflyData.GetMaxID(session)
+    print(f"[INFO] Max_ID_num : {Max_ID_num}")
 
     #\ write back to the database
     Update_Data = (Max_ID_num, index.VarLatestDataID)
+    print(f"[INFO] Update_Data : {Update_Data}")
     Database.InsertDB(conn,
                       Database.Update_varaible_query(index.VariableTableName),
                       Update_Data
