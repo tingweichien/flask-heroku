@@ -338,6 +338,7 @@ def CreateWebSession(event=None):
     else:
         read_query = Database.Read_all_query(index.UserInfoTableName)
         fetchone = False
+    print(f"[INFO] in CrateWebSession read query : {read_query}")
 
     #\ read the data from DB
     DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
