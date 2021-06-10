@@ -274,6 +274,7 @@ i.e.
   s = 'ab2asdrew123'
   s2 = 'a, b, 2, asd, rew123'
   ```
+
 ### [2021/05/21]
 
 1. Alarm to do action in schedule
@@ -303,3 +304,27 @@ i.e.
   [[1, 2, 3], [4, 5, 6, [7, 8, 9]], 10, 11, [12, 13]]
   >>>
   ```
+   - <https://ithelp.ithome.com.tw/articles/10218874>
+    ![Cron](https://i.imgur.com/HOqV9IZ.png)
+
+
+### [2021/06/08]
+
+1. Successfully add the clock to the heroku. The key point is as following
+   - Run the clock.py on it's own by adding ```clock: python clock.py``` in the Procifile
+   - Don't add any file or code or import about the clock.py to the main python file (app.py)
+   - After deploying to the Heroku, turn on this dyno on Configure Dynos
+    ![Dynos Configuration](https://i.imgur.com/nDHvqnZ.png)
+   - Reference : <https://ithelp.ithome.com.tw/articles/10219082>
+    ![CLI for clock](https://i.imgur.com/8WEX7XN.png)
+
+2. Gunicorn(Green unicorn)
+
+     - option
+
+        ```shell
+        reload ： 程式碼更新時將重啟工作，預設為False。此設定用於開發，每當應用程式發生更改時， 都會導致工作重新啟動。
+        preload ： 在工作程序被複制(派生)之前載入應用程式程式碼，預設為False。通過預載入應用程  式，你可以節省RAM資源，並且加快伺服器啟動時間。 可以打印出具體的錯誤資訊
+        ```
+
+      - ref : <https://www.796t.com/article.php?id=208479>
