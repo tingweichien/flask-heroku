@@ -5,12 +5,12 @@
         <meta charset="utf-8">
         <title>{% block title %}{% endblock %}</title>
 
-        <!--icon file-->
+        <!--Icon File-->
         <link rel="icon" href="{{ url_for('static', filename='image/dragonfly_ico.ico') }}" type="image/x-icon" />
         <link rel="shortcut icon" href="{{ url_for('static', filename='image/dragonfly_ico.ico') }}" type="image/x-icon" />
         <link rel="apple-touch-icon"  sizes="180x180" href="{{ url_for('static', filename='image/dragonfly_ico.png') }}" type="image/png"/>
 
-        <!--load static file-->
+        <!--Load Static File-->
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/layout.css') }}"/>
 
         {% block head %}
@@ -24,8 +24,10 @@
                 <a href="{{ url_for('about') }}" class="navbar-item">About</a>
                 <a href="{{ url_for('contact') }}" class="navbar-item">contact</a>
                 <a href="{{ url_for('OSMmap') }}" class="navbar-item">OSM</a>
+                <a href="{{ url_for('leaflet') }}" class="navbar-item">leaflet</a>
         </div>
 
+        <!--The Main Block For Content Which Below The Bar -->
         {% block content1 %}
         {% endblock %}
 

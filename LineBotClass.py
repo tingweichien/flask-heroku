@@ -18,13 +18,14 @@ import Database
 import datetime
 import LineBotMsgHandler
 import random
+from gSheetAPI import Sheet_id_dict
 
 
 
 #\ -- Global --
 #\ Line bot basic info
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('./Key/config.ini')
 gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
 gHandler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 
@@ -613,6 +614,7 @@ def InitCache(_cache):
                                         ))
                )
     _cache.set("DAYAlarm", index.DAYAlarm)
+    _cache.set("gGSheetList", Sheet_id_dict())
 
 
 #\ handle post back event

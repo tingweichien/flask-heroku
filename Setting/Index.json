@@ -1,6 +1,12 @@
 {
     "OSM": {
-        "bAPIon" : false
+        "bAPIon" : false,
+        "MapMarksLimit" : 500,
+        "DefaultMapViewLocation" : [24.158013, 120.650534],
+        "LatLonAccuracy" : 6
+    },
+    "GCP" : {
+        "GSheetApiKeyPath" : "./Key/gSheetApiKey.json"
     },
 
     "Server": "https://dragonfly-flask-web.herokuapp.com/",
@@ -67,6 +73,11 @@
             "Minute" : "1",
             "Second" : "0"
         }
+    },
+
+    "GoogleSheet" : {
+        "GeneralgSheetUrl_head" : "https://docs.google.com/spreadsheets/d/",
+        "GeneralgSheetUrl_end" : "/edit?usp=sharing"
     }
 
 }

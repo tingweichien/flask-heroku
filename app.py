@@ -6,6 +6,7 @@ from datetime import timedelta
 import LineBotClass
 import index
 from VarIndex import cache
+import gSheetAPI
 
 
 
@@ -39,10 +40,6 @@ def home():
     return render_template("home.html")
 
 
-@app.route("/test") # 代表我們要處理的路徑
-def text():
-    return "This is test"
-
 
 @app.route("/about", methods=["GET", "POST"])
 def about():
@@ -68,10 +65,16 @@ def OSMmap():
     return render_template("OSMmap.html", apikey = index.GMAPapikey, api_on = index.bAPIon)
 
 
+@app.route("/leaflet")
+def leaflet():
+    return render_template("leaflet.html", _index=index, _gSheetAPI=gSheetAPI)
+
+
 #\ -- to HTTP method --
 @app.route("/urlREST/<name>")
 def urlREST(name):
     return "<h1>Hello {} !! This is urlREST example</h1>".format(name)
+
 
 @app.route("/Query/")
 def Query():
