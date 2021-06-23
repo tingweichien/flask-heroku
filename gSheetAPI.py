@@ -64,7 +64,10 @@ def GetDragonflyDataGoogleSheets(Species:str, gSheetIDList:list = None)->list:
 
     #\ get the url correspond to the input species name
     #\ https://docs.google.com/spreadsheets/d/1dZtaLtbP4PKsjcQ01mj25HDkEBzk-nF0094tUhce1YU/edit?usp=sharing
-    SpeciesUrl = index.GeneralgSheetUrl(gSheetIDList[Species])
+    try:
+        SpeciesUrl = index.GeneralgSheetUrl(gSheetIDList[Species])
+    except :
+        SpeciesUrl =  index.GeneralgSheetUrl(gSheetIDList["Calopterygidae"])
 
 
     #\ Open the sheets
@@ -94,12 +97,14 @@ def Sheet_id_dict()->list:
     global client
     sheet = {}
     meta_list = client.drive.list()
+    # print(meta_list)
     for file_meta in meta_list:
         if file_meta['mimeType'] == 'application/vnd.google-apps.spreadsheet':
             sheet[file_meta['name']] = file_meta['id']
-    # print(sheet)
+    print(sheet)
     return sheet
 
 
 # IDList = Sheet_id_dict()
+# print(IDList)
 # GetDragonflyDataGoogleSheets("Calopterygidae", IDList)

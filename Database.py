@@ -200,7 +200,8 @@ Variable_create_table_query = '''CREATE TABLE IF NOT EXISTS Variable(
 #\ Execute create connection
 # PG_DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a dragonfly-flask-web').read()[:-1]
 # conn = psycopg2.connect(PG_DATABASE_URL, sslmode='require')
-# ExecuteDB(conn, Variable_create_table_query)
+# ExecuteDB(conn, UserInfo_create_table_query)
+
 
 
 #\ Read all query

@@ -350,3 +350,6 @@ i.e.
 
     - Reference : [How do you create a new sheet in a specific folder/directory using PyGSheets v2?](https://stackoverflow.com/questions/55914179/how-do-you-create-a-new-sheet-in-a-specific-folder-directory-using-pygsheets-v2)
 
+## [2021/06/23]
+
+1. Add the constraint for zooming the map with **ctrl** by following [Leaflet.GestureHandling](https://github.com/elmarquis/Leaflet.GestureHandling)

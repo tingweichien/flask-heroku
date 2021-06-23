@@ -55,9 +55,9 @@ def about():
         return render_template("about.html")
 
 
-@app.route("/contact")
-def contact():
-    return render_template("contact.html")
+@app.route("/weather")
+def weather():
+    return render_template("weather.html")
 
 
 @app.route("/OSMmap")

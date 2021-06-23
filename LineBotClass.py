@@ -471,7 +471,8 @@ def LoginProgress(event):
             #\ Store the user info if success to skip login process
             if cache.get("gLoginStatus") is True:
                 #\ Connect and Create the database if not exist
-                # Database.ExecuteDB(Database.CreateDBConection(), Database.UserInfo_create_table_query)
+                if index.CreateDataBase:
+                    Database.ExecuteDB(Database.CreateDBConection(), Database.UserInfo_create_table_query)
 
                 #\ Request the user info
                 #\      self.display_name = display_name

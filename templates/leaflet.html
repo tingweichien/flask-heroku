@@ -6,18 +6,21 @@ Leaflet page
 
 {% block head %}
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<!-- <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script> -->
-<!-- <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" /> -->
+<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-  crossorigin=""/>
+  crossorigin="" />
 <!-- Make sure you put this AFTER Leaflet's CSS -->
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
   crossorigin=""></script>
 
-   <style>
+
+<link rel="stylesheet" href="static/css/leaflet-gesture-handling.css" type="text/css">
+<script src="static/js/leaflet-gesture-handling.js"></script>
+
+
+<style>
   html,
   body {
     height: 100%;
@@ -49,14 +52,14 @@ Leaflet page
   <select name="Species" id="SpeciesMenu"></select>
 
   <!-- <input type="submit" value="Search" id="SearchBtnId"> -->
-  <button class="SearchBtn", type="button">Search</button>
+  <button class="SearchBtn" , type="button">Search</button>
 
 </form>
 
 <script>
   // load the data from the input of the template_render
   // It's normal to show warning in VScode, since the Jinja2 extensions might not be working properly
-  var items = {{ _index.INDEX_SPECIES["Orders"]|tojson }};
+  var items = {{ _index.INDEX_SPECIES["Orders"]| tojson }};
 
   $(function () {
     var temp_family_menu = {};
@@ -81,12 +84,12 @@ Leaflet page
       menu.empty();
       $.each(temp_family_menu[Value], function (idx, val) {
         $("<option />")
-        .attr("value", this.Value)
-        .html(this.Name)
-        .appendTo(menu);
+          .attr("value", this.Value)
+          .html(this.Name)
+          .appendTo(menu);
         temp_species_menu[this.Value] = this.Subitems;
-        console.log(idx +", [" + val.Value + ", " + val.Name + "]");
-        if (idx==0){
+        console.log(idx + ", [" + val.Value + ", " + val.Name + "]");
+        if (idx == 0) {
           temp = this.Subitems;
         }
       });
@@ -131,9 +134,10 @@ Leaflet page
   // Initialize Leaflet
   var map = L.map('map', {
     center: {{ _index.DefaultMapViewLocation }},
-    zoom: 9,
+  zoom: 7,
     wheelPxPerZoomLevel: 10,
-  })//.setView({lat: 24.150913, lon: 120.650534}, 7);
+      gestureHandling: true
+  });//.setView({lat: 24.150913, lon: 120.650534}, 7);
 
   // Add the OpenStreetMap tiles
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -157,23 +161,23 @@ Leaflet page
     navigator.geolocation.getCurrentPosition(showPosition);
   } else {
     var point = { lat: 24.150913, lon: 120.650534 };
-    L.marker(point, {icon:CurrentLocationIcon}).bindPopup(`<h1>Default position (${point.lat}, ${point.lon})</h1>`).addTo(map);
+    L.marker(point, { icon: CurrentLocationIcon }).bindPopup(`<h1>Default position (${point.lat}, ${point.lon})</h1>`).addTo(map);
   }
 
   // Get the user's current location
   function showPosition(position) {
-    var LatLonAccuracy  = parseFloat({{ _index.LatLonAccuracy }})
-    var lat = Math.round(position.coords.latitude*LatLonAccuracy)/LatLonAccuracy;
-    var lon = Math.round(position.coords.longitude*LatLonAccuracy)/LatLonAccuracy;
-    console.log("current loaction: Latitude: " + lat +
-                ", Longitude: " + lon);
+    var LatLonAccuracy = parseFloat({{ _index.LatLonAccuracy }})
+  var lat = Math.round(position.coords.latitude * LatLonAccuracy) / LatLonAccuracy;
+  var lon = Math.round(position.coords.longitude * LatLonAccuracy) / LatLonAccuracy;
+  console.log("current loaction: Latitude: " + lat +
+    ", Longitude: " + lon);
 
-    // Draw the current locatoin on the map if user authorize and is available to give the location
-    var point = { lat: lat, lon: lon};
-    L.marker(point, {icon:CurrentLocationIcon}).bindPopup(`<h1>Current Location (${point.lat}, ${point.lon})</h1>`).addTo(map);
+  // Draw the current locatoin on the map if user authorize and is available to give the location
+  var point = { lat: lat, lon: lon };
+  L.marker(point, { icon: CurrentLocationIcon }).bindPopup(`<h1>Current Location (${point.lat}, ${point.lon})</h1>`).addTo(map);
 
-    // Set the view to current location
-    map.setView(point)
+  // Set the view to current location
+  map.setView(point)
   }
 
 
@@ -183,30 +187,40 @@ Leaflet page
   var SearchBtn = document.querySelector(".SearchBtn");
 
   // Callback function for the search button
-  function GetSearchBtn(){
-    console.log("SearchBtnId.value: " + SearchBtn.value);
-    // show a marker on the map
-    var Data = {{ _gSheetAPI.GetDragonflyDataGoogleSheets("Calopterygidae", _gSheetAPI.Sheet_id_dict())|safe }};
-    var LatLonAccuracy  = parseFloat({{ _index.LatLonAccuracy }})
+  function GetSearchBtn() {
 
-    Data = Data.slice(1, {{ _index.MapMarksLimit }});
-    for (idx in Data){
-      var tmp_data = Data[idx];
-      var point = { lat: Math.round(parseFloat(tmp_data[10])*LatLonAccuracy)/LatLonAccuracy,
-                    lon: Math.round(parseFloat(tmp_data[11])*LatLonAccuracy)/LatLonAccuracy };
-      //console.log(point);
-      L.marker(point).bindPopup(
-        `<h1>${tmp_data[1]} #${tmp_data[2]}</h1>
+    // Get the dropdown list value
+    var FaimilyDropDownList = document.getElementById("FamilyMenu");
+    var SpeciesDropDownList = document.getElementById("SpeciesMenu");
+    var SpeciesName = FaimilyDropDownList.value + SpeciesDropDownList.value;
+    console.log("Species to show on map: " + SpeciesName);
+
+    // show a marker on the map
+    //var Data = {{ _gSheetAPI.GetDragonflyDataGoogleSheets("Calopterygidae", _gSheetAPI.Sheet_id_dict())|safe }};
+    var Data = {{ _gSheetAPI.GetDragonflyDataGoogleSheets(SpeciesName, _gSheetAPI.Sheet_id_dict()) | safe
+  }};
+  var LatLonAccuracy = parseFloat({{ _index.LatLonAccuracy }});
+
+  Data = Data.slice(1, {{ _index.MapMarksLimit }});
+  for (idx in Data) {
+    var tmp_data = Data[idx];
+    var point = {
+      lat: Math.round(parseFloat(tmp_data[10]) * LatLonAccuracy) / LatLonAccuracy,
+      lon: Math.round(parseFloat(tmp_data[11]) * LatLonAccuracy) / LatLonAccuracy
+    };
+    //console.log(point);
+    L.marker(point).bindPopup(
+      `<h1>${tmp_data[1]} #${tmp_data[2]}</h1>
         <dl>
           <dt> <b>[User]</b>      ${tmp_data[5]}</dt>
-          <dt> <b>[Times]</b>     ${tmp_data[4] + " " +tmp_data[3]}</dt>
+          <dt> <b>[Times]</b>     ${tmp_data[4] + " " + tmp_data[3]}</dt>
           <dt> <b>[City]</b>      ${tmp_data[6] + tmp_data[7]}</dt>
           <dt> <b>[Place]</b>     ${tmp_data[8]}</dt>
           <dt> <b>[Altitude]</b>  ${tmp_data[9]}</dt>
           <dt> <b>[LAT, LON]</b>  (${point.lat}, ${point.lon})</dt>
         </dl>`
-        ).addTo(map);
-    }
+    ).addTo(map);
+  }
   }
 
   // Add to the listener

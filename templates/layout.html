@@ -20,11 +20,11 @@
 
     <body>
         <div class="navbar">
-                <a href="{{ url_for('home') }}" class="navbar-brand">Home</a>
-                <a href="{{ url_for('about') }}" class="navbar-item">About</a>
-                <a href="{{ url_for('contact') }}" class="navbar-item">contact</a>
-                <a href="{{ url_for('OSMmap') }}" class="navbar-item">OSM</a>
-                <a href="{{ url_for('leaflet') }}" class="navbar-item">leaflet</a>
+                <a href="{{ url_for('home') }}" class="navbar-brand" id="HomePage">Home</a>
+                <a href="{{ url_for('about') }}" class="navbar-item" id="AboutPage">About</a>
+                <a href="{{ url_for('weather') }}" class="navbar-item" id="WeatherPage">Weather</a>
+                <a href="{{ url_for('OSMmap') }}" class="navbar-item" id="OSMmap">OSM</a>
+                <a href="{{ url_for('leaflet') }}" class="navbar-item" id="leafletPage">leaflet</a>
         </div>
 
         <!--The Main Block For Content Which Below The Bar -->

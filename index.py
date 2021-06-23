@@ -116,6 +116,9 @@ UserInfoTableName = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableNa
 VariableTableName = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableName"]
 VarLatestDataID = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVar"]["LatestDataID"]
 
+#\ Create database (or to update the current database column name or attribute)
+CreateDataBase = INDEX["DataBase"]["CreateDataBase"]
+
 
 
 #\ Filter object [User_filter, Species_filter, KeepOrFilter]
