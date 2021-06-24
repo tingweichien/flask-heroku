@@ -14,8 +14,9 @@ import Database
 
 #\--->Now use random fake user agent
 # https://ithelp.ithome.com.tw/articles/10209356
+#\ if there is error orrcur then do not use this
 try:
-    UA = UserAgent(use_cache_server=False)
+    UA = UserAgent()
     headers = {
             'User-Agent' : UA.random,
     }
