@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import DataClass
 import index
-from fake_useragent import UserAgent
+from fake_useragent import UserAgent, FakeUserAgentError
 import re
 from datetime import datetime
 import Database
@@ -12,13 +12,15 @@ import Database
 
 
 
-
 #\--->Now use random fake user agent
 # https://ithelp.ithome.com.tw/articles/10209356
-UA = UserAgent(use_cache_server=False)
-headers = {
-        'User-Agent' : UA.random,
-}
+try:
+    UA = UserAgent(use_cache_server=False)
+    headers = {
+            'User-Agent' : UA.random,
+    }
+except FakeUserAgentError:
+    headers = {'User-Agent':"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36"}
 
 
 #\ Proxy auto crawling
