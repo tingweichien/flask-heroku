@@ -53,6 +53,7 @@ def GetDragonflyDataGoogleSheets(Species:str, gSheetIDList:list = None)->list:
 
     Returns:
         list: list of list, list of the data in the gsheet
+        status: success or fail
     """
 
     #\Get the sheet
@@ -66,8 +67,10 @@ def GetDragonflyDataGoogleSheets(Species:str, gSheetIDList:list = None)->list:
     #\ https://docs.google.com/spreadsheets/d/1dZtaLtbP4PKsjcQ01mj25HDkEBzk-nF0094tUhce1YU/edit?usp=sharing
     try:
         SpeciesUrl = index.GeneralgSheetUrl(gSheetIDList[Species])
+        status = 1
     except :
         SpeciesUrl =  index.GeneralgSheetUrl(gSheetIDList["Calopterygidae"])
+        status = 0
 
 
     #\ Open the sheets
@@ -83,7 +86,7 @@ def GetDragonflyDataGoogleSheets(Species:str, gSheetIDList:list = None)->list:
                                 include_tailing_empty_rows=False)
     # print(f"All: {ALL}")
 
-    return ALL
+    return [ALL, status]
 
 
 

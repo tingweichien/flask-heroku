@@ -15,7 +15,7 @@ sched = BlockingScheduler()
 
 
 #\ testing
-@sched.scheduled_job('cron', hour="*/1")
+@sched.scheduled_job('cron', minutes="*/29")
 def testing():
     print(f"[INFO] scheduled_job: {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
 

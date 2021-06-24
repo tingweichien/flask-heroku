@@ -33,16 +33,40 @@ LineBotClass.InitCache(cache)
 
 
 ################################################################################
+#\ -- App menu css setting --
+#\ Remeber to update this when adding another router
+MenuBarSetting = [
+    {"url":"Home", "class":"btn", "name":"Home"},
+    {"url":"About", "class":"btn", "name":"About"},
+    {"url":"Weather", "class":"btn", "name":"Weather"},
+    {"url":"OSMmap", "class":"btn", "name":"OSMmap"},
+    {"url":"Leaflet", "class":"btn", "name":"Leaflet"}
+]
+Pre_Menu = 0
+
+
 #\ -- APP ROUTER --
 #\ Decorator 函式的裝飾:以函式為基礎,提供附加功能
 @app.route("/")
-def home():
-    return render_template("home.html")
-
+def Home():
+    #\ Active the menu bar
+    global Pre_Menu
+    L_MenuBarSetting = MenuBarSetting
+    L_MenuBarSetting[Pre_Menu]["class"] = "btn"
+    L_MenuBarSetting[0]["class"] = "btn-active"
+    Pre_Menu = 0
+    return render_template("Home.html", _MenuBarSetting=L_MenuBarSetting)
 
 
 @app.route("/about", methods=["GET", "POST"])
-def about():
+def About():
+    #\ Active the menu bar
+    global Pre_Menu
+    L_MenuBarSetting = MenuBarSetting
+    L_MenuBarSetting[Pre_Menu]["class"] = "btn"
+    L_MenuBarSetting[1]["class"] = "btn-active"
+    Pre_Menu = 1
+
     if request.method == "POST":
         #session.permanent = True
         user = request.form['nm']
@@ -52,22 +76,40 @@ def about():
         if 'user' in session:
             return redirect(url_for("user"))
 
-        return render_template("about.html")
+        return render_template("About.html", _MenuBarSetting=L_MenuBarSetting)
 
 
-@app.route("/weather")
-def weather():
-    return render_template("weather.html")
+@app.route("/Weather")
+def Weather():
+    #\ Active the menu bar
+    global Pre_Menu
+    L_MenuBarSetting = MenuBarSetting
+    L_MenuBarSetting[Pre_Menu]["class"] = "btn"
+    L_MenuBarSetting[2]["class"] = "btn-active"
+    Pre_Menu = 2
+    return render_template("Weather.html", _MenuBarSetting=L_MenuBarSetting)
 
 
 @app.route("/OSMmap")
 def OSMmap():
-    return render_template("OSMmap.html", apikey = index.GMAPapikey, api_on = index.bAPIon)
+    #\ Active the menu bar
+    global Pre_Menu
+    L_MenuBarSetting = MenuBarSetting
+    L_MenuBarSetting[Pre_Menu]["class"] = "btn"
+    L_MenuBarSetting[3]["class"] = "btn-active"
+    Pre_Menu = 3
+    return render_template("OSMmap.html", apikey = index.GMAPapikey, api_on = index.bAPIon, _MenuBarSetting=L_MenuBarSetting)
 
 
-@app.route("/leaflet")
-def leaflet():
-    return render_template("leaflet.html", _index=index, _gSheetAPI=gSheetAPI)
+@app.route("/Leaflet")
+def Leaflet():
+    #\ Active the menu bar
+    global Pre_Menu
+    L_MenuBarSetting = MenuBarSetting
+    L_MenuBarSetting[Pre_Menu]["class"] = "btn"
+    L_MenuBarSetting[4]["class"] = "btn-active"
+    Pre_Menu = 4
+    return render_template("Leaflet.html", _index=index, _gSheetAPI=gSheetAPI, _MenuBarSetting=L_MenuBarSetting)
 
 
 #\ -- to HTTP method --

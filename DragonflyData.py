@@ -15,7 +15,7 @@ import Database
 
 #\--->Now use random fake user agent
 # https://ithelp.ithome.com.tw/articles/10209356
-UA = UserAgent()
+UA = UserAgent(use_cache_server=False)
 headers = {
         'User-Agent' : UA.random,
 }

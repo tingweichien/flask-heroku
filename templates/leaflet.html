@@ -1,19 +1,9 @@
-{% extends "layout.html" %}
-
-{% block title %}
-Leaflet page
-{% endblock %}
-
-{% block head %}
+{% extends "layout.html" %} {% block title %} Leaflet page {% endblock %} {% block head %}
 <meta charset="utf-8" />
 <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-  integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-  crossorigin="" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
 <!-- Make sure you put this AFTER Leaflet's CSS -->
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-  integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-  crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
 
 
 <link rel="stylesheet" href="static/css/leaflet-gesture-handling.css" type="text/css">
@@ -21,106 +11,104 @@ Leaflet page
 
 
 <style>
-  html,
-  body {
-    height: 100%;
-    padding: 0;
-    margin: 0;
-  }
+    html,
+    body {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+    }
 
-  #map {
-    /* configure the size of the map */
-    width: 100%;
-    height: 100%;
-  }
+    #map {
+        /* configure the size of the map */
+        width: 100%;
+        height: 100%;
+    }
 </style>
-{% endblock %}
-
-{% block content1 %}
+{% endblock %} {% block content1 %}
 <!--------------Selector-------------->
 <form>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-  <label for="OrdersMenu">Choose Orders:</label>
-  <select name="Orders" id="OrdersMenu"></select>
+    <label for="OrdersMenu">Choose Orders:</label>
+    <select name="Orders" id="OrdersMenu"></select>
 
-  <label for="FamilyMenu">Choose Family:</label>
-  <select name="Family" id="FamilyMenu"></select>
+    <label for="FamilyMenu">Choose Family:</label>
+    <select name="Family" id="FamilyMenu"></select>
 
-  <label for="SpeciesMenu">Choose Species:</label>
-  <select name="Species" id="SpeciesMenu"></select>
+    <label for="SpeciesMenu">Choose Species:</label>
+    <select name="Species" id="SpeciesMenu"></select>
 
-  <!-- <input type="submit" value="Search" id="SearchBtnId"> -->
-  <button class="SearchBtn" , type="button">Search</button>
+    <!-- <input type="submit" value="Search" id="SearchBtnId"> -->
+    <button class="SearchBtn" , type="button">Search</button>
 
 </form>
 
 <script>
-  // load the data from the input of the template_render
-  // It's normal to show warning in VScode, since the Jinja2 extensions might not be working properly
-  var items = {{ _index.INDEX_SPECIES["Orders"]| tojson }};
+    // load the data from the input of the template_render
+    // It's normal to show warning in VScode, since the Jinja2 extensions might not be working properly
+    var items = {{ _index.INDEX_SPECIES["Orders"]|tojson }};
 
-  $(function () {
-    var temp_family_menu = {};
-    var temp_species_menu = {};
-    var temp = null;
+    $(function() {
+        var temp_family_menu = {};
+        var temp_species_menu = {};
+        var temp = null;
 
-    $.each(items, function () {
-      $("<option />")
-        .attr("value", this.Value)
-        .html(this.Name)
-        .appendTo("#OrdersMenu");
-      temp_family_menu[this.Value] = this.Subitems;
+        $.each(items, function() {
+            $("<option />")
+                .attr("value", this.Value)
+                .html(this.Name)
+                .appendTo("#OrdersMenu");
+            temp_family_menu[this.Value] = this.Subitems;
+        });
+
+        // one click the order dropdown list
+        $("#OrdersMenu").change(function() {
+            var Value = $(this).val();
+            var menu = $("#FamilyMenu");
+            var menu_next = $("#SpeciesMenu");
+
+            // Family menu build up
+            menu.empty();
+            $.each(temp_family_menu[Value], function(idx, val) {
+                $("<option />")
+                    .attr("value", this.Value)
+                    .html(this.Name)
+                    .appendTo(menu);
+                temp_species_menu[this.Value] = this.Subitems;
+                console.log(idx + ", [" + val.Value + ", " + val.Name + "]");
+                if (idx == 0) {
+                    temp = this.Subitems;
+                }
+            });
+
+            // Species menu correspond to the first of family
+            menu_next.empty()
+            $.each(temp, function() {
+                $("<option />")
+                    .attr("value", this.Value)
+                    .html(this.Name)
+                    .appendTo(menu_next);
+            });
+        }).change();
+
+
+        // On click Species dropdown list
+        $("#FamilyMenu").change(function() {
+            var Value = $(this).val();
+            var menu = $("#SpeciesMenu");
+
+            menu.empty();
+            $.each(temp_species_menu[Value], function() {
+                $("<option />")
+                    .attr("value", this.Value)
+                    .html(this.Name)
+                    .appendTo(menu);
+            });
+        }).change();
+
+
     });
-
-    // one click the order dropdown list
-    $("#OrdersMenu").change(function () {
-      var Value = $(this).val();
-      var menu = $("#FamilyMenu");
-      var menu_next = $("#SpeciesMenu");
-
-      // Family menu build up
-      menu.empty();
-      $.each(temp_family_menu[Value], function (idx, val) {
-        $("<option />")
-          .attr("value", this.Value)
-          .html(this.Name)
-          .appendTo(menu);
-        temp_species_menu[this.Value] = this.Subitems;
-        console.log(idx + ", [" + val.Value + ", " + val.Name + "]");
-        if (idx == 0) {
-          temp = this.Subitems;
-        }
-      });
-
-      // Species menu correspond to the first of family
-      menu_next.empty()
-      $.each(temp, function () {
-        $("<option />")
-          .attr("value", this.Value)
-          .html(this.Name)
-          .appendTo(menu_next);
-      });
-    }).change();
-
-
-    // On click Species dropdown list
-    $("#FamilyMenu").change(function () {
-      var Value = $(this).val();
-      var menu = $("#SpeciesMenu");
-
-      menu.empty();
-      $.each(temp_species_menu[Value], function () {
-        $("<option />")
-          .attr("value", this.Value)
-          .html(this.Name)
-          .appendTo(menu);
-      });
-    }).change();
-
-
-  });
 </script>
 
 
@@ -129,105 +117,116 @@ Leaflet page
 <!-----------------Map----------------->
 <div id="map" style="float: left;"></div>
 <script>
+    // ---- Initialization ----
+    // Initialize Leaflet
+    var map = L.map('map', {
+        center: {{ _index.DefaultMapViewLocation|safe }},
+        zoom: 9,
+        wheelPxPerZoomLevel: 10,
+        gestureHandling: true
+    }); //.setView({lat: 24.150913, lon: 120.650534}, 7);
 
-  // ---- Initialization ----
-  // Initialize Leaflet
-  var map = L.map('map', {
-    center: {{ _index.DefaultMapViewLocation }},
-  zoom: 7,
-    wheelPxPerZoomLevel: 10,
-      gestureHandling: true
-  });//.setView({lat: 24.150913, lon: 120.650534}, 7);
+    // Add the OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+    }).addTo(map);
 
-  // Add the OpenStreetMap tiles
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
-  }).addTo(map);
-
-  // Show the scale bar on the lower left corner
-  L.control.scale().addTo(map);
-
-
-
-  // ---- Get current location ----
-  // Current location marker
-  var CurrentLocationIcon = L.icon({
-    iconUrl: 'https://image.flaticon.com/icons/png/512/800/800724.png',
-    iconSize: [50, 50],
-  });
-
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(showPosition);
-  } else {
-    var point = { lat: 24.150913, lon: 120.650534 };
-    L.marker(point, { icon: CurrentLocationIcon }).bindPopup(`<h1>Default position (${point.lat}, ${point.lon})</h1>`).addTo(map);
-  }
-
-  // Get the user's current location
-  function showPosition(position) {
-    var LatLonAccuracy = parseFloat({{ _index.LatLonAccuracy }})
-  var lat = Math.round(position.coords.latitude * LatLonAccuracy) / LatLonAccuracy;
-  var lon = Math.round(position.coords.longitude * LatLonAccuracy) / LatLonAccuracy;
-  console.log("current loaction: Latitude: " + lat +
-    ", Longitude: " + lon);
-
-  // Draw the current locatoin on the map if user authorize and is available to give the location
-  var point = { lat: lat, lon: lon };
-  L.marker(point, { icon: CurrentLocationIcon }).bindPopup(`<h1>Current Location (${point.lat}, ${point.lon})</h1>`).addTo(map);
-
-  // Set the view to current location
-  map.setView(point)
-  }
+    // Show the scale bar on the lower left corner
+    L.control.scale().addTo(map);
 
 
 
-  // ---- Search Button Callback ----
-  // Function to get the value when push the search button
-  var SearchBtn = document.querySelector(".SearchBtn");
+    // ---- Get current location ----
+    // Current location marker
+    var CurrentLocationIcon = L.icon({
+        iconUrl: 'https://image.flaticon.com/icons/png/512/800/800724.png',
+        iconSize: [50, 50],
+    });
 
-  // Callback function for the search button
-  function GetSearchBtn() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
+        var point = {
+            lat: 24.150913,
+            lon: 120.650534
+        };
+        L.marker(point, {
+            icon: CurrentLocationIcon
+        }).bindPopup(`<h1>Default position (${point.lat}, ${point.lon})</h1>`).addTo(map);
+    }
 
-    // Get the dropdown list value
-    var FaimilyDropDownList = document.getElementById("FamilyMenu");
-    var SpeciesDropDownList = document.getElementById("SpeciesMenu");
-    var SpeciesName = FaimilyDropDownList.value + SpeciesDropDownList.value;
-    console.log("Species to show on map: " + SpeciesName);
+    // Get the user's current location
+    function showPosition(position) {
+        var LatLonAccuracy = parseFloat({{ _index.LatLonAccuracy }})
+        var lat = Math.round(position.coords.latitude * LatLonAccuracy) / LatLonAccuracy;
+        var lon = Math.round(position.coords.longitude * LatLonAccuracy) / LatLonAccuracy;
+        console.log("current loaction: Latitude: " + lat + ", Longitude: " + lon);
 
-    // show a marker on the map
-    //var Data = {{ _gSheetAPI.GetDragonflyDataGoogleSheets("Calopterygidae", _gSheetAPI.Sheet_id_dict())|safe }};
-    var Data = {{ _gSheetAPI.GetDragonflyDataGoogleSheets(SpeciesName, _gSheetAPI.Sheet_id_dict()) | safe
-  }};
-  var LatLonAccuracy = parseFloat({{ _index.LatLonAccuracy }});
+        // Draw the current locatoin on the map if user authorize and is available to give the location
+        var point = {
+            lat: lat,
+            lon: lon
+        };
+        L.marker(point, {
+            icon: CurrentLocationIcon
+        }).bindPopup(`<h1>Current Location (${point.lat}, ${point.lon})</h1>`).addTo(map);
 
-  Data = Data.slice(1, {{ _index.MapMarksLimit }});
-  for (idx in Data) {
-    var tmp_data = Data[idx];
-    var point = {
-      lat: Math.round(parseFloat(tmp_data[10]) * LatLonAccuracy) / LatLonAccuracy,
-      lon: Math.round(parseFloat(tmp_data[11]) * LatLonAccuracy) / LatLonAccuracy
-    };
-    //console.log(point);
-    L.marker(point).bindPopup(
-      `<h1>${tmp_data[1]} #${tmp_data[2]}</h1>
-        <dl>
-          <dt> <b>[User]</b>      ${tmp_data[5]}</dt>
-          <dt> <b>[Times]</b>     ${tmp_data[4] + " " + tmp_data[3]}</dt>
-          <dt> <b>[City]</b>      ${tmp_data[6] + tmp_data[7]}</dt>
-          <dt> <b>[Place]</b>     ${tmp_data[8]}</dt>
-          <dt> <b>[Altitude]</b>  ${tmp_data[9]}</dt>
-          <dt> <b>[LAT, LON]</b>  (${point.lat}, ${point.lon})</dt>
-        </dl>`
-    ).addTo(map);
-  }
-  }
-
-  // Add to the listener
-  SearchBtn.addEventListener("click", GetSearchBtn);
+        // Set the view to current location
+        map.setView(point)
+    }
 
 
 
+    // ---- Search Button Callback ----
+    // Function to get the value when push the search button
+    var SearchBtn = document.querySelector(".SearchBtn");
+
+    // Callback function for the search button
+    function GetSearchBtn() {
+
+        // Get the dropdown list value
+        var FaimilyDropDownList = document.getElementById("FamilyMenu");
+        var SpeciesDropDownList = document.getElementById("SpeciesMenu");
+        var SpeciesName = FaimilyDropDownList.value + SpeciesDropDownList.value;
+        console.log("Species to show on map: " + SpeciesName);
+
+        // show a marker on the map
+        var return_Data = {{ _gSheetAPI.GetDragonflyDataGoogleSheets(SpeciesName, _gSheetAPI.Sheet_id_dict()) | safe}};
+        var Data;
+        if (return_Data[1]) {
+            Data = return_Data[0];
+        } else {
+            window.alert("No Data");
+            return;
+        }
+
+        var LatLonAccuracy = parseFloat({{ _index.LatLonAccuracy }});
+
+        Data = Data.slice(1, {{ _index.MapMarksLimit }});
+        for (idx in Data) {
+            var tmp_data = Data[idx];
+            var point = {
+                lat: Math.round(parseFloat(tmp_data[10]) * LatLonAccuracy) / LatLonAccuracy,
+                lon: Math.round(parseFloat(tmp_data[11]) * LatLonAccuracy) / LatLonAccuracy
+            };
+            //console.log(point);
+            L.marker(point).bindPopup(
+                `<h1>${tmp_data[1]} #${tmp_data[2]}</h1>
+          <dl>
+            <dt> <b>[User]</b>      ${tmp_data[5]}</dt>
+            <dt> <b>[Times]</b>     ${tmp_data[4] + " " + tmp_data[3]}</dt>
+            <dt> <b>[City]</b>      ${tmp_data[6] + tmp_data[7]}</dt>
+            <dt> <b>[Place]</b>     ${tmp_data[8]}</dt>
+            <dt> <b>[Altitude]</b>  ${tmp_data[9]}</dt>
+            <dt> <b>[LAT, LON]</b>  (${point.lat}, ${point.lon})</dt>
+          </dl>`
+            ).addTo(map);
+        }
+    }
+
+    // Add to the listener
+    SearchBtn.addEventListener("click", GetSearchBtn);
 </script>
 <!-----------------Map----------------->
 
