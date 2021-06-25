@@ -1,5 +1,4 @@
 import proxyscrape
-from typing import List
 import requests
 from bs4 import BeautifulSoup
 import DataClass
@@ -7,7 +6,6 @@ import index
 from fake_useragent import UserAgent, FakeUserAgentError
 import re
 from datetime import datetime
-import Database
 
 
 
@@ -21,7 +19,7 @@ try:
             'User-Agent' : UA.random,
     }
 except FakeUserAgentError:
-    headers = {'User-Agent':"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36"}
+    headers = {}
 
 
 #\ Proxy auto crawling
