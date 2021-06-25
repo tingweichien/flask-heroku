@@ -58,7 +58,7 @@ def Home():
     return render_template("Home.html", _MenuBarSetting=L_MenuBarSetting)
 
 
-@app.route("/about", methods=["GET", "POST"])
+@app.route("/About", methods=["GET", "POST"])
 def About():
     #\ Active the menu bar
     global Pre_Menu
