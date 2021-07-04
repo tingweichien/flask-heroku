@@ -7,8 +7,11 @@ import LineBotClass
 import index
 from VarIndex import cache
 import gSheetAPI
+import json
 
 
+################################################################################
+#\ -- Global and Init --
 
 #\ __name__ represent the current module
 app = Flask(__name__)
@@ -22,19 +25,21 @@ Session(app)
 app.secret_key = index.APP_Pri_Key
 app.permanent_session_lifetime = timedelta(seconds=5)
 
-#\ cache for global variable
+#\ Cache for global variable
 cache.init_app(app=app, config={"CACHE_TYPE": "filesystem", "CACHE_DIR":"/tmp"})
 
-#\set cache data
+#\ Set cache data
+#\ use cache.get("name") or cache.set("name", "value")
 LineBotClass.InitCache(cache)
 
 #\ Init default richmenu
 # gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Login Richmenu"])
 
 
+
 ################################################################################
 #\ -- App menu css setting --
-#\ Remeber to update this when adding another router
+#\ Remeber to update this when adding another router in the menu bar
 MenuBarSetting = [
     {"url":"Home", "class":"btn", "name":"Home"},
     {"url":"About", "class":"btn", "name":"About"},
@@ -101,7 +106,7 @@ def OSMmap():
     return render_template("OSMmap.html", apikey = index.GMAPapikey, api_on = index.bAPIon, _MenuBarSetting=L_MenuBarSetting)
 
 
-@app.route("/Leaflet")
+@app.route("/Leaflet", methods=['GET','POST'])
 def Leaflet():
     #\ Active the menu bar
     global Pre_Menu
@@ -109,7 +114,28 @@ def Leaflet():
     L_MenuBarSetting[Pre_Menu]["class"] = "btn"
     L_MenuBarSetting[4]["class"] = "btn-active"
     Pre_Menu = 4
-    return render_template("Leaflet.html", _index=index, _gSheetAPI=gSheetAPI, _MenuBarSetting=L_MenuBarSetting)
+
+    #\ Handling the POST and GET method
+    #\ POST
+    MapData = []
+    MapDataStatus = 0
+    if request.method == "POST":
+        print(f"request.form: {request.form}") #\ i.e. request.form: ImmutableMultiDict([('Orders', 'Damselfly'), ('Family', 'Calopterygidae'), ('Species', '01')])
+        [MapDataStatus, MapData] = gSheetAPI.GetDragonflyDataGoogleSheets(request.form['Family']+request.form['Species'],
+                                                         None
+                                                         )
+        # print(f"[INFO] MapData : {MapData}")
+        print("[INFO] Leaflet router method : POST")
+    else:
+        print("[INFO] Leaflet router method : GET")
+
+    return render_template("Leaflet.html",
+                            _index=index,
+                            _MenuBarSetting=L_MenuBarSetting,
+                            _MapDataStatus=json.dumps(MapDataStatus),
+                            _MapData=json.dumps(MapData)
+                            )
+
 
 
 #\ -- to HTTP method --
@@ -162,7 +188,7 @@ def LineBotEcho():
 
 
 ################################################################################
-#\ start the server
+#\ -- Start the server --
 if __name__ == "__main__":
     #\ auto reload page
     app.config['TEMPLATES_AUTO_RELOAD'] = True

@@ -26,7 +26,7 @@
 </style>
 {% endblock %} {% block content1 %}
 <!--------------Selector-------------->
-<form>
+<form method="post" id="select1">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -40,7 +40,8 @@
     <select name="Species" id="SpeciesMenu"></select>
 
     <!-- <input type="submit" value="Search" id="SearchBtnId"> -->
-    <button class="SearchBtn" , type="button">Search</button>
+    <button class="SearchBtn" type="submit" form="select1">Search</button>
+    <!-- <input class="SearchBtn" value="Search" type="submit"> -->
 
 </form>
 
@@ -116,6 +117,7 @@
 
 <!-----------------Map----------------->
 <div id="map" style="float: left;"></div>
+<script type="text/javascript" src="static/js/leaflet.js"></script>
 <script>
     // ---- Initialization ----
     // Initialize Leaflet
@@ -183,7 +185,7 @@
     var SearchBtn = document.querySelector(".SearchBtn");
 
     // Callback function for the search button
-    function GetSearchBtn() {
+    function SearchBtnCallback() {
 
         // Get the dropdown list value
         var FaimilyDropDownList = document.getElementById("FamilyMenu");
@@ -191,11 +193,17 @@
         var SpeciesName = FaimilyDropDownList.value + SpeciesDropDownList.value;
         console.log("Species to show on map: " + SpeciesName);
 
+        // Get the google sheet from gsheet api ajax
+
+
         // show a marker on the map
-        var return_Data = {{ _gSheetAPI.GetDragonflyDataGoogleSheets(SpeciesName, _gSheetAPI.Sheet_id_dict()) | safe}};
         var Data;
-        if (return_Data[1]) {
-            Data = return_Data[0];
+        var return_Data = {{ _MapData|safe }};
+        var MapDataStatus = {{ _MapDataStatus|safe }};
+
+        console.log(return_Data);
+        if (MapDataStatus) {
+            Data = return_Data;
         } else {
             window.alert("No Data");
             return;
@@ -203,7 +211,7 @@
 
         var LatLonAccuracy = parseFloat({{ _index.LatLonAccuracy }});
 
-        Data = Data.slice(1, {{ _index.MapMarksLimit }});
+        Data = Data.slice(0, {{ _index.MapMarksLimit }});
         for (idx in Data) {
             var tmp_data = Data[idx];
             var point = {
@@ -213,20 +221,36 @@
             //console.log(point);
             L.marker(point).bindPopup(
                 `<h1>${tmp_data[1]} #${tmp_data[2]}</h1>
-          <dl>
-            <dt> <b>[User]</b>      ${tmp_data[5]}</dt>
-            <dt> <b>[Times]</b>     ${tmp_data[4] + " " + tmp_data[3]}</dt>
-            <dt> <b>[City]</b>      ${tmp_data[6] + tmp_data[7]}</dt>
-            <dt> <b>[Place]</b>     ${tmp_data[8]}</dt>
-            <dt> <b>[Altitude]</b>  ${tmp_data[9]}</dt>
-            <dt> <b>[LAT, LON]</b>  (${point.lat}, ${point.lon})</dt>
-          </dl>`
+                    <dl>
+                        <dt> <b>[User]</b>      ${tmp_data[5]}</dt>
+                        <dt> <b>[Times]</b>     ${tmp_data[4] + " " + tmp_data[3]}</dt>
+                        <dt> <b>[City]</b>      ${tmp_data[6] + tmp_data[7]}</dt>
+                        <dt> <b>[Place]</b>     ${tmp_data[8]}</dt>
+                        <dt> <b>[Altitude]</b>  ${tmp_data[9]}</dt>
+                        <dt> <b>[LAT, LON]</b>  (${point.lat}, ${point.lon})</dt>
+                    </dl>`
             ).addTo(map);
         }
     }
 
     // Add to the listener
-    SearchBtn.addEventListener("click", GetSearchBtn);
+    //SearchBtn.addEventListener("click", SearchBtnCallback);
+
+    // Add to Ajax listener
+    $('#select1').submit(function(e){
+        e.preventDefault();
+        $.ajax({
+            url: '/Leaflet',
+            type: 'post',
+            data:$('#select1').serialize(),
+            success:function(){
+                SearchBtnCallback()
+            }
+        });
+    });
+
+
+
 </script>
 <!-----------------Map----------------->
 

@@ -49,7 +49,7 @@ def GetDragonflyDataGoogleSheets(Species:str, gSheetIDList:list = None)->list:
     """Function to get the dragonfly data from the google sheets
     Args:
         Species (str): title of the gsheet
-        gSheetIDList (list, optional): gsheet list. Defaults to None.
+        gSheetIDList (list, optional): gsheet list. Defaults to None, or you can put the cache.get("gGSheetList"). If None then funciton will get the sheet list itself.
 
     Returns:
         list: list of list, list of the data in the gsheet
@@ -65,12 +65,13 @@ def GetDragonflyDataGoogleSheets(Species:str, gSheetIDList:list = None)->list:
 
     #\ get the url correspond to the input species name
     #\ https://docs.google.com/spreadsheets/d/1dZtaLtbP4PKsjcQ01mj25HDkEBzk-nF0094tUhce1YU/edit?usp=sharing
+    SpeciesUrl = None
     try:
         SpeciesUrl = index.GeneralgSheetUrl(gSheetIDList[Species])
-        status = 1
+        status = True
     except :
-        SpeciesUrl =  index.GeneralgSheetUrl(gSheetIDList["Calopterygidae"])
-        status = 0
+        # SpeciesUrl =  index.GeneralgSheetUrl(gSheetIDList["Calopterygidae01"])
+        status = False
 
 
     #\ Open the sheets
@@ -84,9 +85,17 @@ def GetDragonflyDataGoogleSheets(Species:str, gSheetIDList:list = None)->list:
     #\ Read the worksheets
     ALL = wks_order.get_all_values(include_tailing_empty=False,
                                 include_tailing_empty_rows=False)
-    # print(f"All: {ALL}")
 
-    return [ALL, status]
+    #\ eliminate the null lat lon data
+    gSheetResult = []
+    ColumNum = len(ALL[0])-2 #\ minus 2 is because the weather and discription column are not using
+    for data in ALL:
+        if len(data) == ColumNum:
+            gSheetResult.append(data)
+
+    # print(f"All: {gSheetResult}")
+
+    return [status, gSheetResult]
 
 
 

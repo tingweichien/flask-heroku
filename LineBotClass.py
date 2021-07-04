@@ -347,6 +347,10 @@ def CreateWebSession(event=None, CloseDBConn=True):
 
     #\ read the data from DB
     conn = Database.CreateDBConection()
+    if conn is None:
+        print("[Warming] Fail to do CreateWebSession() due to the CreateDBConnection() fail")
+        return None, None
+
     DB_Data = Database.ReadFromDB(conn,
                                     read_query,
                                     fetchone,

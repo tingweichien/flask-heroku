@@ -71,7 +71,14 @@ def CreateDBConection():
             try:
                 conn = psycopg2.connect(**cache.get("DBInfo"), sslmode='require')
             except:
-                conn = psycopg2.connect(**InitDBInfo(), sslmode='require')
+                DbInfo = InitDBInfo()
+                if len(DbInfo) > 1:
+                    conn = psycopg2.connect(**DbInfo, sslmode='require')
+                elif len(DbInfo) == 1:
+                    conn = psycopg2.connect(DbInfo["DBURI"], sslmode='require')
+                else:
+                    conn = None
+                    print("[WARNING] Unable to create the connection to the database")
         except:
             conn = psycopg2.connect(cache.get("DBInfo")["DBURI"], sslmode='require')#\ This is for the local DB connection
             #conn = psycopg2.connect(DBURI, sslmode='require')#\ This is for the local DB connection
@@ -107,6 +114,21 @@ def InsertDB(conn, query, data):
         cursor.execute(query, data)
         conn.commit()
         print("[INFO] Successfully execute the insert database query")
+
+    except:
+        print("[WARNING] Unable to execute the insert database query")
+    CloseDBConnection(conn)
+
+
+#\ Insert multi into DB SQL command
+def InsertManyDB(conn, query, datas):
+    try:
+        for data in datas:
+            cursor = conn.cursor()
+            # cursor.executemant(query, datas) #--> too slow
+            cursor.execute(query, data)
+            conn.commit()
+            print(f"[INFO] Successfully execute the {data} insert database query")
 
     except:
         print("[WARNING] Unable to execute the insert database query")

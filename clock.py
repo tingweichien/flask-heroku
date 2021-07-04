@@ -49,12 +49,15 @@ def UpdateDataBase_job():
     # print(f"[INFO] Max_ID_num : {Max_ID_num}")
 
     #\ write back to the database
-    Update_Data = (str(Max_ID_num), index.VarLatestDataID)
+    Update_Data = [
+                    (str(Max_ID_num), index.VarLatestDataID),
+                    (datetime.datetime.now().strftime('%Y-%m-%d'), index.VarLatestDataIDDate)
+                   ]
     print(f"[INFO] Update_Data : {Update_Data}")
-    Database.InsertDB(conn,
-                      Database.Update_varaible_query(index.VariableTableName),
-                      Update_Data
-                      )
+    Database.InsertManyDB(conn,
+                        Database.Update_varaible_query(index.VariableTableName),
+                        Update_Data
+                        )
 
 
 
@@ -62,8 +65,17 @@ def UpdateDataBase_job():
 
 ################################################################################################
 
-#\ Add the job
-sched.add_job(UpdateDataBase_job, "cron", id="UpdateDataBase_job_ID", hour=0, minute=1, second=0)
+#\ ----------------------------------------------------------------
+#\ Run the clock by the schedul of apscheduler
+if index.ClockStandAloneVer:
+    #\ Add the job
+    sched.add_job(UpdateDataBase_job, "cron", id="UpdateDataBase_job_ID", hour=0, minute=1, second=0)
 
-#\ start the clock
-sched.start()
+    #\ start the clock
+    sched.start()
+
+#\ Run the clock by the schedule of the Heroku add-on
+elif index.ClockHerokuDependancyVer:
+    # if datetime.datetime.now().hour == index.Time_UpdateDatabase:
+     UpdateDataBase_job()
+

@@ -60,8 +60,9 @@
             },
             "VariableTable": {
                 "TableName": "variable",
-                "TableVar": {
-                    "LatestDataID": "LatestDataID"
+                "TableVarName": {
+                    "VarLatestDataID": "LatestDataID",
+                    "VarLatestDataIDDate": "LatestDataIDDate"
                 }
             }
         }
@@ -82,5 +83,12 @@
     "GoogleSheet": {
         "GeneralgSheetUrl_head": "https://docs.google.com/spreadsheets/d/",
         "GeneralgSheetUrl_end": "/edit?usp=sharing"
+    },
+    "Clock": {
+        "ClockStandAloneVer": false,
+        "ClockHerokuDependancyVer": true,
+        "Update_Time": {
+            "Time_UpdateDatabase": 0
+        }
     }
 }

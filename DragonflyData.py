@@ -288,7 +288,7 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None)->list:
                                                     Description
                                                     )
 
-    print(f"[INFO] Return Object: {ID_find_result}")
+    # print(f"[INFO] Return Object: {ID_find_result}")
     return [ID_find_result, overflow, int(Max_ID_Num)]
 
 
@@ -452,7 +452,7 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->l
 
         else :
             condition = False
-    print(f"[INFO] In CrawlDataByIDRange() the result list is {result_list}")
+    # print(f"[INFO] In CrawlDataByIDRange() the result list is {result_list}")
     return result_list
 
 

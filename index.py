@@ -114,7 +114,8 @@ URI = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["URI"]
 #\ Database table name
 UserInfoTableName = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableName"]
 VariableTableName = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableName"]
-VarLatestDataID = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVar"]["LatestDataID"]
+VarLatestDataID = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVarName"]["VarLatestDataID"]
+VarLatestDataIDDate = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVarName"]["VarLatestDataIDDate"]
 
 #\ Create database (or to update the current database column name or attribute)
 CreateDataBase = INDEX["DataBase"]["CreateDataBase"]
@@ -147,3 +148,15 @@ DAYAlarm = {"hour": INDEX["Alarm"]["DailyUpdate"]["Hour"], "minute": INDEX["Alar
 #\ --Google sheet api--
 #\ General google sheet url
 GeneralgSheetUrl = lambda SpeciesID: INDEX["GoogleSheet"]["GeneralgSheetUrl_head"] + str(SpeciesID) + INDEX["GoogleSheet"]["GeneralgSheetUrl_end"]
+
+
+
+
+#\ --Clock--
+#\ Switch token
+ClockStandAloneVer = INDEX["Clock"]["ClockStandAloneVer"]
+
+ClockHerokuDependancyVer = INDEX["Clock"]["ClockHerokuDependancyVer"]
+
+#\ Time for the update database
+Time_UpdateDatabase = INDEX["Clock"]["Update_Time"]["Time_UpdateDatabase"]
