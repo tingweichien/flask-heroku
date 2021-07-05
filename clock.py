@@ -9,6 +9,7 @@ import random
 import DragonflyData
 import LineBotClass
 import Database
+import pytz
 
 
 sched = BlockingScheduler()
@@ -39,7 +40,8 @@ def SetTimer2Update_job():
 
 #\ This is to update the database's TodayID eveyday midnight
 def UpdateDataBase_job():
-    print(f"[INFO] In UpdateDataBase_job() Update the database latest ID at {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
+    time_zone = pytz.timezone("Asia/Taipei")
+    print(f"[INFO] In UpdateDataBase_job() Update the database latest ID at {datetime.datetime.now(time_zone).strftime('%Y-%m-%d, %H:%M:%S')}")
 
     #\ Create the web session and conn
     session, conn = LineBotClass.CreateWebSession(None, False)
@@ -51,7 +53,7 @@ def UpdateDataBase_job():
     #\ write back to the database
     Update_Data = [
                     (str(Max_ID_num), index.VarLatestDataID),
-                    (datetime.datetime.now().strftime('%Y-%m-%d'), index.VarLatestDataIDDate)
+                    (datetime.datetime.now(time_zone).strftime('%Y-%m-%d'), index.VarLatestDataIDDate)
                    ]
     print(f"[INFO] Update_Data : {Update_Data}")
     Database.InsertManyDB(conn,
