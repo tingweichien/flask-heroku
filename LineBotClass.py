@@ -626,11 +626,8 @@ def InitCache(_cache):
                )
     _cache.set("DAYAlarm", index.DAYAlarm)
     _cache.set("gGSheetList", Sheet_id_dict())
-
-    #\ Check the LINE Notify Access token
     _cache.set("gLN_AccessToken", None)
-    body = request.get_data(as_text=True)
-    Check_LN_Key_exist(body["events"][0]["source"]["userId"])
+
 
 
 #\ handle post back event
