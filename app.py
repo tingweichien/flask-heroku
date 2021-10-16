@@ -168,6 +168,11 @@ def LineBotEcho():
     #\ Init the cache
     if cache.get("gIsJustText") is None:
         LineBotClass.InitCache(cache)
+
+    #\ Check if the LINE Notify is available or not
+    body = request.get_data(as_text=True)
+    LineBotClass.Check_LN_Key_exist(body["events"][0]["source"]["userId"])
+
     #\ handler
     LineBotClass.LineBotHandler(app)
     return "ok"
