@@ -627,6 +627,11 @@ def InitCache(_cache):
     _cache.set("DAYAlarm", index.DAYAlarm)
     _cache.set("gGSheetList", Sheet_id_dict())
 
+    #\ Check the LINE Notify Access token
+    _cache.set("gLN_AccessToken", None)
+    body = request.get_data(as_text=True)
+    Check_LN_Key_exist(body["events"][0]["source"]["userId"])
+
 
 #\ handle post back event
 @gHandler.add(PostbackEvent)
@@ -661,7 +666,7 @@ def CheckPostEvent(event_text:str):
 #\ Line Bot for Line Notify
 #\ send this url to the user to get the access token
 def create_auth_link(user_id, client_id=index.LN_Client_ID, redirect_uri=index.LN_redirect_uri):
-
+    print("[Info] Request the user to authorize the LINE Notify")
     data = {
         'response_type': 'code',
         'client_id': client_id,
@@ -671,7 +676,29 @@ def create_auth_link(user_id, client_id=index.LN_Client_ID, redirect_uri=index.L
     }
     query_str = urllib.parse.urlencode(data)
 
-    return f'https://notify-bot.line.me/oauth/authorize?{query_str}'
+    #\ return f'https://notify-bot.line.me/oauth/authorize?{query_str}'
+    gLine_bot_api.push_message(user_id,
+                                f"Please click the following link to authorize the LINE Notify\nhttps://notify-bot.line.me/oauth/authorize?{query_str}"
+                                )
+
+
+#\ Check if the LINE Notify key already exit or not
+def Check_LN_Key_exist(userid: str):
+    #\ read the database
+    Userinfo = dict(Database.ReadFromDB(Database.CreateDBConection(),
+                        Database.Read_userinfo_query(index.UserInfoTableName, userid),
+                        False)
+                    )
+    if len(Userinfo["access_token"]) is 0:
+        print("[Info] Updating the LINE Notify access token")
+        #\ Send the link to the user to authorize and get the access token
+        #\ After the user click authorize, it'll redirect to the callback_nofity() in app.py
+        #\ the code can be got, then can start to ask the LINE Notify for the access token
+        create_auth_link(userid)
+    else:
+        cache.set("gLN_AccessToken", Userinfo["access_token"])
+
+
 
 
 #\ Get the token
@@ -679,7 +706,7 @@ def LN_get_token(code:str, client_id:str=index.LN_Client_ID, client_secret:str=i
     """Get the token from the user to access the LIne Notify message
 
     Args:
-        code (str):
+        code (str): The code that get after user click authorize
         client_id (str, optional): Put the user ID here and it'll return the corresponding access token back. Defaults to index.LN_Client_ID.
         client_secret (str, optional): . Defaults to index.LN_Client_Secret.
         redirect_uri (str, optional): . Defaults to index.LN_redirect_uri.
@@ -707,6 +734,8 @@ def LN_get_token(code:str, client_id:str=index.LN_Client_ID, client_secret:str=i
     Database.InsertDB(Database.CreateDBConection(),
                       Database.Update_userinfo_query("access_token"),
                       data)
+    #\ Set to the cache
+    cache.set("gLN_AccessToken", res['access_token'])
 
     return res['access_token']
 

@@ -382,11 +382,11 @@ def CheckDataSameOrNot(result_list:list, ID_find_result:list):
 #\ filter to filter out the data with specific condition
 def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_filter:list=None, KeepOrFilter:bool=None)->bool:
     """
-     params:
+     @params:
           user to filter
           species to filter
           KeepOrFilter: indicate to do filter(False) or keep(True) the data if satisfied the condition
-     return:
+     @return:
         if KeepOrFilter True to keep the data
           True: Filter out
           Flase: Not Filter out to keep

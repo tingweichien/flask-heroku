@@ -312,7 +312,7 @@ i.e.
    - <https://hackmd.io/@Yun-Cheng/GoogleSheets>
 
 3. [javascript: dynamic drop down menu values](https://stackoverflow.com/questions/20483470/javascript-dynamic-drop-down-menu-values/20485740)
-    ![dynamic drop down menu values](https://i.imgur.com/rCoee4e.png)  
+    ![dynamic drop down menu values](https://i.imgur.com/rCoee4e.png)
 
 
 
@@ -353,3 +353,9 @@ i.e.
 ## [2021/06/23]
 
 1. Add the constraint for zooming the map with **ctrl** by following [Leaflet.GestureHandling](https://github.com/elmarquis/Leaflet.GestureHandling)
+
+
+## [2021/10/16]
+
+1. The database GUI for the PostgreSQL database : **pgAdmin**
+   ![pgAdmin](https://i.imgur.com/TybeITK.png)

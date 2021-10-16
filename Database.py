@@ -143,8 +143,15 @@ def UpdateDB(conn, query, data):
 #\ Read the data
 def ReadFromDB(conn, query, FetchOneOrNot, CloseConn=True):
     """
-    fetchone : return tuple
-    fetchall : return list of tuple
+    @params
+        conn : Connection
+        query : query for reading the database
+        FetchOneOrNot : Whether to get one data or all the data from the database
+        CloseConn :  Decides whether to close the database connection after reading
+
+    @return
+        fetchone : return tuple
+        fetchall : return list of tuple
     """
     cursor = ExecuteDB(conn, query)
     try:

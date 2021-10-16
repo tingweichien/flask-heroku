@@ -452,17 +452,38 @@ def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTa
   #\ if use this function in the loop all the RequestDataMsgText will point to the same dictionary
   #\ When changing the value all the dict point to this will change
   #\ Therefore, use copy to copy to a new dict as local variable
-  print(f"[Info] In RequestDataMsgText_handler, the data is {DrgonflyData}")
   local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
+
+  #\ ID number
   local_RequestDataMsgText["body"]["contents"][0]["text"] = DrgonflyData.IdNumber
+
+  #\ Dates and Times
   local_RequestDataMsgText["body"]["contents"][1]["text"] = f"{DrgonflyData.Dates}, {DrgonflyData.Times}"
+
+  #\ User namE
   local_RequestDataMsgText["body"]["contents"][3]["contents"][0]["contents"][1]["text"] = DrgonflyData.User
+
+  #\ City and District
   local_RequestDataMsgText["body"]["contents"][3]["contents"][1]["contents"][1]["text"] = f"{DrgonflyData.City} {DrgonflyData.District}"
+
+  #\ Place
   local_RequestDataMsgText["body"]["contents"][3]["contents"][2]["contents"][1]["text"] = DrgonflyData.Place
-  local_RequestDataMsgText["body"]["contents"][3]["contents"][3]["contents"][1]["text"] = f"({round(float(DrgonflyData.Latitude), index.PositionPrecision)}, {round(float(DrgonflyData.Longitude), index.PositionPrecision)})"
+
+  #\ Longitude and Latitude
+  try :
+    LatLngData = f"({round(float(DrgonflyData.Latitude), index.PositionPrecision)}, {round(float(DrgonflyData.Longitude), index.PositionPrecision)})"
+  except :
+    LatLngData = "None"
+  local_RequestDataMsgText["body"]["contents"][3]["contents"][3]["contents"][1]["text"] = LatLngData
+
+  #\ Species name
   local_RequestDataMsgText["body"]["contents"][3]["contents"][5]["contents"][1]["text"] = ', '.join(DrgonflyData.SpeciesList)
+
+  #\ Description
   local_RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DrgonflyData.Description
   return local_RequestDataMsgText
+
+
 
 #\ testing
 # l = []
