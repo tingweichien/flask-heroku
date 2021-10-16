@@ -170,8 +170,8 @@ def LineBotEcho():
         LineBotClass.InitCache(cache)
 
     #\ Check if the LINE Notify is available or not
-    body = request.get_data()
-    print(f"[Info]body->{body}")
+    body = json.loads(request.get_data(as_text=True))
+    print(f"[Info]In LineBitEcho body->{body}")
     LineBotClass.Check_LN_Key_exist(body["events"][0]["source"]["userId"])
 
     #\ handler
