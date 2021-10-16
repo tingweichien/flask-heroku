@@ -19,7 +19,9 @@ import datetime
 import LineBotMsgHandler
 import random
 from gSheetAPI import Sheet_id_dict
-
+import urllib
+import urllib.request, urllib.parse
+import json
 
 
 #\ -- Global --
@@ -305,7 +307,7 @@ def IDRequestCallback(event):
                                                         f"[Longitude]: {ID_find_result.Longitude}\n"\
                                                         f"[Speceis]: {', '.join(ID_find_result.SpeciesList)}\n"+\
                                                         f"[Description]: {ID_find_result.Description}\n",
-                                                contents=LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText,ID_find_result)
+                                                contents=LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, ID_find_result)
                                             )
 
             gLine_bot_api.reply_message(event.reply_token,
@@ -580,24 +582,28 @@ def GetTodayData(event):
         bubble_content = LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, data)
         content_list.append(bubble_content)
 
-    #\ Handling the carsoul text message with limitation number by line api
+    #\ Handling the carsoul text message with limitation number by LINE API
     # print(f"[INFO] in GetTodayData() content list\n{content_list}")
-    for content_idx in range(0, len(content_list), index.CarsoulBubbleLimit):
-        end = content_idx + index.CarsoulBubbleLimit
-        #\ handle overflow
-        if end > len(content_list):
-            content_limit_list = content_list[content_idx:]
-        else:
-            content_limit_list = content_list[content_idx:end]
-
-        Msgtext = FlexSendMessage(alt_text="No data",
-                                contents=LineBotMsgHandler.MultiRequestDataMsgText(content_limit_list)
-                                )
-
+    if len(content_list) is 0:
         gLine_bot_api.push_message(event.source.user_id,
-                                Msgtext
-                                )
+                        "No data updated today"
+                        )
+    else:
+        for content_idx in range(0, len(content_list), index.CarsoulBubbleLimit):
+            end = content_idx + index.CarsoulBubbleLimit
+            #\ handle overflow
+            if end > len(content_list):
+                content_limit_list = content_list[content_idx:]
+            else:
+                content_limit_list = content_list[content_idx:end]
 
+            Msgtext = FlexSendMessage(alt_text="No data",
+                                    contents=LineBotMsgHandler.MultiRequestDataMsgText(content_limit_list)
+                                    )
+
+            gLine_bot_api.push_message(event.source.user_id,
+                                    Msgtext
+                                    )
 
 
 #\ Init the cache data
@@ -648,3 +654,94 @@ def CheckPostEvent(event_text:str):
 
     else:
         return eLineBotPostEvent.NONE.value
+
+
+
+
+#\ Line Bot for Line Notify
+#\ send this url to the user to get the access token
+def create_auth_link(user_id, client_id=index.LN_Client_ID, redirect_uri=index.LN_redirect_uri):
+
+    data = {
+        'response_type': 'code',
+        'client_id': client_id,
+        'redirect_uri': redirect_uri,
+        'scope': 'notify',
+        'state': user_id
+    }
+    query_str = urllib.parse.urlencode(data)
+
+    return f'https://notify-bot.line.me/oauth/authorize?{query_str}'
+
+
+#\ Get the token
+def LN_get_token(code:str, client_id:str=index.LN_Client_ID, client_secret:str=index.LN_Client_Secret, redirect_uri:str=index.LN_redirect_uri):
+    """Get the token from the user to access the LIne Notify message
+
+    Args:
+        code (str):
+        client_id (str, optional): Put the user ID here and it'll return the corresponding access token back. Defaults to index.LN_Client_ID.
+        client_secret (str, optional): . Defaults to index.LN_Client_Secret.
+        redirect_uri (str, optional): . Defaults to index.LN_redirect_uri.
+
+    Returns:
+        str: access token
+    """
+    print("[Line Notify] Get Token")
+    url = 'https://notify-bot.line.me/oauth/token'
+    headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+    data = {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': redirect_uri,
+        'client_id': client_id,
+        'client_secret': client_secret
+    }
+    data = urllib.parse.urlencode(data).encode()
+    req = urllib.request.Request(url, data=data, headers=headers)
+    page = urllib.request.urlopen(req).read()
+
+    res = json.loads(page.decode('utf-8'))
+
+    #\ Save the token to the database
+    Database.InsertDB(Database.CreateDBConection(),
+                      Database.Update_userinfo_query("access_token"),
+                      data)
+
+    return res['access_token']
+
+
+#\ Send the message
+def LN_send_message(access_token:str=None, text_message:str=None, picurl:str=None):
+    print("[Line Notify] Send message")
+
+    #\ Handle the access token and check the input data vaildation
+    if access_token is None:
+        print("[Warning][Line Notify] access token is None")
+        return
+    else:
+        url = 'https://notify-api.line.me/api/notify'
+        headers = {"Authorization": "Bearer "+ access_token}
+
+    #\ Handle the text message or picture url to be send and check if it's vaildate
+    if text_message and  picurl is None:
+        print("[Warning][Line Notify] Not specify the text message and the picture url to send")
+        return
+    temp_data = dict()
+    DataToSend = dict()
+    if text_message is not None:
+        temp_data = {'message': text_message}
+        DataToSend.update(temp_data)
+    if picurl is not None:
+        temp_data = {"stickerPackageId": 2, 'stickerId': 38,
+                    'imageThumbnail':picurl, 'imageFullsize':picurl}
+        DataToSend.update(temp_data)
+
+
+    # data = {'message': text_message,
+    #         "stickerPackageId": 2, 'stickerId': 38,
+    #         'imageThumbnail':picurl, 'imageFullsize':picurl}
+
+    data = urllib.parse.urlencode(DataToSend).encode()
+    req = urllib.request.Request(url, data=data, headers=headers)
+    page = urllib.request.urlopen(req).read()

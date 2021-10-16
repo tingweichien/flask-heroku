@@ -7,7 +7,7 @@ import os
 import psycopg2
 import urllib.parse as urlparse
 from VarIndex import *
-from typing import List
+import index
 
 
 #\ Init the database info
@@ -204,7 +204,9 @@ UserInfo_create_table_query = '''CREATE TABLE IF NOT EXISTS UserInfo(
     userid VARCHAR (50) PRIVATE NOT NULL,
     join_date DATE NOT NULL,
     account VARCHAR (50) NOT NULL,
-    password VARCHAR (50) NOT NULL
+    password VARCHAR (50) NOT NULL,
+    current_crawling_id VARCHAR (50),
+    access_token VARCHAR (50),
 );'''
 
 
@@ -242,6 +244,8 @@ Insert_userinfo_query = lambda Table : f"INSERT INTO {Table} (name, userid, join
 #\ Read the userinfo
 Read_userinfo_query = lambda Table, userid : f"SELECT * FROM {Table} WHERE userid = '{userid}';"
 
+#\ Update user info
+Update_userinfo_query = lambda column_name: f"UPDATE {index.UserInfoTableName} SET {column_name}=%s WHERE userid=%s;"
 
 
 #\ --- Variable table ---

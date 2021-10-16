@@ -452,6 +452,7 @@ def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTa
   #\ if use this function in the loop all the RequestDataMsgText will point to the same dictionary
   #\ When changing the value all the dict point to this will change
   #\ Therefore, use copy to copy to a new dict as local variable
+  print(f"[Info] In RequestDataMsgText_handler, the data is {DrgonflyData}")
   local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
   local_RequestDataMsgText["body"]["contents"][0]["text"] = DrgonflyData.IdNumber
   local_RequestDataMsgText["body"]["contents"][1]["text"] = f"{DrgonflyData.Dates}, {DrgonflyData.Times}"

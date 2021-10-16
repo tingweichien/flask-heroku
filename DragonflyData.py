@@ -310,7 +310,7 @@ def GetMaxID(session)->int:
 
 #\ ------------------------------------------------------------------------------
 #\ for testing
-# [session, Login_Response, Login_state] = Login_Web("簡庭威", "tim960622")
+# [session, Login_Response, Login_state] = Login_Web("-----", "-------")
 # DataCrawler(session, "77257")
 
 
@@ -464,5 +464,5 @@ def CrawTodayData(session, TodayFirstID:int, filter_object:list):
 
 
 #\ Test
-# [session, Login_Response, Login_state] = Login_Web("簡庭威", "tim960622")
+# [session, Login_Response, Login_state] = Login_Web("------", "------")
 # print(CrawTodayData(session))

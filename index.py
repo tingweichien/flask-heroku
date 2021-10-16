@@ -75,6 +75,12 @@ Main2RichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["Main2RichMen
 CarsoulBubbleLimit = INDEX["LineBot"]["CarsoulBubbleLimit"]
 
 
+#\ ---- Line Notify----
+LN_Client_ID = INDEX_PRIVATE["Line_Notify"]["Client_ID"]
+LN_Client_Secret = INDEX_PRIVATE["Line_Notify"]["Client_Secret"]
+LN_redirect_uri = INDEX_PRIVATE["Line_Notify"]["redirect_uri"]
+
+
 #\ ---- Dragonfly ----
 #\ Retry for login
 re_try_limit = INDEX["DragonflyData"]["re_try_limit"]

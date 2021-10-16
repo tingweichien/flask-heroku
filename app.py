@@ -32,8 +32,6 @@ cache.init_app(app=app, config={"CACHE_TYPE": "filesystem", "CACHE_DIR":"/tmp"})
 #\ use cache.get("name") or cache.set("name", "value")
 LineBotClass.InitCache(cache)
 
-#\ Init default richmenu
-# gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Login Richmenu"])
 
 
 
@@ -174,6 +172,20 @@ def LineBotEcho():
     #\ handler
     LineBotClass.LineBotHandler(app)
     return "ok"
+
+
+#\ Line bot for Line Notify
+@app.route("/callback/notify", methods=['GET'])
+def callback_nofity():
+    assert request.headers['referer'] == 'https://notify-bot.line.me/'
+    code = request.args.get('code')
+    state = request.args.get('state')
+
+    # 接下來要繼續實作的函式
+    access_token = LineBotClass.LN_get_token(code, index.LN_Client_ID, index.LN_Client_Secret, index.LN_redirect_uri)
+
+    return '恭喜完成 LINE Notify 連動！請關閉此視窗。'
+
 
 
 #\ handle the message
