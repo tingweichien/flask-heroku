@@ -141,12 +141,12 @@ def UpdateDB(conn, query, data):
 
 
 #\ Read the data
-def ReadFromDB(conn, query, FetchOneOrNot, CloseConn=True):
+def ReadFromDB(conn, query, FetchOneOrNot=True, CloseConn=True):
     """
     @params
         conn : Connection
         query : query for reading the database
-        FetchOneOrNot : Whether to get one data or all the data from the database
+        FetchOneOrNot : (True to fetch one , False to fetch all)Whether to get one data or all the data from the database
         CloseConn :  Decides whether to close the database connection after reading
 
     @return
@@ -157,10 +157,10 @@ def ReadFromDB(conn, query, FetchOneOrNot, CloseConn=True):
     try:
         if FetchOneOrNot:
             returnData = cursor.fetchone()
-            print(f"[INFO] Read from DB : \n{returnData}")
+            print(f"[INFO] Read from DB fetchone: \n{returnData}")
         else:
             returnData = cursor.fetchall()
-            print(f"[INFO] Read from DB : \n{returnData}")
+            print(f"[INFO] Read from DB fetchall: \n{returnData}")
 
         #\ Don't Close connection
         if CloseConn is True:

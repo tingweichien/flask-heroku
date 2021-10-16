@@ -675,25 +675,27 @@ def create_auth_link(user_id, client_id=index.LN_Client_ID, redirect_uri=index.L
 
     #\ return f'https://notify-bot.line.me/oauth/authorize?{query_str}'
     gLine_bot_api.push_message(user_id,
-                                f"Please click the following link to authorize the LINE Notify\nhttps://notify-bot.line.me/oauth/authorize?{query_str}"
+                                TextSendMessage(text=f"Please click the following link to authorize the LINE Notify\nhttps://notify-bot.line.me/oauth/authorize?{query_str}")
                                 )
 
 
 #\ Check if the LINE Notify key already exit or not
 def Check_LN_Key_exist(userid: str):
     #\ read the database
-    Userinfo = dict(Database.ReadFromDB(Database.CreateDBConection(),
-                        Database.Read_userinfo_query(index.UserInfoTableName, userid),
-                        False)
-                    )
-    if len(Userinfo["access_token"]) is 0:
+    Userinfo_access_token = Database.ReadFromDB(Database.CreateDBConection(),
+                                                Database.Read_col_userinfo_query("access_token", index.UserInfoTableName, userid),
+                                                True
+                                                )
+
+    print(f"[Info] In Check_LN_Key_exist() the access token is {Userinfo_access_token}")
+    if Userinfo_access_token[0] is None:
         print("[Info] Updating the LINE Notify access token")
         #\ Send the link to the user to authorize and get the access token
         #\ After the user click authorize, it'll redirect to the callback_nofity() in app.py
         #\ the code can be got, then can start to ask the LINE Notify for the access token
         create_auth_link(userid)
     else:
-        cache.set("gLN_AccessToken", Userinfo["access_token"])
+        cache.set("gLN_AccessToken", Userinfo_access_token["access_token"])
 
 
 
