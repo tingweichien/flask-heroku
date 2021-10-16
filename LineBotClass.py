@@ -682,11 +682,14 @@ def create_auth_link(user_id, client_id=index.LN_Client_ID, redirect_uri=index.L
 #\ Check if the LINE Notify key already exit or not
 def Check_LN_Key_exist(userid: str):
     #\ read the database
-    Userinfo_access_token = Database.ReadFromDB(Database.CreateDBConection(),
-                        Database.Read_col_userinfo_query("access_token" ,index.UserInfoTableName, userid),
-                        False)
+    Userinfo_access_token = Database.ReadFromDB(
+                                                Database.CreateDBConection(),
+                                                Database.Read_col_userinfo_query("access_token",
+                                                                                 index.UserInfoTableName, userid),
+                                                True)
 
-    if len(Userinfo_access_token) is 0:
+    print(f"[Info] In Check_LN_Key_exist() the access token is {Userinfo_access_token}")
+    if Userinfo_access_token[0] is None:
         print("[Info] Updating the LINE Notify access token")
         #\ Send the link to the user to authorize and get the access token
         #\ After the user click authorize, it'll redirect to the callback_nofity() in app.py
