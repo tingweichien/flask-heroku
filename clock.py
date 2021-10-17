@@ -64,6 +64,11 @@ def UpdateDataBase_job():
 
 
 
+#\ Send the hourly summary of the update for the dragonfly data
+def Send_Hourly_Summary():
+    exit
+
+
 
 ################################################################################################
 
@@ -80,4 +85,5 @@ if index.ClockStandAloneVer:
 elif index.ClockHerokuDependancyVer:
     # if datetime.datetime.now().hour == index.Time_UpdateDatabase:
      UpdateDataBase_job()
+     Send_Hourly_Summary()
 
