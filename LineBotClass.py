@@ -211,7 +211,7 @@ def CheckEvent(event_text:str):
 #\ Check User Info from database to see if there are any records or not
 def CheckUserInfo(event):
     DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
-                                    Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
+                                    Database.Read_userinfo_query(event.source.user_id),
                                     True)
     print(f"[INFO] In the CkeckUserInfo() the Data return from the DB is {DB_Data}")
     if DB_Data is not None:
@@ -340,7 +340,7 @@ def CreateWebSession(event=None, CloseDBConn=True):
         conn
     """
     if event is not None:
-        read_query = Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id)
+        read_query = Database.Read_userinfo_query(event.source.user_id)
         fetchone = True
     else:
         read_query = Database.Read_all_query(index.UserInfoTableName)
@@ -499,7 +499,7 @@ def LoginProgress(event):
 
                 #\ Save the PW and ACCOUNT to the database
                 Database.InsertDB(Database.CreateDBConection(),
-                                    Database.Insert_userinfo_query(index.UserInfoTableName),
+                                    Database.Insert_userinfo_query(),
                                     InsertData
                                 )
 
@@ -614,6 +614,7 @@ def InitCache(_cache):
     _cache.set("gIsJustText", True)
     _cache.set("gLoginDataConfirm", False)
     _cache.set("gLoginStatus", False)
+    _cache.set("gUserID", None)
     _cache.set("gAccount", None)
     _cache.set("gPassword", None)
     _cache.set("Dragonfly_session", None)
@@ -663,7 +664,7 @@ def CheckPostEvent(event_text:str):
 #\ Line Bot for Line Notify
 #\ send this url to the user to get the access token
 def create_auth_link(user_id, client_id=index.LN_Client_ID, redirect_uri=index.LN_redirect_uri):
-    print("[Info] Request the user to authorize the LINE Notify")
+    print("[LINE Notify] Request the user to authorize the LINE Notify")
     data = {
         'response_type': 'code',
         'client_id': client_id,
@@ -686,6 +687,9 @@ def Check_LN_Key_exist(userid: str):
                                                 Database.Read_col_userinfo_query("access_token", index.UserInfoTableName, userid),
                                                 True
                                                 )
+
+    #\ Set the User ID to cache
+    cache.set("gUserID", userid)
 
     print(f"[Info] In Check_LN_Key_exist() the access token is {Userinfo_access_token}")
     if Userinfo_access_token[0] is None:
@@ -713,7 +717,7 @@ def LN_get_token(code:str, client_id:str=index.LN_Client_ID, client_secret:str=i
     Returns:
         str: access token
     """
-    print("[Line Notify] Get Token")
+    print("[LINE Notify] Get Token")
     url = 'https://notify-bot.line.me/oauth/token'
     headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
     data = {
@@ -732,7 +736,7 @@ def LN_get_token(code:str, client_id:str=index.LN_Client_ID, client_secret:str=i
     #\ Save the token to the database
     Database.InsertDB(Database.CreateDBConection(),
                       Database.Update_userinfo_query("access_token"),
-                      data)
+                      (data, cache.get("gUserID")))
     #\ Set to the cache
     cache.set("gLN_AccessToken", res['access_token'])
 
