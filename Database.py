@@ -258,6 +258,9 @@ Insert_userinfo_query = f"INSERT INTO {index.UserInfoTableName} (name, userid, j
 #\ Read the userinfo
 Read_userinfo_query = lambda userid : f"SELECT * FROM {index.UserInfoTableName} WHERE userid = '{userid}';"
 
+#\ Read specific column from the userinfo
+Read_col_userinfo_query = lambda Col, Table, userid : f"SELECT {Col} FROM {Table} WHERE userid = '{userid}';"
+
 #\ Update user info
 Update_userinfo_query = lambda column_name: f"UPDATE {index.UserInfoTableName} SET {column_name}=%s WHERE userid=%s;"
 
