@@ -108,7 +108,14 @@ def ExecuteDB(conn, query):
 
 
 #\ Insert into DB SQL command
-def InsertDB(conn, query, data):
+def InsertDB(conn, query:str, data:tuple):
+    """[summary]
+
+    Args:
+        conn ([type]): connection for the database
+        query (string): query(the column) to insert
+        data (tuple): data to be insert
+    """
     try:
         cursor = conn.cursor()
         cursor.execute(query, data)
@@ -246,10 +253,10 @@ Insert_query = lambda Table, name, value : f"INSERT INTO {Table} {name} VALUES {
 
 #\ insert to the userinfo database if the userid conflict then update the reset of the column
 #\ value should be "(XXX, XXX, XXXX, XX, XXXXX, .....)"
-Insert_userinfo_query = lambda Table : f"INSERT INTO {Table} (name, userid, join_date, account, password) VALUES (%s, %s, %s, %s, %s) ON CONFLICT ON CONSTRAINT userinfo_userid_key DO UPDATE SET name = EXCLUDED.name, join_date=EXCLUDED.join_date, account=EXCLUDED.account, password=EXCLUDED.password ;"
+Insert_userinfo_query = f"INSERT INTO {index.UserInfoTableName} (name, userid, join_date, account, password) VALUES (%s, %s, %s, %s, %s) ON CONFLICT ON CONSTRAINT userinfo_userid_key DO UPDATE SET name = EXCLUDED.name, join_date=EXCLUDED.join_date, account=EXCLUDED.account, password=EXCLUDED.password ;"
 
 #\ Read the userinfo
-Read_userinfo_query = lambda Table, userid : f"SELECT * FROM {Table} WHERE userid = '{userid}';"
+Read_userinfo_query = lambda userid : f"SELECT * FROM {index.UserInfoTableName} WHERE userid = '{userid}';"
 
 #\ Read specific column from the userinfo
 Read_col_userinfo_query = lambda Col, Table, userid : f"SELECT {Col} FROM {Table} WHERE userid = '{userid}';"
