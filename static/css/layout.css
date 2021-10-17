@@ -1,23 +1,50 @@
-.navbar {
-    background-color: rgb(136, 139, 143);
-    font-size: 30px;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    color: rgb(245, 8, 8);
-    padding: 8px 5px 8px 5px;
+#menu-bar {
+    margin: 0;
+    width: auto;
+    background-color: #565656;
+    font-size: 16px;
+    font-family: Tahoma, Geneva, sans-serif;
+    font-weight: bold;
+    text-align: left;
+    padding: 8px;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -o-border-radius: 8px;
 }
 
-.navbar-brand {
-    color: rgb(123, 219, 206);
-    font-weight: 600;
+#menu-bar ul {
+    margin: 0;
+    padding: 8px 0;
+    list-style: none;
+    height: auto;
 }
 
-.navbar-item {
-    color: rgb(245, 248, 246);
-    font-variant: small-caps;
-    margin-left: 30px;
+#menu-bar li {
+    display: inline;
+    padding: 8px;
 }
 
-.body-content {
-    padding: 5px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+#menu-bar a {
+    color: #FFF;
+    padding: 10px;
+    text-decoration: none;
+}
+
+#menu-bar .btn:hover {
+    background-color: #ce0d1d;
+    color: rgb(247, 241, 241);
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    -o-border-radius: 20px;
+}
+
+#menu-bar .btn-active {
+    background-color: #1B191B;
+    color: #FFF;
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    -o-border-radius: 20px;
 }

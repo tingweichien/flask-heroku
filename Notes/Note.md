@@ -328,3 +328,66 @@ i.e.
         ```
 
       - ref : <https://www.796t.com/article.php?id=208479>
+
+### [2021/06/15]
+
+1. Google sheet api
+2. Reference :
+   - <https://www.maxlist.xyz/2018/09/25/python_googlesheet_crud/>
+   - <https://hackmd.io/@Yun-Cheng/GoogleSheets>
+
+3. [javascript: dynamic drop down menu values](https://stackoverflow.com/questions/20483470/javascript-dynamic-drop-down-menu-values/20485740)
+    ![dynamic drop down menu values](https://i.imgur.com/rCoee4e.png)
+
+
+
+### [2021/06/20]
+
+1. The steps to add the folder or file into the authorization
+
+     - Go to the GCP and remeber the email of you're project
+      ![picture 1](https://i.imgur.com/ZPEoL6r.png)
+
+     - Go to the folder you want to use in this projecta and sharing it with this email.
+      ![picture 2](https://i.imgur.com/MxrVOCl.png)
+
+    - Use the code below, we can see the folder and file share to this.
+
+      ```python
+      # \ -- Authorize --
+      import pygsheets
+
+      gc = pygsheets.authorize(service_file=index.GSheetApiKeyPath)
+
+      def folder_id_dict(client):
+      folders = {}
+      meta_list = client.drive.list()
+      print(meta_list)
+      for file_meta in meta_list:
+          if file_meta['mimeType'] == 'application/vnd.google-apps.spreadsheet':
+              folders[file_meta['name']] = file_meta['id']
+      return folders
+
+      #your use:
+      names = folder_id_dict(gc)
+      print(names)
+      ```
+
+    - Reference : [How do you create a new sheet in a specific folder/directory using PyGSheets v2?](https://stackoverflow.com/questions/55914179/how-do-you-create-a-new-sheet-in-a-specific-folder-directory-using-pygsheets-v2)
+
+## [2021/06/23]
+
+1. Add the constraint for zooming the map with **ctrl** by following [Leaflet.GestureHandling](https://github.com/elmarquis/Leaflet.GestureHandling)
+
+
+## [2021/10/16]
+
+1. The database GUI for the PostgreSQL database : **pgAdmin**
+   ![pgAdmin](https://i.imgur.com/TybeITK.png)
+
+
+## [2021/10/17]
+
+1. Add the function for using the LINE Notify.
+
+2. Not planning to use due to that it will not showing the message in your app.

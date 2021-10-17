@@ -1,0 +1,94 @@
+{
+    "OSM": {
+        "bAPIon": false,
+        "MapMarksLimit": 500,
+        "DefaultMapViewLocation": [
+            24.158013,
+            120.650534
+        ],
+        "LatLonAccuracy": 6
+    },
+    "GCP": {
+        "GSheetApiKeyPath": "./Key/gSheetApiKey.json"
+    },
+    "Server": "https://dragonfly-flask-web.herokuapp.com/",
+    "LineBot": {
+        "EventText": {
+            "JoinEventText": [
+                "Welcome to the dragonfly line bot~\nPlease login by typing 'login' or via the richmenu"
+            ],
+            "LoginEventText": [
+                "Please enter the account : ",
+                "Please enter the password : "
+            ]
+        },
+        "RichMenu": {
+            "MenuImgPath": {
+                "LoginRichMenuImgPath": "./Notes/image/richmenu_login.jpg",
+                "MainRichMenuImgPath": "./Notes/image/richmenu_main.jpg",
+                "Main2RichMenuImgPath": "./Notes/image/richmenu_main2.jpg"
+            }
+        },
+        "CarsoulBubbleLimit": 12
+    },
+    "DragonflyData": {
+        "re_try_limit": 4,
+        "URL": {
+            "general_url": "http://dragonfly.idv.tw/dragonfly/",
+            "Login_url": "login.php",
+            "All_Observation_Data_url": "rec_list_view.php",
+            "Next_page_url": "?pageNum_rs_dragonfly_record=",
+            "Brief_discriptions_url": "view_data.php?id=",
+            "Detailed_discriptions_url": "read_data.php?id=",
+            "map_info_url": "tokei.php?kind_key=",
+            "species_all_record_data_first_url": "rec_list_view_for_key.php",
+            "species_all_record_data_page_url": "?pageNum_rs_dragonfly_record=",
+            "species_all_record_data_species_url": "&type=total_kind&kind=",
+            "total_num_species_url": "kind_total_records.php"
+        },
+        "Simple_info_table": {
+            "dragonfly_simple_info_species_col_name": "蜓　種",
+            "dragonfly_simple_info_city_col_name": "地　點"
+        },
+        "PositionPrecision": 4
+    },
+    "DataBase": {
+        "CreateDataBase": true,
+        "DataBaseTable": {
+            "UserInfoTable": {
+                "TableName": "userInfo"
+            },
+            "VariableTable": {
+                "TableName": "variable",
+                "TableVarName": {
+                    "VarLatestDataID": "LatestDataID",
+                    "VarLatestDataIDDate": "LatestDataIDDate"
+                }
+            }
+        }
+    },
+    "Alarm": {
+        "WakeUpAlarm": {
+            "HourFrom": "5",
+            "HourEnd": "21",
+            "IntervalPerHour": "1",
+            "IntervalPerMin": ""
+        },
+        "DailyUpdate": {
+            "Hour": "0",
+            "Minute": "1",
+            "Second": "0"
+        }
+    },
+    "GoogleSheet": {
+        "GeneralgSheetUrl_head": "https://docs.google.com/spreadsheets/d/",
+        "GeneralgSheetUrl_end": "/edit?usp=sharing"
+    },
+    "Clock": {
+        "ClockStandAloneVer": false,
+        "ClockHerokuDependancyVer": true,
+        "Update_Time": {
+            "Time_UpdateDatabase": 0
+        }
+    }
+}

@@ -7,7 +7,7 @@ import os
 import psycopg2
 import urllib.parse as urlparse
 from VarIndex import *
-from typing import List
+import index
 
 
 #\ Init the database info
@@ -71,7 +71,14 @@ def CreateDBConection():
             try:
                 conn = psycopg2.connect(**cache.get("DBInfo"), sslmode='require')
             except:
-                conn = psycopg2.connect(**InitDBInfo(), sslmode='require')
+                DbInfo = InitDBInfo()
+                if len(DbInfo) > 1:
+                    conn = psycopg2.connect(**DbInfo, sslmode='require')
+                elif len(DbInfo) == 1:
+                    conn = psycopg2.connect(DbInfo["DBURI"], sslmode='require')
+                else:
+                    conn = None
+                    print("[WARNING] Unable to create the connection to the database")
         except:
             conn = psycopg2.connect(cache.get("DBInfo")["DBURI"], sslmode='require')#\ This is for the local DB connection
             #conn = psycopg2.connect(DBURI, sslmode='require')#\ This is for the local DB connection
@@ -101,12 +108,34 @@ def ExecuteDB(conn, query):
 
 
 #\ Insert into DB SQL command
-def InsertDB(conn, query, data):
+def InsertDB(conn, query:str, data:tuple):
+    """[summary]
+
+    Args:
+        conn ([type]): connection for the database
+        query (string): query(the column) to insert
+        data (tuple): data to be insert
+    """
     try:
         cursor = conn.cursor()
         cursor.execute(query, data)
         conn.commit()
         print("[INFO] Successfully execute the insert database query")
+
+    except:
+        print("[WARNING] Unable to execute the insert database query")
+    CloseDBConnection(conn)
+
+
+#\ Insert multi into DB SQL command
+def InsertManyDB(conn, query, datas):
+    try:
+        for data in datas:
+            cursor = conn.cursor()
+            # cursor.executemant(query, datas) #--> too slow
+            cursor.execute(query, data)
+            conn.commit()
+            print(f"[INFO] Successfully execute the {data} insert database query")
 
     except:
         print("[WARNING] Unable to execute the insert database query")
@@ -119,19 +148,26 @@ def UpdateDB(conn, query, data):
 
 
 #\ Read the data
-def ReadFromDB(conn, query, FetchOneOrNot, CloseConn=True):
+def ReadFromDB(conn, query, FetchOneOrNot=True, CloseConn=True):
     """
-    fetchone : return tuple
-    fetchall : return list of tuple
+    @params
+        conn : Connection
+        query : query for reading the database
+        FetchOneOrNot : (True to fetch one , False to fetch all)Whether to get one data or all the data from the database
+        CloseConn :  Decides whether to close the database connection after reading
+
+    @return
+        fetchone : return tuple
+        fetchall : return list of tuple
     """
     cursor = ExecuteDB(conn, query)
     try:
         if FetchOneOrNot:
             returnData = cursor.fetchone()
-            print(f"[INFO] Read from DB : \n{returnData}")
+            print(f"[INFO] Read from DB fetchone: \n{returnData}")
         else:
             returnData = cursor.fetchall()
-            print(f"[INFO] Read from DB : \n{returnData}")
+            print(f"[INFO] Read from DB fetchall: \n{returnData}")
 
         #\ Don't Close connection
         if CloseConn is True:
@@ -182,7 +218,9 @@ UserInfo_create_table_query = '''CREATE TABLE IF NOT EXISTS UserInfo(
     userid VARCHAR (50) PRIVATE NOT NULL,
     join_date DATE NOT NULL,
     account VARCHAR (50) NOT NULL,
-    password VARCHAR (50) NOT NULL
+    password VARCHAR (50) NOT NULL,
+    current_crawling_id VARCHAR (50),
+    access_token VARCHAR (50),
 );'''
 
 
@@ -200,7 +238,8 @@ Variable_create_table_query = '''CREATE TABLE IF NOT EXISTS Variable(
 #\ Execute create connection
 # PG_DATABASE_URL = os.popen('heroku config:get DATABASE_URL -a dragonfly-flask-web').read()[:-1]
 # conn = psycopg2.connect(PG_DATABASE_URL, sslmode='require')
-# ExecuteDB(conn, Variable_create_table_query)
+# ExecuteDB(conn, UserInfo_create_table_query)
+
 
 
 #\ Read all query
@@ -214,11 +253,13 @@ Insert_query = lambda Table, name, value : f"INSERT INTO {Table} {name} VALUES {
 
 #\ insert to the userinfo database if the userid conflict then update the reset of the column
 #\ value should be "(XXX, XXX, XXXX, XX, XXXXX, .....)"
-Insert_userinfo_query = lambda Table : f"INSERT INTO {Table} (name, userid, join_date, account, password) VALUES (%s, %s, %s, %s, %s) ON CONFLICT ON CONSTRAINT userinfo_userid_key DO UPDATE SET name = EXCLUDED.name, join_date=EXCLUDED.join_date, account=EXCLUDED.account, password=EXCLUDED.password ;"
+Insert_userinfo_query = f"INSERT INTO {index.UserInfoTableName} (name, userid, join_date, account, password) VALUES (%s, %s, %s, %s, %s) ON CONFLICT ON CONSTRAINT userinfo_userid_key DO UPDATE SET name = EXCLUDED.name, join_date=EXCLUDED.join_date, account=EXCLUDED.account, password=EXCLUDED.password ;"
 
 #\ Read the userinfo
-Read_userinfo_query = lambda Table, userid : f"SELECT * FROM {Table} WHERE userid = '{userid}';"
+Read_userinfo_query = lambda userid : f"SELECT * FROM {index.UserInfoTableName} WHERE userid = '{userid}';"
 
+#\ Update user info
+Update_userinfo_query = lambda column_name: f"UPDATE {index.UserInfoTableName} SET {column_name}=%s WHERE userid=%s;"
 
 
 #\ --- Variable table ---

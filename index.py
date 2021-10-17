@@ -15,13 +15,17 @@ import json
 
 
 #\ Load data from json file
-with open("Index.json", encoding="utf-8") as f:
+with open("./Setting/Index.json", encoding="utf-8") as f:
     INDEX = json.load(f)
     # print(f'{"x"*25}\n| [INFO]The Index data |\n{"x"*25}\n{json.dumps(INDEX, indent=4)}')
 
 #\ Load the private data from json file
-with open("Private_Index.json") as p_f:
+with open("./Setting/Private_Index.json") as p_f:
     INDEX_PRIVATE = json.load(p_f)
+
+#\ Load Species directory
+with open("./Setting/SpeciesDirectory.json", encoding="utf-8") as SD_f:
+    INDEX_SPECIES = json.load(SD_f)
 
 
 
@@ -34,6 +38,21 @@ APP_Pri_Key = INDEX_PRIVATE["APP_Pri_Key"]
 #\ ---- OSM API ----
 bAPIon = INDEX["OSM"]["bAPIon"]
 GMAPapikey = INDEX_PRIVATE["OSM"]["GMAPapikey"]
+
+#\ limit the map marker amount
+MapMarksLimit = INDEX["OSM"]["MapMarksLimit"]
+
+#\ default map view location
+DefaultMapViewLocation = INDEX["OSM"]["DefaultMapViewLocation"]
+
+#\ accuracy for the latitude and longitude
+LatLonAccuracy = 10**INDEX["OSM"]["LatLonAccuracy"]
+
+
+#\ ---- Google sheet API ----
+GSheetApiKeyPath = INDEX["GCP"]["GSheetApiKeyPath"]
+
+
 
 #\ -- Server url--
 ServerURL = INDEX["Server"]
@@ -54,6 +73,12 @@ Main2RichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["Main2RichMen
 
 #\ Carsoul Bubble Limit number due to line bot api limitation
 CarsoulBubbleLimit = INDEX["LineBot"]["CarsoulBubbleLimit"]
+
+
+#\ ---- Line Notify----
+LN_Client_ID = INDEX_PRIVATE["Line_Notify"]["Client_ID"]
+LN_Client_Secret = INDEX_PRIVATE["Line_Notify"]["Client_Secret"]
+LN_redirect_uri = INDEX_PRIVATE["Line_Notify"]["redirect_uri"]
 
 
 #\ ---- Dragonfly ----
@@ -95,7 +120,11 @@ URI = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["URI"]
 #\ Database table name
 UserInfoTableName = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableName"]
 VariableTableName = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableName"]
-VarLatestDataID = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVar"]["LatestDataID"]
+VarLatestDataID = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVarName"]["VarLatestDataID"]
+VarLatestDataIDDate = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVarName"]["VarLatestDataIDDate"]
+
+#\ Create database (or to update the current database column name or attribute)
+CreateDataBase = INDEX["DataBase"]["CreateDataBase"]
 
 
 
@@ -110,6 +139,30 @@ IntervalPerHour = INDEX["Alarm"]["WakeUpAlarm"]["IntervalPerHour"]
 IntervalPerMin = INDEX["Alarm"]["WakeUpAlarm"]["IntervalPerMin"]
 HOURAlarm = {"hour" : HourRange+"/"+IntervalPerHour} if IntervalPerHour != "" else {"minute" : "*/"+IntervalPerMin}
 
-#\ Daily routin
+#\ Daily routine
 DAYAlarm = {"hour": INDEX["Alarm"]["DailyUpdate"]["Hour"], "minute": INDEX["Alarm"]["DailyUpdate"]["Minute"], "second": INDEX["Alarm"]["DailyUpdate"]["Second"]}
 
+
+
+
+#\ --Species directory--
+# Dragonfly_Orders
+
+
+
+
+#\ --Google sheet api--
+#\ General google sheet url
+GeneralgSheetUrl = lambda SpeciesID: INDEX["GoogleSheet"]["GeneralgSheetUrl_head"] + str(SpeciesID) + INDEX["GoogleSheet"]["GeneralgSheetUrl_end"]
+
+
+
+
+#\ --Clock--
+#\ Switch token
+ClockStandAloneVer = INDEX["Clock"]["ClockStandAloneVer"]
+
+ClockHerokuDependancyVer = INDEX["Clock"]["ClockHerokuDependancyVer"]
+
+#\ Time for the update database
+Time_UpdateDatabase = INDEX["Clock"]["Update_Time"]["Time_UpdateDatabase"]

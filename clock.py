@@ -9,13 +9,14 @@ import random
 import DragonflyData
 import LineBotClass
 import Database
+import pytz
 
 
 sched = BlockingScheduler()
 
 
 #\ testing
-@sched.scheduled_job('cron', hour="*/1")
+@sched.scheduled_job('cron', minute="*/29")
 def testing():
     print(f"[INFO] scheduled_job: {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
 
@@ -39,7 +40,8 @@ def SetTimer2Update_job():
 
 #\ This is to update the database's TodayID eveyday midnight
 def UpdateDataBase_job():
-    print(f"[INFO] In UpdateDataBase_job() Update the database latest ID at {datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S')}")
+    time_zone = pytz.timezone("Asia/Taipei")
+    print(f"[INFO] In UpdateDataBase_job() Update the database latest ID at {datetime.datetime.now(time_zone).strftime('%Y-%m-%d, %H:%M:%S')}")
 
     #\ Create the web session and conn
     session, conn = LineBotClass.CreateWebSession(None, False)
@@ -49,21 +51,39 @@ def UpdateDataBase_job():
     # print(f"[INFO] Max_ID_num : {Max_ID_num}")
 
     #\ write back to the database
-    Update_Data = (str(Max_ID_num), index.VarLatestDataID)
+    Update_Data = [
+                    (str(Max_ID_num), index.VarLatestDataID),
+                    (datetime.datetime.now(time_zone).strftime('%Y-%m-%d'), index.VarLatestDataIDDate)
+                   ]
     print(f"[INFO] Update_Data : {Update_Data}")
-    Database.InsertDB(conn,
-                      Database.Update_varaible_query(index.VariableTableName),
-                      Update_Data
-                      )
+    Database.InsertManyDB(conn,
+                        Database.Update_varaible_query(index.VariableTableName),
+                        Update_Data
+                        )
 
 
+
+
+#\ Send the hourly summary of the update for the dragonfly data
+def Send_Hourly_Summary():
+    exit
 
 
 
 ################################################################################################
 
-#\ Add the job
-sched.add_job(UpdateDataBase_job, "cron", id="UpdateDataBase_job_ID", hour=0, minute=1, second=0)
+#\ ----------------------------------------------------------------
+#\ Run the clock by the schedul of apscheduler
+if index.ClockStandAloneVer:
+    #\ Add the job
+    sched.add_job(UpdateDataBase_job, "cron", id="UpdateDataBase_job_ID", hour=0, minute=1, second=0)
 
-#\ start the clock
-sched.start()
+    #\ start the clock
+    sched.start()
+
+#\ Run the clock by the schedule of the Heroku add-on
+elif index.ClockHerokuDependancyVer:
+    # if datetime.datetime.now().hour == index.Time_UpdateDatabase:
+     UpdateDataBase_job()
+     Send_Hourly_Summary()
+

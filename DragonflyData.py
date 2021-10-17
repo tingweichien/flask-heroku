@@ -1,24 +1,25 @@
 import proxyscrape
-from typing import List
 import requests
 from bs4 import BeautifulSoup
 import DataClass
 import index
-from fake_useragent import UserAgent
+from fake_useragent import UserAgent, FakeUserAgentError
 import re
 from datetime import datetime
-import Database
-
 
 
 
 
 #\--->Now use random fake user agent
 # https://ithelp.ithome.com.tw/articles/10209356
-UA = UserAgent()
-headers = {
-        'User-Agent' : UA.random,
-}
+#\ if there is error orrcur then do not use this
+try:
+    UA = UserAgent()
+    headers = {
+            'User-Agent' : UA.random,
+    }
+except FakeUserAgentError:
+    headers = {}
 
 
 #\ Proxy auto crawling
@@ -287,7 +288,7 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None)->list:
                                                     Description
                                                     )
 
-    print(f"[INFO] Return Object: {ID_find_result}")
+    # print(f"[INFO] Return Object: {ID_find_result}")
     return [ID_find_result, overflow, int(Max_ID_Num)]
 
 
@@ -309,7 +310,7 @@ def GetMaxID(session)->int:
 
 #\ ------------------------------------------------------------------------------
 #\ for testing
-# [session, Login_Response, Login_state] = Login_Web("簡庭威", "tim960622")
+# [session, Login_Response, Login_state] = Login_Web("-----", "-------")
 # DataCrawler(session, "77257")
 
 
@@ -381,11 +382,11 @@ def CheckDataSameOrNot(result_list:list, ID_find_result:list):
 #\ filter to filter out the data with specific condition
 def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_filter:list=None, KeepOrFilter:bool=None)->bool:
     """
-     params:
+     @params:
           user to filter
           species to filter
           KeepOrFilter: indicate to do filter(False) or keep(True) the data if satisfied the condition
-     return:
+     @return:
         if KeepOrFilter True to keep the data
           True: Filter out
           Flase: Not Filter out to keep
@@ -451,7 +452,7 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->l
 
         else :
             condition = False
-    print(f"[INFO] In CrawlDataByIDRange() the result list is {result_list}")
+    # print(f"[INFO] In CrawlDataByIDRange() the result list is {result_list}")
     return result_list
 
 
@@ -463,5 +464,5 @@ def CrawTodayData(session, TodayFirstID:int, filter_object:list):
 
 
 #\ Test
-# [session, Login_Response, Login_state] = Login_Web("簡庭威", "tim960622")
+# [session, Login_Response, Login_state] = Login_Web("------", "------")
 # print(CrawTodayData(session))

@@ -18,13 +18,16 @@ import Database
 import datetime
 import LineBotMsgHandler
 import random
-
+from gSheetAPI import Sheet_id_dict
+import urllib
+import urllib.request, urllib.parse
+import json
 
 
 #\ -- Global --
 #\ Line bot basic info
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('./Key/config.ini')
 gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
 gHandler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 
@@ -208,7 +211,7 @@ def CheckEvent(event_text:str):
 #\ Check User Info from database to see if there are any records or not
 def CheckUserInfo(event):
     DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
-                                    Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
+                                    Database.Read_userinfo_query(event.source.user_id),
                                     True)
     print(f"[INFO] In the CkeckUserInfo() the Data return from the DB is {DB_Data}")
     if DB_Data is not None:
@@ -304,7 +307,7 @@ def IDRequestCallback(event):
                                                         f"[Longitude]: {ID_find_result.Longitude}\n"\
                                                         f"[Speceis]: {', '.join(ID_find_result.SpeciesList)}\n"+\
                                                         f"[Description]: {ID_find_result.Description}\n",
-                                                contents=LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText,ID_find_result)
+                                                contents=LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, ID_find_result)
                                             )
 
             gLine_bot_api.reply_message(event.reply_token,
@@ -337,7 +340,7 @@ def CreateWebSession(event=None, CloseDBConn=True):
         conn
     """
     if event is not None:
-        read_query = Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id)
+        read_query = Database.Read_userinfo_query(event.source.user_id)
         fetchone = True
     else:
         read_query = Database.Read_all_query(index.UserInfoTableName)
@@ -346,6 +349,10 @@ def CreateWebSession(event=None, CloseDBConn=True):
 
     #\ read the data from DB
     conn = Database.CreateDBConection()
+    if conn is None:
+        print("[Warming] Fail to do CreateWebSession() due to the CreateDBConnection() fail")
+        return None, None
+
     DB_Data = Database.ReadFromDB(conn,
                                     read_query,
                                     fetchone,
@@ -470,7 +477,8 @@ def LoginProgress(event):
             #\ Store the user info if success to skip login process
             if cache.get("gLoginStatus") is True:
                 #\ Connect and Create the database if not exist
-                # Database.ExecuteDB(Database.CreateDBConection(), Database.UserInfo_create_table_query)
+                if index.CreateDataBase:
+                    Database.ExecuteDB(Database.CreateDBConection(), Database.UserInfo_create_table_query)
 
                 #\ Request the user info
                 #\      self.display_name = display_name
@@ -491,7 +499,7 @@ def LoginProgress(event):
 
                 #\ Save the PW and ACCOUNT to the database
                 Database.InsertDB(Database.CreateDBConection(),
-                                    Database.Insert_userinfo_query(index.UserInfoTableName),
+                                    Database.Insert_userinfo_query(),
                                     InsertData
                                 )
 
@@ -574,24 +582,28 @@ def GetTodayData(event):
         bubble_content = LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, data)
         content_list.append(bubble_content)
 
-    #\ Handling the carsoul text message with limitation number by line api
+    #\ Handling the carsoul text message with limitation number by LINE API
     # print(f"[INFO] in GetTodayData() content list\n{content_list}")
-    for content_idx in range(0, len(content_list), index.CarsoulBubbleLimit):
-        end = content_idx + index.CarsoulBubbleLimit
-        #\ handle overflow
-        if end > len(content_list):
-            content_limit_list = content_list[content_idx:]
-        else:
-            content_limit_list = content_list[content_idx:end]
-
-        Msgtext = FlexSendMessage(alt_text="No data",
-                                contents=LineBotMsgHandler.MultiRequestDataMsgText(content_limit_list)
-                                )
-
+    if len(content_list) is 0:
         gLine_bot_api.push_message(event.source.user_id,
-                                Msgtext
-                                )
+                        "No data updated today"
+                        )
+    else:
+        for content_idx in range(0, len(content_list), index.CarsoulBubbleLimit):
+            end = content_idx + index.CarsoulBubbleLimit
+            #\ handle overflow
+            if end > len(content_list):
+                content_limit_list = content_list[content_idx:]
+            else:
+                content_limit_list = content_list[content_idx:end]
 
+            Msgtext = FlexSendMessage(alt_text="No data",
+                                    contents=LineBotMsgHandler.MultiRequestDataMsgText(content_limit_list)
+                                    )
+
+            gLine_bot_api.push_message(event.source.user_id,
+                                    Msgtext
+                                    )
 
 
 #\ Init the cache data
@@ -602,6 +614,7 @@ def InitCache(_cache):
     _cache.set("gIsJustText", True)
     _cache.set("gLoginDataConfirm", False)
     _cache.set("gLoginStatus", False)
+    _cache.set("gUserID", None)
     _cache.set("gAccount", None)
     _cache.set("gPassword", None)
     _cache.set("Dragonfly_session", None)
@@ -613,6 +626,9 @@ def InitCache(_cache):
                                         ))
                )
     _cache.set("DAYAlarm", index.DAYAlarm)
+    _cache.set("gGSheetList", Sheet_id_dict())
+    _cache.set("gLN_AccessToken", None)
+
 
 
 #\ handle post back event
@@ -641,3 +657,131 @@ def CheckPostEvent(event_text:str):
 
     else:
         return eLineBotPostEvent.NONE.value
+
+
+
+
+#\ Line Bot for Line Notify
+#\ send this url to the user to get the access token
+def create_auth_link(user_id, client_id=index.LN_Client_ID, redirect_uri=index.LN_redirect_uri):
+    print("[LINE Notify] Request the user to authorize the LINE Notify")
+    data = {
+        'response_type': 'code',
+        'client_id': client_id,
+        'redirect_uri': redirect_uri,
+        'scope': 'notify',
+        'state': user_id
+    }
+    query_str = urllib.parse.urlencode(data)
+
+    #\ return f'https://notify-bot.line.me/oauth/authorize?{query_str}'
+    gLine_bot_api.push_message(user_id,
+                                TextSendMessage(text=f"Please click the following link to authorize the LINE Notify, select \"1-on-1 chat with LINE Notify\"\nhttps://notify-bot.line.me/oauth/authorize?{query_str}")
+                                )
+
+
+#\ Check if the LINE Notify key already exit or not
+def Check_LN_Key_exist(userid: str):
+    #\ read the database
+    Userinfo_access_token = Database.ReadFromDB(Database.CreateDBConection(),
+                                                Database.Read_col_userinfo_query("access_token", index.UserInfoTableName, userid),
+                                                True
+                                                )
+
+    #\ Set the User ID to cache
+    cache.set("gUserID", userid)
+
+    print(f"[Info] In Check_LN_Key_exist() the access token is {Userinfo_access_token}")
+    if Userinfo_access_token[0] is None:
+        print("[Info] Updating the LINE Notify access token")
+        #\ Send the link to the user to authorize and get the access token
+        #\ After the user click authorize, it'll redirect to the callback_nofity() in app.py
+        #\ the code can be got, then can start to ask the LINE Notify for the access token
+        create_auth_link(userid)
+    else:
+        cache.set("gLN_AccessToken", Userinfo_access_token["access_token"])
+
+
+
+
+#\ Get the token
+def LN_get_token(code:str, client_id:str=index.LN_Client_ID, client_secret:str=index.LN_Client_Secret, redirect_uri:str=index.LN_redirect_uri):
+    """Get the token from the user to access the LIne Notify message
+
+    Args:
+        code (str): The code that get after user click authorize
+        client_id (str, optional): Put the user ID here and it'll return the corresponding access token back. Defaults to index.LN_Client_ID.
+        client_secret (str, optional): . Defaults to index.LN_Client_Secret.
+        redirect_uri (str, optional): . Defaults to index.LN_redirect_uri.
+
+    Returns:
+        str: access token
+    """
+    print("[LINE Notify] Get Token")
+    url = 'https://notify-bot.line.me/oauth/token'
+    headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+    data = {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': redirect_uri,
+        'client_id': client_id,
+        'client_secret': client_secret
+    }
+    data = urllib.parse.urlencode(data).encode()
+    req = urllib.request.Request(url, data=data, headers=headers)
+    page = urllib.request.urlopen(req).read()
+
+    res = json.loads(page.decode('utf-8'))
+
+    #\ Save the token to the database
+    Database.InsertDB(Database.CreateDBConection(),
+                      Database.Update_userinfo_query("access_token"),
+                      (res['access_token'], cache.get("gUserID")))
+    #\ Set to the cache
+    cache.set("gLN_AccessToken", res['access_token'])
+    print(f"[LINE Notify] Access Token : {res['access_token']}")
+    return res['access_token']
+
+
+###########################################################################################
+#\ Use this to send the message via LINE Notify, but the message will not show in your APP.
+#\ Send the message
+def LN_send_message(access_token:str=None, text_message:str=None, picurl:str=None):
+    """Send the message using LINE Notify
+
+    Args:
+        access_token (str, optional): [Access token for the LINE Notify]. Defaults to None.
+        text_message (str, optional): [test message to sen]. Defaults to None.
+        picurl (str, optional): [piecture url]. Defaults to None.
+    """
+    print("[LINE Notify] Send message")
+
+    #\ Handle the access token and check the input data vaildation
+    if access_token is None:
+        print("[Warning][LINE Notify] access token is None")
+        return
+    else:
+        url = 'https://notify-api.line.me/api/notify'
+        headers = {"Authorization": "Bearer "+ access_token}
+
+    #\ The LINE Notify required the text message no matter whether the picture url is specify or not
+    if text_message is None:
+        print("[Warning][LINE Notify] Not specify the mandatory text message to send")
+        return
+
+    DataToSend = dict()
+    DataToSend = {'message': text_message}
+    if picurl is not None:
+        temp_data = {"stickerPackageId": 2, 'stickerId': 38,
+                    'imageThumbnail':picurl, 'imageFullsize':picurl}
+        DataToSend.update(temp_data)
+
+
+    # data = {'message': text_message,
+    #         "stickerPackageId": 2, 'stickerId': 38,
+    #         'imageThumbnail':picurl, 'imageFullsize':picurl}
+
+    data = urllib.parse.urlencode(DataToSend).encode()
+    req = urllib.request.Request(url, data=data, headers=headers)
+    page = urllib.request.urlopen(req).read()
+    ###########################################################################################
