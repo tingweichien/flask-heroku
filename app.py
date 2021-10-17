@@ -170,9 +170,9 @@ def LineBotEcho():
         LineBotClass.InitCache(cache)
 
     #\ Check if the LINE Notify is available or not
-    body = json.loads(request.get_data(as_text=True))
-    print(f"[Info]In LineBitEcho body->{body}")
-    LineBotClass.Check_LN_Key_exist(body["events"][0]["source"]["userId"])
+    if cache.get("gLN_AccessToken") is None:
+        body = json.loads(request.get_data(as_text=True))
+        LineBotClass.Check_LN_Key_exist(body["events"][0]["source"]["userId"])
 
     #\ handler
     LineBotClass.LineBotHandler(app)
@@ -182,14 +182,18 @@ def LineBotEcho():
 #\ Line bot for Line Notify
 @app.route("/callback/notify", methods=['GET'])
 def callback_nofity():
-    assert request.headers['referer'] == 'https://notify-bot.line.me/'
-    code = request.args.get('code')
-    state = request.args.get('state')
+    try:
+        assert request.headers['referer'] == 'https://notify-bot.line.me/'
+        code = request.args.get('code')
+        state = request.args.get('state')
 
-    # 接下來要繼續實作的函式
-    access_token = LineBotClass.LN_get_token(code, index.LN_Client_ID, index.LN_Client_Secret, index.LN_redirect_uri)
+        # 接下來要繼續實作的函式
+        access_token = LineBotClass.LN_get_token(code, index.LN_Client_ID, index.LN_Client_Secret, index.LN_redirect_uri)
 
-    return '恭喜完成 LINE Notify 連動！請關閉此視窗。'
+        return '恭喜完成 LINE Notify 連動！請關閉此視窗。'
+
+    except:
+        return "Failed to execute the LINE Notify callback redirect URL"
 
 
 
