@@ -676,7 +676,7 @@ def create_auth_link(user_id, client_id=index.LN_Client_ID, redirect_uri=index.L
 
     #\ return f'https://notify-bot.line.me/oauth/authorize?{query_str}'
     gLine_bot_api.push_message(user_id,
-                                TextSendMessage(text=f"Please click the following link to authorize the LINE Notify, please select one on one.....\nhttps://notify-bot.line.me/oauth/authorize?{query_str}")
+                                TextSendMessage(text=f"Please click the following link to authorize the LINE Notify, select \"1-on-1 chat with LINE Notify\"\nhttps://notify-bot.line.me/oauth/authorize?{query_str}")
                                 )
 
 
@@ -739,31 +739,36 @@ def LN_get_token(code:str, client_id:str=index.LN_Client_ID, client_secret:str=i
                       (data, cache.get("gUserID")))
     #\ Set to the cache
     cache.set("gLN_AccessToken", res['access_token'])
-
+    print(f"[LINE Notify] Access Token : {res['access_token']}")
     return res['access_token']
 
 
 #\ Send the message
 def LN_send_message(access_token:str=None, text_message:str=None, picurl:str=None):
-    print("[Line Notify] Send message")
+    """Send the message using LINE Notify
+
+    Args:
+        access_token (str, optional): [Access token for the LINE Notify]. Defaults to None.
+        text_message (str, optional): [test message to sen]. Defaults to None.
+        picurl (str, optional): [piecture url]. Defaults to None.
+    """
+    print("[LINE Notify] Send message")
 
     #\ Handle the access token and check the input data vaildation
     if access_token is None:
-        print("[Warning][Line Notify] access token is None")
+        print("[Warning][LINE Notify] access token is None")
         return
     else:
         url = 'https://notify-api.line.me/api/notify'
         headers = {"Authorization": "Bearer "+ access_token}
 
-    #\ Handle the text message or picture url to be send and check if it's vaildate
-    if text_message and  picurl is None:
-        print("[Warning][Line Notify] Not specify the text message and the picture url to send")
+    #\ The LINE Notify required the text message no matter whether the picture url is specify or not
+    if text_message is None:
+        print("[Warning][LINE Notify] Not specify the mandatory text message to send")
         return
-    temp_data = dict()
+
     DataToSend = dict()
-    if text_message is not None:
-        temp_data = {'message': text_message}
-        DataToSend.update(temp_data)
+    DataToSend = {'message': text_message}
     if picurl is not None:
         temp_data = {"stickerPackageId": 2, 'stickerId': 38,
                     'imageThumbnail':picurl, 'imageFullsize':picurl}
