@@ -675,7 +675,7 @@ def create_auth_link(user_id, client_id=index.LN_Client_ID, redirect_uri=index.L
 
     #\ return f'https://notify-bot.line.me/oauth/authorize?{query_str}'
     gLine_bot_api.push_message(user_id,
-                                TextSendMessage(text=f"Please click the following link to authorize the LINE Notify\nhttps://notify-bot.line.me/oauth/authorize?{query_str}")
+                                TextSendMessage(text=f"Please click the following link to authorize the LINE Notify, please select one on one.....\nhttps://notify-bot.line.me/oauth/authorize?{query_str}")
                                 )
 
 
