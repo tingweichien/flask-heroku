@@ -736,13 +736,15 @@ def LN_get_token(code:str, client_id:str=index.LN_Client_ID, client_secret:str=i
     #\ Save the token to the database
     Database.InsertDB(Database.CreateDBConection(),
                       Database.Update_userinfo_query("access_token"),
-                      (data, cache.get("gUserID")))
+                      (res['access_token'], cache.get("gUserID")))
     #\ Set to the cache
     cache.set("gLN_AccessToken", res['access_token'])
     print(f"[LINE Notify] Access Token : {res['access_token']}")
     return res['access_token']
 
 
+###########################################################################################
+#\ Use this to send the message via LINE Notify, but the message will not show in your APP.
 #\ Send the message
 def LN_send_message(access_token:str=None, text_message:str=None, picurl:str=None):
     """Send the message using LINE Notify
@@ -782,3 +784,4 @@ def LN_send_message(access_token:str=None, text_message:str=None, picurl:str=Non
     data = urllib.parse.urlencode(DataToSend).encode()
     req = urllib.request.Request(url, data=data, headers=headers)
     page = urllib.request.urlopen(req).read()
+    ###########################################################################################

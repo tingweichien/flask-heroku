@@ -359,3 +359,10 @@ i.e.
 
 1. The database GUI for the PostgreSQL database : **pgAdmin**
    ![pgAdmin](https://i.imgur.com/TybeITK.png)
+
+
+## [2021/10/17]
+
+1. Add the function for using the LINE Notify.
+
+2. Not planning to use due to that it will not showing the message in your app.
