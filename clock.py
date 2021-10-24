@@ -10,6 +10,7 @@ import DragonflyData
 import LineBotClass
 import Database
 import pytz
+import gSheetAPI
 
 
 sched = BlockingScheduler()
@@ -38,13 +39,15 @@ def SetTimer2Update_job():
     print(f"[INFO] In SetTimer2Update_job() set the timer to update : {index.DAYAlarm}")
 
 
-#\ This is to update the database's TodayID eveyday midnight
-def UpdateDataBase_job():
-    time_zone = pytz.timezone("Asia/Taipei")
-    print(f"[INFO] In UpdateDataBase_job() Update the database latest ID at {datetime.datetime.now(time_zone).strftime('%Y-%m-%d, %H:%M:%S')}")
+#\ Update database to the google sheets
+def update_gSheets_daily():
+    #\ Update the database to the google sheets
+    [status, gSheetResult] = gSheetAPI.GetDragonflyDataGoogleSheets()
 
-    #\ Create the web session and conn
-    session, conn = LineBotClass.CreateWebSession(None, False)
+
+
+#\ This is to update the database's TodayID eveyday midnight
+def UpdateDataBase_job(session, conn, time_zone):
 
     #\ Get the latest ID
     Max_ID_num = DragonflyData.GetMaxID(session)
@@ -52,8 +55,8 @@ def UpdateDataBase_job():
 
     #\ write back to the database
     Update_Data = [
-                    (str(Max_ID_num), index.VarLatestDataID),
-                    (datetime.datetime.now(time_zone).strftime('%Y-%m-%d'), index.VarLatestDataIDDate)
+                   (str(Max_ID_num), index.VarLatestDataID),
+                   (datetime.datetime.now(time_zone).strftime('%Y-%m-%d'), index.VarLatestDataIDDate)
                    ]
     print(f"[INFO] Update_Data : {Update_Data}")
     Database.InsertManyDB(conn,
@@ -61,12 +64,50 @@ def UpdateDataBase_job():
                         Update_Data
                         )
 
+    #\ Update database to the google sheets
+    # update_gSheets_daily()
+
 
 
 
 #\ Send the hourly summary of the update for the dragonfly data
-def Send_Hourly_Summary():
-    exit
+def Send_Hourly_Summary(session):
+    #\ Get the user id from the database
+    userid_list = Database.ReadFromDB(Database.CreateDBConection(),
+                                      Database.Read_all_row_for_col_query("userid"),
+                                      True
+                                      )
+
+    #\ Get the filter to the filter object : [user_list, species_list, keep_or_filter ]
+    Filter_list = DragonflyData.GetSpeciesRecordingNumberRank(session)
+    index.Hourly_Summary_default_data_filter[1] = Filter_list[index.HSDDFilter_start_index:]
+
+    #\ Send to all the user
+    for user_id in userid_list:
+        LineBotClass.GetTodayDataSend2LINEBot(user_id,
+                                              AllDayData=False,
+                                              filter=index.Hourly_Summary_default_data_filter
+                                              )
+
+
+#\ The main function to run the clock.py function every heroku dependency defined schedule time.
+def RunClockFunctionbyHeroku():
+    #\ Get the date time
+    time_zone = pytz.timezone("Asia/Taipei")
+    print(f"[INFO] In RunClockFunctionbyHeroku() Update the database latest ID at {datetime.datetime.now(time_zone).strftime('%Y-%m-%d, %H:%M:%S')}")
+
+    #\ Create the web session and conn
+    session, conn = LineBotClass.CreateWebSession(None, False)
+
+    #\ Update the database everyday
+    if datetime.datetime.now(time_zone).hour == 0:
+        UpdateDataBase_job(session, conn, time_zone)
+        print("[INFO][Clock] Update the date and the latest ID to the database")
+
+    #\ Send the data to the Line bot for all the user evey x hour
+    if datetime.datetime.now(time_zone).hour % index.Send_Hour_Summary_timeInterval == 0:
+        Send_Hourly_Summary(session)
+        print("[INFO][Clock]Send the data to the user for hourly summary")
 
 
 
@@ -82,8 +123,7 @@ if index.ClockStandAloneVer:
     sched.start()
 
 #\ Run the clock by the schedule of the Heroku add-on
+#\ The heroku schedule set to run every hour
 elif index.ClockHerokuDependancyVer:
     # if datetime.datetime.now().hour == index.Time_UpdateDatabase:
-     UpdateDataBase_job()
-     Send_Hourly_Summary()
-
+    RunClockFunctionbyHeroku()

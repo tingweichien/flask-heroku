@@ -1,3 +1,4 @@
+from typing import List
 import proxyscrape
 import requests
 from bs4 import BeautifulSoup
@@ -389,11 +390,18 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
      @return:
         if KeepOrFilter True to keep the data
           True: Filter out
-          Flase: Not Filter out to keep
+          False: Not Filter out to keep
         if KeepOrFilter False to filter the data
           True: keep
-          Flase: not to keep to filter out
+          False: not to keep to filter out
     """
+
+    #\ if the input list is emnpty then transfer to None
+    if len(user_filter) is 0 :
+        user_filter = None
+    if len(species_filter) is 0 :
+        species_filter = None
+
     Filter_State = False
 
     #\ No input then return True, since nothing is going to filter
@@ -426,7 +434,18 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
 #\  same as the it's record date. Therefore, we select the data
 #\  based on the ID renew in the midnight everyday to tell which
 #\  ID correspond to the start of the that day to indicate the time.
-def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->list:
+def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List[list])->list:
+    """[summary]
+
+    Args:
+        session ([type]): session
+        Start_ID (int): Start_ID
+        End_ID (int): End_ID
+        filter_object (list of lists):
+
+    Returns:
+        list:
+    """
     [User_filter, Species_filter, KeepOrFilter] = filter_object
     Max_ID_Num = None
     counter = 0
@@ -458,11 +477,50 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->l
 
 
 #\ Craw today's data
-def CrawTodayData(session, TodayFirstID:int, filter_object:list):
+def CrawTodayData(session, TodayFirstID:int, filter_object:List[list]):
     #CrawDataByDate(session, datetime.now(), datetime.now())
     return CrawlDataByIDRange(session, None, TodayFirstID, filter_object)
 
 
+
+#\ Get the species recording number rank from the website
+def GetSpeciesRecordingNumberRank(session)->list:
+    """[summary]
+
+    Args:
+        session ([type]): [description]
+
+    Returns:
+        list: [[name, count],[name2, count2],....]
+    """
+
+    #\ Get the data from the website via beautiful soup
+    species_number_rank_response = session.post(index.species_number_rank_url, headers=headers)
+    soup_number_species_check = BeautifulSoup(species_number_rank_response.text, 'html.parser')
+    Data_td_tag = soup_number_species_check.find_all('td')
+    #Data_td_tag = Data_tr_tag.find_all('td')
+
+    #\ Extract the text from the html tags <td>
+    #\ The return list : Species_rank_list will be Species_rank_list[the_rank_number] = ["species_name", "total_recording_number"]
+    #\   <tr>
+    #\      <td align="center">1</td>
+    #\      <td>薄翅蜻蜓</td>
+    #\      <td align="right">11267</td>
+    #\      <td align="right">5.96 %</td>
+    #\  <tr>
+    Species_rank_list = []
+    #\ i = 2--> workaround to skip the unused column name and title
+    for i in range(2, len(Data_td_tag), 4):
+        td = Data_td_tag[i:i+3]
+        Species_rank_list.append([td[0].text, td[1].text])
+
+    #\ The first is the most common one which own most records
+    return Species_rank_list
+
+
+
+
 #\ Test
-# [session, Login_Response, Login_state] = Login_Web("------", "------")
-# print(CrawTodayData(session))
+#\ Use this to test the function required session
+# [session, Login_Response, Login_state] = Login_Web("-----", "-----")
+# print(GetSpeciesRecordingNumberRank(session))

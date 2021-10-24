@@ -190,7 +190,7 @@ def callback_nofity():
         # 接下來要繼續實作的函式
         access_token = LineBotClass.LN_get_token(code, index.LN_Client_ID, index.LN_Client_Secret, index.LN_redirect_uri)
 
-        return '恭喜完成 LINE Notify 連動！請關閉此視窗。'
+        return "恭喜完成 LINE Notify 連動！請關閉此視窗。"
 
     except:
         return "Failed to execute the LINE Notify callback redirect URL"

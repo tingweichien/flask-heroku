@@ -13,10 +13,10 @@
 import json
 
 
-
 #\ Load data from json file
 with open("./Setting/Index.json", encoding="utf-8") as f:
     INDEX = json.load(f)
+    #\ use this to print the data from the json file
     # print(f'{"x"*25}\n| [INFO]The Index data |\n{"x"*25}\n{json.dumps(INDEX, indent=4)}')
 
 #\ Load the private data from json file
@@ -97,6 +97,7 @@ species_all_record_data_first_url = INDEX["DragonflyData"]["URL"]["species_all_r
 species_all_record_data_page_url = INDEX["DragonflyData"]["URL"]["species_all_record_data_page_url"]
 species_all_record_data_species_url = INDEX["DragonflyData"]["URL"]["species_all_record_data_species_url"]
 total_num_species_url = INDEX["DragonflyData"]["URL"]["total_num_species_url"]
+species_number_rank_url = general_url + INDEX["DragonflyData"]["URL"]["species_number_rank_url"]
 
 #\ Dragonfly simple info species column name
 dragonfly_simple_info_species_col_name = INDEX["DragonflyData"]["Simple_info_table"]["dragonfly_simple_info_species_col_name"]
@@ -130,6 +131,8 @@ CreateDataBase = INDEX["DataBase"]["CreateDataBase"]
 
 #\ Filter object [User_filter, Species_filter, KeepOrFilter]
 DefaultFilterObject = [None, None, None]
+Hourly_Summary_default_data_filter = INDEX["DataBase"]["filter"]["Hourly_Summary_default_data_filter"]
+HSDDFilter_start_index = INDEX["DataBase"]["filter"]["HSDDFilter_start_index"] #\ this set the start number to the end of the species rank list for which you want to use to filter out
 
 #\ Alarm (This is for wake the free dyno Heroku up)
 HourFrom = INDEX["Alarm"]["WakeUpAlarm"]["HourFrom"]
@@ -138,6 +141,8 @@ HourRange = f"{HourFrom}-{HourEnd}"
 IntervalPerHour = INDEX["Alarm"]["WakeUpAlarm"]["IntervalPerHour"]
 IntervalPerMin = INDEX["Alarm"]["WakeUpAlarm"]["IntervalPerMin"]
 HOURAlarm = {"hour" : HourRange+"/"+IntervalPerHour} if IntervalPerHour != "" else {"minute" : "*/"+IntervalPerMin}
+Send_Hour_Summary_timeInterval = INDEX["Alarm"]["Send_Hour_Summary_timeInterval"]
+
 
 #\ Daily routine
 DAYAlarm = {"hour": INDEX["Alarm"]["DailyUpdate"]["Hour"], "minute": INDEX["Alarm"]["DailyUpdate"]["Minute"], "second": INDEX["Alarm"]["DailyUpdate"]["Second"]}

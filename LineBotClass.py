@@ -5,6 +5,7 @@
 ##############################
 #\ This is the main function to handle the line bot e=vent
 
+from typing import List
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, FlexSendMessage, PostbackEvent, LocationSendMessage, flex_message
@@ -144,10 +145,9 @@ def handle_text_message(event):
             search_flex_message = FlexSendMessage(alt_text="Please type IDRequest or Advance Search",
                                                   contents=LineBotMsgHandler.Search_event_text
                                                   )
-            gLine_bot_api.reply_message(
-                            event.reply_token,
-                            search_flex_message
-                            )
+            gLine_bot_api.reply_message(event.reply_token,
+                                        search_flex_message
+                                        )
             #\ reset the is-just-text flag
             cache.set("gIsJustText", True)
 
@@ -156,7 +156,9 @@ def handle_text_message(event):
         if pleaseLogin(event) is True :
 
             #\ Get today's data
-            GetTodayData(event)
+            GetTodayDataSend2LINEBot(event.source.user_id,
+                                     event.reply_token
+                                     )
 
             #\ reset the is-just-text flag
             cache.set("gIsJustText", True)
@@ -566,26 +568,60 @@ def OEMSetDefaultRichmenu(linebot_api, event):
 
 
 #\ Callback for today's Data
-def GetTodayData(event):
+def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:bool=True, filter:List[list]=index.DefaultFilterObject):
+    """Callback for today's Data or data in certain time period(control by AllDayData) and apply the filter if needed
+    Args:
+        user_id (str, optional) : [description]. Defaults to None.
+        reply_token (str, optional) : This is for rely function, you can choose whether you want to use or not. Defaults to None.
+        AllDayData (bool, optional) : Whether to get all the data in this day or do the seperate. If this set to false, then the data return will
+                                     be based on the current_crawling_id. The current_crawling_id will be updated after that and so does the daily update.
+                                     Defaults to True.
+        filter (list of list, optional): Filter to filter out the data you want. Defaults to index.DefaultFilterObject.
+    """
+    if user_id is not None:
+        print("[Error] In GetTodayDataSend2LINEBot() No user id been specify")
 
-    gLine_bot_api.reply_message(event.reply_token,
-                                TextSendMessage(text="Please be patient, it might take a while~~")
-                                )
+    if reply_token is not None:
+        gLine_bot_api.reply_message(reply_token,
+                                    TextSendMessage(text="Please be patient, it might take a while~~")
+                                    )
+
 
     #\ Get the data
-    DragonflyData_session, _ = CreateWebSession(event)
-    TodayDataList = DragonflyData.CrawTodayData(DragonflyData_session, int(cache.get("DataBaseVariable")["LatestDataID"]), index.DefaultFilterObject)
+    DragonflyData_session, _ = CreateWebSession()
+    #\ Get all the data today
+    if AllDayData is True:
+        TimeIntevalDataList = DragonflyData.CrawTodayData(DragonflyData_session,
+                                                          int(cache.get("DataBaseVariable")["LatestDataID"]),
+                                                          filter
+                                                          )
+    #\ Get the specific time interval data based on current_crawling_id
+    else :
+        #\ Get the data for certain time interval
+        current_cawling_ID = dict(Database.ReadFromDB(Database.CreateDBConection(),
+                                                        Database.Read_col_userinfo_query("current_crawling_id",
+                                                                                        user_id),
+                                                                                        True
+                                                                                        )
+                                                        )
+        TimeIntevalDataList = DragonflyData.CrawlDataByIDRange(DragonflyData_session,
+                                                               int(current_cawling_ID),
+                                                               int(cache.get("DataBaseVariable")["LatestDataID"]),
+                                                               filter
+                                                               )
+
 
     #\ Handling the data for the bubble in the carsoul message
     content_list = []
-    for data in TodayDataList:
+    for data in TimeIntevalDataList:
         bubble_content = LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, data)
         content_list.append(bubble_content)
 
+
     #\ Handling the carsoul text message with limitation number by LINE API
-    # print(f"[INFO] in GetTodayData() content list\n{content_list}")
+    # print(f"[INFO] in GetTodayDataSend2LINEBot() content list\n{content_list}")
     if len(content_list) is 0:
-        gLine_bot_api.push_message(event.source.user_id,
+        gLine_bot_api.push_message(user_id,
                         "No data updated today"
                         )
     else:
@@ -601,7 +637,7 @@ def GetTodayData(event):
                                     contents=LineBotMsgHandler.MultiRequestDataMsgText(content_limit_list)
                                     )
 
-            gLine_bot_api.push_message(event.source.user_id,
+            gLine_bot_api.push_message(user_id,
                                     Msgtext
                                     )
 
@@ -684,7 +720,7 @@ def create_auth_link(user_id, client_id=index.LN_Client_ID, redirect_uri=index.L
 def Check_LN_Key_exist(userid: str):
     #\ read the database
     Userinfo_access_token = Database.ReadFromDB(Database.CreateDBConection(),
-                                                Database.Read_col_userinfo_query("access_token", index.UserInfoTableName, userid),
+                                                Database.Read_col_userinfo_query("access_token", userid),
                                                 True
                                                 )
 

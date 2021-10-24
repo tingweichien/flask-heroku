@@ -4,6 +4,7 @@
 
 import pygsheets
 import index
+from typing import List
 # import gspread
 # from oauth2client.service_account import ServiceAccountCredentials
 
@@ -43,19 +44,7 @@ print(f"All: {ALL}")
 wks_name.update_value('A1', 'test')
 
 """
-
-#\ Function to get the dragonfly data from the google sheets
-def GetDragonflyDataGoogleSheets(Species:str, gSheetIDList:list = None)->list:
-    """Function to get the dragonfly data from the google sheets
-    Args:
-        Species (str): title of the gsheet
-        gSheetIDList (list, optional): gsheet list. Defaults to None, or you can put the cache.get("gGSheetList"). If None then funciton will get the sheet list itself.
-
-    Returns:
-        list: list of list, list of the data in the gsheet
-        status: success or fail
-    """
-
+def OpenGSheet(Species_table:str, gSheetIDList:list)->pygsheets.Worksheet:
     #\Get the sheet
     global client
 
@@ -63,11 +52,11 @@ def GetDragonflyDataGoogleSheets(Species:str, gSheetIDList:list = None)->list:
     if gSheetIDList is None:
         gSheetIDList = Sheet_id_dict()
 
-    #\ get the url correspond to the input species name
+    #\ get the url correspond to the input Species_table name
     #\ https://docs.google.com/spreadsheets/d/1dZtaLtbP4PKsjcQ01mj25HDkEBzk-nF0094tUhce1YU/edit?usp=sharing
     SpeciesUrl = None
     try:
-        SpeciesUrl = index.GeneralgSheetUrl(gSheetIDList[Species])
+        SpeciesUrl = index.GeneralgSheetUrl(gSheetIDList[Species_table])
         status = True
     except :
         # SpeciesUrl =  index.GeneralgSheetUrl(gSheetIDList["Calopterygidae01"])
@@ -82,6 +71,41 @@ def GetDragonflyDataGoogleSheets(Species:str, gSheetIDList:list = None)->list:
     #\ Select by order
     wks_order = wks_list[0]
 
+    return wks_order
+
+#\ Set the data to the gsheets
+def SetDragonflyDataGoogleSheets(Species_table:str, gSheetIDList:list=None, NumRows:int=1, Data2Update:list=[]):
+    """Set the data to the gsheets
+
+    Args:
+        Species_table (str): [description]
+        gSheetIDList (list, optional): [description]. Defaults to None.
+        NumRows (int, optional): [description]. Defaults to 1.
+        Data2Update (list, optional): [description]. Defaults to [].
+    """
+    #\ Open the sheets
+    wks_order = OpenGSheet(Species_table, gSheetIDList)
+    #\ 2 is to skip the column name.
+    wks_order.insert_rows(2, number=NumRows, value=Data2Update)
+
+
+
+#\ Function to get the dragonfly data from the google sheets
+def GetDragonflyDataGoogleSheets(Species_table:str, gSheetIDList:list=None)->list:
+    """Function to get the dragonfly data from the google sheets
+    Args:
+        Species_table (str): title of the gsheet
+        gSheetIDList (list, optional): gsheet list. Defaults to None, or you can put the cache.get("gGSheetList"). If None then funciton will get the sheet list itself.
+
+    Returns:
+        list: list of list, list of the data in the gsheet
+        status: success or fail
+    """
+
+    #\ Open the sheets
+    wks_order = OpenGSheet(Species_table, gSheetIDList)
+
+
     #\ Read the worksheets
     ALL = wks_order.get_all_values(include_tailing_empty=False,
                                 include_tailing_empty_rows=False)
@@ -95,8 +119,7 @@ def GetDragonflyDataGoogleSheets(Species:str, gSheetIDList:list = None)->list:
 
     # print(f"All: {gSheetResult}")
 
-    return [status, gSheetResult]
-
+    return gSheetResult
 
 
 
@@ -117,6 +140,8 @@ def Sheet_id_dict()->list:
     return sheet
 
 
+########################################################
+#\ Test case
 # IDList = Sheet_id_dict()
 # print(IDList)
 # GetDragonflyDataGoogleSheets("Calopterygidae", IDList)

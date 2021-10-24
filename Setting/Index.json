@@ -44,7 +44,8 @@
             "species_all_record_data_first_url": "rec_list_view_for_key.php",
             "species_all_record_data_page_url": "?pageNum_rs_dragonfly_record=",
             "species_all_record_data_species_url": "&type=total_kind&kind=",
-            "total_num_species_url": "kind_total_records.php"
+            "total_num_species_url": "kind_total_records.php",
+            "species_number_rank_url": "kind_total_rank_list.php"
         },
         "Simple_info_table": {
             "dragonfly_simple_info_species_col_name": "蜓　種",
@@ -65,6 +66,14 @@
                     "VarLatestDataIDDate": "LatestDataIDDate"
                 }
             }
+        },
+        "filter":{
+            "Hourly_Summary_default_data_filter" : [
+                [],
+                [],
+                true
+            ],
+            "HSDDFilter_start_index" : 60
         }
     },
     "Alarm": {
@@ -78,7 +87,8 @@
             "Hour": "0",
             "Minute": "1",
             "Second": "0"
-        }
+        },
+        "Send_Hour_Summary_timeInterval" : 8
     },
     "GoogleSheet": {
         "GeneralgSheetUrl_head": "https://docs.google.com/spreadsheets/d/",
