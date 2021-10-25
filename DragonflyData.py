@@ -434,7 +434,7 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
 #\  same as the it's record date. Therefore, we select the data
 #\  based on the ID renew in the midnight everyday to tell which
 #\  ID correspond to the start of the that day to indicate the time.
-def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List[list])->list:
+def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List)->list:
     """[summary]
 
     Args:
@@ -477,7 +477,7 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List[lis
 
 
 #\ Craw today's data
-def CrawTodayData(session, TodayFirstID:int, filter_object:List[list]):
+def CrawTodayData(session, TodayFirstID:int, filter_object:List):
     #CrawDataByDate(session, datetime.now(), datetime.now())
     return CrawlDataByIDRange(session, None, TodayFirstID, filter_object)
 

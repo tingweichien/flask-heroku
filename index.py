@@ -171,3 +171,10 @@ ClockHerokuDependancyVer = INDEX["Clock"]["ClockHerokuDependancyVer"]
 
 #\ Time for the update database
 Time_UpdateDatabase = INDEX["Clock"]["Update_Time"]["Time_UpdateDatabase"]
+
+
+
+
+########################################################################
+#\ For testing
+print(Hourly_Summary_default_data_filter)

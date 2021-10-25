@@ -54,8 +54,7 @@ def UpdateDataBase_job(session, conn, time_zone):
     # print(f"[INFO] Max_ID_num : {Max_ID_num}")
 
     #\ write back to the database
-    Update_Data = [
-                   (str(Max_ID_num), index.VarLatestDataID),
+    Update_Data = [(str(Max_ID_num), index.VarLatestDataID),
                    (datetime.datetime.now(time_zone).strftime('%Y-%m-%d'), index.VarLatestDataIDDate)
                    ]
     print(f"[INFO] Update_Data : {Update_Data}")
@@ -94,7 +93,7 @@ def Send_Hourly_Summary(session):
 def RunClockFunctionbyHeroku():
     #\ Get the date time
     time_zone = pytz.timezone("Asia/Taipei")
-    print(f"[INFO] In RunClockFunctionbyHeroku() Update the database latest ID at {datetime.datetime.now(time_zone).strftime('%Y-%m-%d, %H:%M:%S')}")
+    print(f"[INFO] In UpdateDataBase_job() Update the database latest ID at {datetime.datetime.now(time_zone).strftime('%Y-%m-%d, %H:%M:%S')}")
 
     #\ Create the web session and conn
     session, conn = LineBotClass.CreateWebSession(None, False)
@@ -108,7 +107,6 @@ def RunClockFunctionbyHeroku():
     if datetime.datetime.now(time_zone).hour % index.Send_Hour_Summary_timeInterval == 0:
         Send_Hourly_Summary(session)
         print("[INFO][Clock]Send the data to the user for hourly summary")
-
 
 
 ################################################################################################

@@ -568,7 +568,7 @@ def OEMSetDefaultRichmenu(linebot_api, event):
 
 
 #\ Callback for today's Data
-def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:bool=True, filter:List[list]=index.DefaultFilterObject):
+def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:bool=True, filter:List=index.DefaultFilterObject):
     """Callback for today's Data or data in certain time period(control by AllDayData) and apply the filter if needed
     Args:
         user_id (str, optional) : [description]. Defaults to None.
@@ -578,7 +578,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
                                      Defaults to True.
         filter (list of list, optional): Filter to filter out the data you want. Defaults to index.DefaultFilterObject.
     """
-    if user_id is not None:
+    if user_id is None:
         print("[Error] In GetTodayDataSend2LINEBot() No user id been specify")
 
     if reply_token is not None:
@@ -598,17 +598,28 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
     #\ Get the specific time interval data based on current_crawling_id
     else :
         #\ Get the data for certain time interval
-        current_cawling_ID = dict(Database.ReadFromDB(Database.CreateDBConection(),
-                                                        Database.Read_col_userinfo_query("current_crawling_id",
+        current_crawling_id_tmp = Database.ReadFromDB(Database.CreateDBConection(),
+                                                      Database.Read_col_userinfo_query("current_crawling_id",
                                                                                         user_id),
-                                                                                        True
-                                                                                        )
-                                                        )
+                                                      True,
+                                                      False
+                                                      )
+        Latest_ID = Database.ReadFromDB(Database.CreateDBConection(),
+                                        Database.Read_variable_query("LatestDataID"),
+                                        True
+                                        )[1]
+
+        if current_crawling_id_tmp is not None:
+            current_cawling_ID = current_crawling_id_tmp[0]
+        else:
+            current_cawling_ID = Latest_ID
+
+        #\ Get the data
         TimeIntevalDataList = DragonflyData.CrawlDataByIDRange(DragonflyData_session,
-                                                               int(current_cawling_ID),
-                                                               int(cache.get("DataBaseVariable")["LatestDataID"]),
-                                                               filter
-                                                               )
+                                                            int(current_cawling_ID),
+                                                            int(Latest_ID),
+                                                            filter
+                                                            )
 
 
     #\ Handling the data for the bubble in the carsoul message
@@ -622,7 +633,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
     # print(f"[INFO] in GetTodayDataSend2LINEBot() content list\n{content_list}")
     if len(content_list) is 0:
         gLine_bot_api.push_message(user_id,
-                        "No data updated today"
+                        TextSendMessage(text="No data updated today")
                         )
     else:
         for content_idx in range(0, len(content_list), index.CarsoulBubbleLimit):
