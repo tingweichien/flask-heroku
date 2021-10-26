@@ -57,7 +57,17 @@
         "CreateDataBase": true,
         "DataBaseTable": {
             "UserInfoTable": {
-                "TableName": "userInfo"
+                "TableName": "userinfo",
+                "TableVarName": {
+                    "UserInfo_record_no": "record_no",
+                    "UserInfo_name":"name",
+                    "UserInfo_userid":"userid",
+                    "UserInfo_join_date":"join_date",
+                    "UserInfo_account":"account",
+                    "UserInfo_password":"password",
+                    "UserInfo_current_crawling_id":"current_crawling_id",
+                    "UserInfo_access_token": "access_token"
+                }
             },
             "VariableTable": {
                 "TableName": "variable",

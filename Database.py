@@ -159,6 +159,7 @@ def ReadFromDB(conn, query, FetchOneOrNot=True, CloseConn=True):
     @return
         fetchone : return tuple
         fetchall : return list of tuple
+        None     : Fail to read the data from database
     """
     cursor = ExecuteDB(conn, query)
     try:
@@ -278,4 +279,4 @@ Read_variable_query = lambda var_name : f"SELECT * FROM {index.VariableTableName
 
 #\ Update
 #\ i.e. UPDATE public.variable	SET var_value = '79166'	WHERE var_name = 'LatestDataID';
-Update_varaible_query = lambda Table : f"UPDATE {Table} SET var_value=%s WHERE var_name=%s;"
+Update_varaible_query = f"UPDATE {index.VariableTableName} SET var_value=%s WHERE var_name=%s;"

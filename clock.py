@@ -59,7 +59,7 @@ def UpdateDataBase_job(session, conn, time_zone):
                    ]
     print(f"[INFO] Update_Data : {Update_Data}")
     Database.InsertManyDB(conn,
-                        Database.Update_varaible_query(index.VariableTableName),
+                        Database.Update_varaible_query,
                         Update_Data
                         )
 
@@ -70,23 +70,31 @@ def UpdateDataBase_job(session, conn, time_zone):
 
 
 #\ Send the hourly summary of the update for the dragonfly data
-def Send_Hourly_Summary(session):
+def Send_Hourly_Summary(session, Conn, DB_Variable_Data:dict):
     #\ Get the user id from the database
-    userid_list = Database.ReadFromDB(Database.CreateDBConection(),
+    userid_list = Database.ReadFromDB(Conn ,
                                       Database.Read_all_row_for_col_query("userid"),
-                                      True
+                                      True,
+                                      False
                                       )
 
     #\ Get the filter to the filter object : [user_list, species_list, keep_or_filter ]
-    Filter_list = DragonflyData.GetSpeciesRecordingNumberRank(session)
-    index.Hourly_Summary_default_data_filter[1] = Filter_list[index.HSDDFilter_start_index:]
+    _, Species_filter_list_name = DragonflyData.GetSpeciesRecordingNumberRank(session)
+    index.Hourly_Summary_default_data_filter[1] = Species_filter_list_name[index.HSDDFilter_start_index:]
+    # print(f"[INFO] The Filter is {index.Hourly_Summary_default_data_filter}")
 
     #\ Send to all the user
     for user_id in userid_list:
+        print(f"[INFO] >>> Looping with the User ID : {user_id}\n{'-'*60}")
         LineBotClass.GetTodayDataSend2LINEBot(user_id,
                                               AllDayData=False,
-                                              filter=index.Hourly_Summary_default_data_filter
-                                              )
+                                              filter=index.Hourly_Summary_default_data_filter,
+                                              DB_variableinfo=DB_Variable_Data,
+                                              conn=Conn,
+                                              DragonflyData_session=session)
+
+
+
 
 
 #\ The main function to run the clock.py function every heroku dependency defined schedule time.
@@ -96,7 +104,15 @@ def RunClockFunctionbyHeroku():
     print(f"[INFO] In UpdateDataBase_job() Update the database latest ID at {datetime.datetime.now(time_zone).strftime('%Y-%m-%d, %H:%M:%S')}")
 
     #\ Create the web session and conn
+    #\ DB_User_Data will be list of tuple or just list
     session, conn = LineBotClass.CreateWebSession(None, False)
+
+    #\ Read variable data
+    DB_Variable_Data = dict((Database.ReadFromDB(conn,
+                                                Database.Read_all_query(index.VariableTableName),
+                                                False,
+                                                False)
+                            ))
 
     #\ Update the database everyday
     if datetime.datetime.now(time_zone).hour == 0:
@@ -105,8 +121,16 @@ def RunClockFunctionbyHeroku():
 
     #\ Send the data to the Line bot for all the user evey x hour
     if datetime.datetime.now(time_zone).hour % index.Send_Hour_Summary_timeInterval == 0:
-        Send_Hourly_Summary(session)
+        Send_Hourly_Summary(session, conn, DB_Variable_Data)
         print("[INFO][Clock]Send the data to the user for hourly summary")
+
+    #\ for testing (remove when pushing to heroku master)
+    # Send_Hourly_Summary(session, conn, DB_Variable_Data)
+
+
+
+
+
 
 
 ################################################################################################
@@ -123,5 +147,6 @@ if index.ClockStandAloneVer:
 #\ Run the clock by the schedule of the Heroku add-on
 #\ The heroku schedule set to run every hour
 elif index.ClockHerokuDependancyVer:
-    # if datetime.datetime.now().hour == index.Time_UpdateDatabase:
+
+    #\ Main function for the clock
     RunClockFunctionbyHeroku()

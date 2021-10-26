@@ -568,7 +568,7 @@ def OEMSetDefaultRichmenu(linebot_api, event):
 
 
 #\ Callback for today's Data
-def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:bool=True, filter:List=index.DefaultFilterObject):
+def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:bool=True, filter:List=index.DefaultFilterObject, DB_variableinfo=None, conn=None, DragonflyData_session=None):
     """Callback for today's Data or data in certain time period(control by AllDayData) and apply the filter if needed
     Args:
         user_id (str, optional) : [description]. Defaults to None.
@@ -578,41 +578,76 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
                                      Defaults to True.
         filter (list of list, optional): Filter to filter out the data you want. Defaults to index.DefaultFilterObject.
     """
+    #\ Check the input args
     if user_id is None:
         print("[Error] In GetTodayDataSend2LINEBot() No user id been specify")
+        return
 
     if reply_token is not None:
         gLine_bot_api.reply_message(reply_token,
                                     TextSendMessage(text="Please be patient, it might take a while~~")
                                     )
 
+    #\ Check the web session
+    if DragonflyData_session is None:
+        DragonflyData_session, _ = CreateWebSession()
 
-    #\ Get the data
-    DragonflyData_session, _ = CreateWebSession()
-    #\ Get all the data today
+    #\ --- Get all the data today ---
+    #\ ------------------------------
     if AllDayData is True:
         TimeIntevalDataList = DragonflyData.CrawTodayData(DragonflyData_session,
                                                           int(cache.get("DataBaseVariable")["LatestDataID"]),
                                                           filter
                                                           )
-    #\ Get the specific time interval data based on current_crawling_id
+
+    #\ --- Get the specific time interval data based on current_crawling_id ---
+    #\ ------------------------------------------------------------------------
     else :
         #\ Get the data for certain time interval
-        current_crawling_id_tmp = Database.ReadFromDB(Database.CreateDBConection(),
+        current_crawling_id_tmp = Database.ReadFromDB(conn,
                                                       Database.Read_col_userinfo_query("current_crawling_id",
                                                                                         user_id),
                                                       True,
                                                       False
-                                                      )
-        Latest_ID = Database.ReadFromDB(Database.CreateDBConection(),
-                                        Database.Read_variable_query("LatestDataID"),
-                                        True
-                                        )[1]
+                                                      )[0]
+        #\ Get the latest ID
+        Latest_ID = DB_variableinfo["LatestDataID"]
 
+        #\ Check if the current crawling data is None or not
+        SaveCCID2DB = False
         if current_crawling_id_tmp is not None:
-            current_cawling_ID = current_crawling_id_tmp[0]
-        else:
+            current_cawling_ID = current_crawling_id_tmp
+            if current_cawling_ID == Latest_ID:
+                print("[INFO] The current crawling data is equal to the Latest_ID, no need to update, return the function")
+                return None
+            else:
+                SaveCCID2DB = True
+
+        elif current_crawling_id_tmp is None and Latest_ID is not None:
             current_cawling_ID = Latest_ID
+            #\ Update the current crawling data
+            SaveCCID2DB = True
+            Database.InsertDB(  conn,
+                                Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
+                                (Latest_ID, user_id)
+                             )
+
+            #\ Since the current latest ID is equal to the current crawling ID so there will be no data to upate, return this function
+            return None
+
+        else:
+            print("[Warning] In GetTodayDataSend2LINEBot() both current_crawling_id_tmp and Latest_ID read from the database are None,\
+                    please check the database query execution")
+            return None
+
+
+        #\ Save the CCID(Current Crawling ID) to datbase
+        if SaveCCID2DB is True:
+            Database.InsertDB(  conn,
+                    Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
+                    (current_cawling_ID, user_id)
+                    )
+
 
         #\ Get the data
         TimeIntevalDataList = DragonflyData.CrawlDataByIDRange(DragonflyData_session,

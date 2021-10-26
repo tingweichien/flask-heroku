@@ -466,7 +466,7 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List)->l
         #\ Check the condition
         if Start_ID >= End_ID:
             #\ Filter out the unwanted info
-            if DataFilter(User_filter, Species_filter, KeepOrFilter):
+            if DataFilter(ID_find_result, User_filter, Species_filter, KeepOrFilter):
                 result_list.append(ID_find_result)
 
         else :
@@ -492,6 +492,7 @@ def GetSpeciesRecordingNumberRank(session)->list:
 
     Returns:
         list: [[name, count],[name2, count2],....]
+        list: [name, name1, name2, ......]
     """
 
     #\ Get the data from the website via beautiful soup
@@ -509,13 +510,15 @@ def GetSpeciesRecordingNumberRank(session)->list:
     #\      <td align="right">5.96 %</td>
     #\  <tr>
     Species_rank_list = []
+    Species_rank_list_only_name = []
     #\ i = 2--> workaround to skip the unused column name and title
     for i in range(2, len(Data_td_tag), 4):
         td = Data_td_tag[i:i+3]
         Species_rank_list.append([td[0].text, td[1].text])
+        Species_rank_list_only_name.append(td[0].text)
 
     #\ The first is the most common one which own most records
-    return Species_rank_list
+    return Species_rank_list, Species_rank_list_only_name
 
 
 

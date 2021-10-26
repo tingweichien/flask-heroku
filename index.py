@@ -120,6 +120,14 @@ URI = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["URI"]
 
 #\ Database table name
 UserInfoTableName = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableName"]
+UserInfo_record_no = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_record_no"]
+UserInfo_name = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_name"]
+UserInfo_userid = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_userid"]
+UserInfo_join_date = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_join_date"]
+UserInfo_account = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_account"],
+UserInfo_password = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_password"]
+UserInfo_current_crawling_id = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_current_crawling_id"]
+UserInfo_access_token = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_access_token"]
 VariableTableName = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableName"]
 VarLatestDataID = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVarName"]["VarLatestDataID"]
 VarLatestDataIDDate = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVarName"]["VarLatestDataIDDate"]
@@ -177,4 +185,4 @@ Time_UpdateDatabase = INDEX["Clock"]["Update_Time"]["Time_UpdateDatabase"]
 
 ########################################################################
 #\ For testing
-print(Hourly_Summary_default_data_filter)
+# print(Hourly_Summary_default_data_filter)
