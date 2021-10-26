@@ -23,6 +23,7 @@ from gSheetAPI import Sheet_id_dict
 import urllib
 import urllib.request, urllib.parse
 import json
+import yaml
 
 
 #\ -- Global --
@@ -781,7 +782,7 @@ def Check_LN_Key_exist(userid: str):
         #\ the code can be got, then can start to ask the LINE Notify for the access token
         create_auth_link(userid)
     else:
-        cache.set("gLN_AccessToken", Userinfo_access_token["access_token"])
+        cache.set("gLN_AccessToken", Userinfo_access_token)
 
 
 
@@ -813,7 +814,10 @@ def LN_get_token(code:str, client_id:str=index.LN_Client_ID, client_secret:str=i
     req = urllib.request.Request(url, data=data, headers=headers)
     page = urllib.request.urlopen(req).read()
 
-    res = json.loads(page.decode('utf-8'))
+    #res = json.loads(page.decode('utf-8'))
+    #\ Use the yaml loads to fix the unicode output by json.loads
+    res = yaml.safe_load(page)
+
 
     #\ Save the token to the database
     Database.InsertDB(Database.CreateDBConection(),

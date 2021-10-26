@@ -15,7 +15,7 @@
     },
     "Line_Notify": {
         "Client_ID": "gvYAi5gq0AwBFuLmXHUKF3",
-        "Client_Secret": "umR8oEO1QxAsbTIVxHtSMCsNpgAcAgq4jkREK9prTBN",
+        "Client_Secret": "k1rhmEJKgtitWFw9u7DNpsfy9r7g1iESemsiwkQsJ5Z",
         "redirect_uri": "https://dragonfly-flask-web.herokuapp.com/callback/notify"
     }
 }
