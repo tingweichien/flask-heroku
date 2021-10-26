@@ -396,12 +396,6 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
           False: not to keep to filter out
     """
 
-    #\ if the input list is emnpty then transfer to None
-    if len(user_filter) is 0 :
-        user_filter = None
-    if len(species_filter) is 0 :
-        species_filter = None
-
     Filter_State = False
 
     #\ No input then return True, since nothing is going to filter
@@ -410,19 +404,21 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
 
     #\ user filter
     if user_filter is not None:
-        for user2filter in user_filter:
-            if user2filter == Data.User:
-                Filter_State = True
+        if len(user_filter) > 0:
+            for user2filter in user_filter:
+                if user2filter == Data.User:
+                    Filter_State = True
 
     #\ species filter
     if species_filter is not None:
-        for species in Data.SpeciesList:
-            for species2filter in species_filter:
-                if species2filter == species:
-                    Filter_State = True
-                    break
-                else:
-                    Filter_State = False
+        if len(species_filter) > 0:
+            for species in Data.SpeciesList:
+                for species2filter in species_filter:
+                    if species2filter == species:
+                        Filter_State = True
+                        break
+                    else:
+                        Filter_State = False
 
     return Filter_State if KeepOrFilter is True else not Filter_State
 
