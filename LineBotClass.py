@@ -664,6 +664,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
         bubble_content = LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, data)
         content_list.append(bubble_content)
 
+    print(f"[INFO] In GetTodayDataSend2LINEBot() content list is {content_list}")
 
     #\ Handling the carsoul text message with limitation number by LINE API
     # print(f"[INFO] in GetTodayDataSend2LINEBot() content list\n{content_list}")
