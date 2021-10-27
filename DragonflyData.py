@@ -376,10 +376,6 @@ def CheckDataSameOrNot(result_list:list, ID_find_result:list):
                 result_list[idx].append(ID_find_result)
 
 
-
-
-
-
 #\ filter to filter out the data with specific condition
 def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_filter:list=None, KeepOrFilter:bool=None)->bool:
     """
@@ -405,20 +401,22 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
     #\ user filter
     if user_filter is not None:
         if len(user_filter) > 0:
-            for user2filter in user_filter:
-                if user2filter == Data.User:
-                    Filter_State = True
+            Filter_State = Data.User in user_filter
+            # for user2filter in user_filter:
+            #     if user2filter == Data.User:
+            #         Filter_State = True
 
     #\ species filter
     if species_filter is not None:
         if len(species_filter) > 0:
-            for species in Data.SpeciesList:
-                for species2filter in species_filter:
-                    if species2filter == species:
-                        Filter_State = True
-                        break
-                    else:
-                        Filter_State = False
+            Filter_State = len(set(Data.SpeciesList) & set(species_filter)) > 0
+            # for species in Data.SpeciesList:
+            #     for species2filter in species_filter:
+            #         if species2filter == species:
+            #             Filter_State = True
+            #             break
+            #         else:
+            #             Filter_State = False
 
     return Filter_State if KeepOrFilter is True else not Filter_State
 
@@ -521,5 +519,7 @@ def GetSpeciesRecordingNumberRank(session)->list:
 
 #\ Test
 #\ Use this to test the function required session
-# [session, Login_Response, Login_state] = Login_Web("-----", "-----")
+# [session, Login_Response, Login_state] = Login_Web("USER", "PW")
+# print(GetSpeciesRecordingNumberRank(session)[1][60:])
+# print(GetSpeciesRecordingNumberRank(session)[1])
 # print(GetSpeciesRecordingNumberRank(session))

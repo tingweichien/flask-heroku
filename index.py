@@ -141,6 +141,8 @@ CreateDataBase = INDEX["DataBase"]["CreateDataBase"]
 DefaultFilterObject = [None, None, None]
 Hourly_Summary_default_data_filter = INDEX["DataBase"]["filter"]["Hourly_Summary_default_data_filter"]
 HSDDFilter_start_index = INDEX["DataBase"]["filter"]["HSDDFilter_start_index"] #\ this set the start number to the end of the species rank list for which you want to use to filter out
+Species_rare_rank_first_60 = INDEX["DataBase"]["filter"]["Species_rare_rank_first_60"]
+
 
 #\ Alarm (This is for wake the free dyno Heroku up)
 HourFrom = INDEX["Alarm"]["WakeUpAlarm"]["HourFrom"]
@@ -185,4 +187,4 @@ Time_UpdateDatabase = INDEX["Clock"]["Update_Time"]["Time_UpdateDatabase"]
 
 ########################################################################
 #\ For testing
-# print(Hourly_Summary_default_data_filter)
+print(Species_rare_rank_first_60)

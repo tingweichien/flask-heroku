@@ -157,8 +157,11 @@ def handle_text_message(event):
         if pleaseLogin(event) is True :
 
             #\ Get today's data
+            index.Hourly_Summary_default_data_filter[1] = index.Species_rare_rank_first_60.copy()
             GetTodayDataSend2LINEBot(event.source.user_id,
-                                     event.reply_token
+                                     event.reply_token,
+                                     True,
+                                     index.Hourly_Summary_default_data_filter
                                      )
 
             #\ reset the is-just-text flag
@@ -591,10 +594,10 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
 
     #\ Check the web session
     if DragonflyData_session is None:
-        DragonflyData_session, _ = CreateWebSession()
+        DragonflyData_session, conn = CreateWebSession(CloseDBConn=False)
 
     #\ --- Get all the data today ---
-    #\ ------------------------------
+    #\ ------------------------------------------------------------------------
     if AllDayData is True:
         TimeIntevalDataList = DragonflyData.CrawTodayData(DragonflyData_session,
                                                           int(cache.get("DataBaseVariable")["LatestDataID"]),
@@ -606,11 +609,11 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
     else :
         #\ Get the data for certain time interval
         current_crawling_id_tmp = Database.ReadFromDB(conn,
-                                                      Database.Read_col_userinfo_query("current_crawling_id",
-                                                                                        user_id),
+                                                      Database.Read_col_userinfo_query("current_crawling_id", user_id),
                                                       True,
                                                       False
                                                       )[0]
+
         #\ Get the latest ID
         Latest_ID = DB_variableinfo["LatestDataID"]
 
@@ -628,10 +631,10 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
 
             #\ Save the CCID(Current Crawling ID) to datbase
             print("[INFO] Update the current crawling ID to the database since there is no current crawling ID")
-            Database.InsertDB(  conn,
-                    Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
-                    (current_cawling_ID, user_id)
-                    )
+            Database.InsertDB(conn,
+                              Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
+                              (current_cawling_ID, user_id)
+                              )
             #\ Since the current latest ID is equal to the current crawling ID so there will be no data to upate, return this function
             return None
 
@@ -647,6 +650,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
                                                             int(Latest_ID),
                                                             filter
                                                             )
+    #\ ------------------------------------------------------------------------
 
 
     #\ Handling the data for the bubble in the carsoul message
@@ -655,14 +659,15 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
         bubble_content = LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, data)
         content_list.append(bubble_content)
 
-    #\ Update the current ID
+
+    #\ Update the current ID and save the CCID(Current Crawling ID) to datbase
     Update_current_ID = TimeIntevalDataList[-1].IdNumber
-    #\ Save the CCID(Current Crawling ID) to datbase
     Database.InsertDB(conn,
                       Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
                       (Update_current_ID, user_id)
                       )
     print(f"[INFO] Update the current crawling ID to the database: {Update_current_ID}")
+
 
     #\ Handling the carsoul text message with limitation number by LINE API
     # print(f"[INFO] in GetTodayDataSend2LINEBot() content list\n{content_list}")
@@ -687,6 +692,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
             gLine_bot_api.push_message(user_id,
                                     Msgtext
                                     )
+
 
 
 #\ Init the cache data
@@ -723,9 +729,11 @@ def handle_postback_event(event):
     if PostbackEvent == eLineBotPostEvent.OTHERS.value:
         gLine_bot_api.link_rich_menu_to_user(event.source.user_id,cache.get("RichMenuID")["Main2 Richmenu"])
         print("[INFO] Switch to the Main2 Richmenu")
+
     elif PostbackEvent == eLineBotPostEvent.GOBACKMAIN.value:
         gLine_bot_api.link_rich_menu_to_user(event.source.user_id,cache.get("RichMenuID")["Main Richmenu"])
         print("[INFO] Go back to the Main Richmenu")
+
     else :
         pass
 
@@ -743,8 +751,8 @@ def CheckPostEvent(event_text:str):
 
 
 
-
-#\ Line Bot for Line Notify
+#\ ------------------------------------------------------------------------------------------------
+#\ --- Line Bot for Line Notify ---
 #\ send this url to the user to get the access token
 def create_auth_link(user_id, client_id=index.LN_Client_ID, redirect_uri=index.LN_redirect_uri):
     print("[LINE Notify] Request the user to authorize the LINE Notify")
