@@ -615,24 +615,23 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
         Latest_ID = DB_variableinfo["LatestDataID"]
 
         #\ Check if the current crawling data is None or not
-        SaveCCID2DB = False
         if current_crawling_id_tmp is not None:
             current_cawling_ID = current_crawling_id_tmp
-            if current_cawling_ID == Latest_ID:
-                print("[INFO] The current crawling data is equal to the Latest_ID, no need to update, return the function")
-                return None
-            else:
-                SaveCCID2DB = True
 
         elif current_crawling_id_tmp is None and Latest_ID is not None:
             current_cawling_ID = Latest_ID
             #\ Update the current crawling data
-            SaveCCID2DB = True
             Database.InsertDB(  conn,
                                 Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
                                 (Latest_ID, user_id)
                              )
 
+            #\ Save the CCID(Current Crawling ID) to datbase
+            print("[INFO] Update the current crawling ID to the database since there is no current crawling ID")
+            Database.InsertDB(  conn,
+                    Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
+                    (current_cawling_ID, user_id)
+                    )
             #\ Since the current latest ID is equal to the current crawling ID so there will be no data to upate, return this function
             return None
 
@@ -640,14 +639,6 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
             print("[Warning] In GetTodayDataSend2LINEBot() both current_crawling_id_tmp and Latest_ID read from the database are None,\
                     please check the database query execution")
             return None
-
-
-        #\ Save the CCID(Current Crawling ID) to datbase
-        if SaveCCID2DB is True:
-            Database.InsertDB(  conn,
-                    Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
-                    (current_cawling_ID, user_id)
-                    )
 
 
         #\ Get the data
@@ -664,19 +655,27 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
         bubble_content = LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, data)
         content_list.append(bubble_content)
 
-    print(f"[INFO] In GetTodayDataSend2LINEBot() content list is {content_list}")
+    #\ Update the current ID
+    Update_current_ID = TimeIntevalDataList[-1].IdNumber
+    #\ Save the CCID(Current Crawling ID) to datbase
+    Database.InsertDB(conn,
+                      Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
+                      (Update_current_ID, user_id)
+                      )
+    print(f"[INFO] Update the current crawling ID to the database: {Update_current_ID}")
 
     #\ Handling the carsoul text message with limitation number by LINE API
     # print(f"[INFO] in GetTodayDataSend2LINEBot() content list\n{content_list}")
     if len(content_list) is 0:
+        print("[INFO] In GetTodayDataSend2LINEBot() No data need to update")
         gLine_bot_api.push_message(user_id,
                         TextSendMessage(text="No data updated today")
                         )
     else:
         for content_idx in range(0, len(content_list), index.CarsoulBubbleLimit):
-            end = content_idx + index.CarsoulBubbleLimit
+            end = content_idx + index.CarsoulBubbleLimit - 1
             #\ handle overflow
-            if end > len(content_list):
+            if end >= len(content_list):
                 content_limit_list = content_list[content_idx:]
             else:
                 content_limit_list = content_list[content_idx:end]
