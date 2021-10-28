@@ -60,7 +60,8 @@ def UpdateDataBase_job(session, conn, time_zone):
     print(f"[INFO] Update_Data : {Update_Data}")
     Database.InsertManyDB(conn,
                         Database.Update_varaible_query,
-                        Update_Data
+                        Update_Data,
+                        False
                         )
 
     #\ Update database to the google sheets
@@ -125,7 +126,7 @@ def RunClockFunctionbyHeroku():
         print("[INFO][Clock]Send the data to the user for hourly summary")
 
     #\ for testing (remove when pushing to heroku master)
-    # Send_Hourly_Summary(session, conn, DB_Variable_Data)
+    Send_Hourly_Summary(session, conn, DB_Variable_Data)
 
 
 

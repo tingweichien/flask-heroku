@@ -128,7 +128,7 @@ def InsertDB(conn, query:str, data:tuple):
 
 
 #\ Insert multi into DB SQL command
-def InsertManyDB(conn, query, datas):
+def InsertManyDB(conn, query, datas, close_connection=True):
     try:
         for data in datas:
             cursor = conn.cursor()
@@ -139,7 +139,9 @@ def InsertManyDB(conn, query, datas):
 
     except:
         print("[WARNING] Unable to execute the insert database query")
-    CloseDBConnection(conn)
+        
+    if close_connection:
+        CloseDBConnection(conn)
 
 
 #\ Update

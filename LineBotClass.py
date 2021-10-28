@@ -650,6 +650,10 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
                                                             int(Latest_ID),
                                                             filter
                                                             )
+        #\ return in the returned data list is None
+        if len(TimeIntevalDataList) is 0:
+            print("[INFO] In GetTodayDataSend2LINEBot() No data need to update")
+            return None
     #\ ------------------------------------------------------------------------
 
 
