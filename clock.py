@@ -90,7 +90,6 @@ def Send_Hourly_Summary(session, Conn, DB_Variable_Data:dict):
         LineBotClass.GetTodayDataSend2LINEBot(user_id,
                                               AllDayData=False,
                                               filter=index.Hourly_Summary_default_data_filter,
-                                              DB_variableinfo=DB_Variable_Data,
                                               conn=Conn,
                                               DragonflyData_session=session)
 
@@ -121,7 +120,7 @@ def RunClockFunctionbyHeroku():
         print("[INFO][Clock] Update the date and the latest ID to the database")
 
     #\ Send the data to the Line bot for all the user evey x hour
-    if datetime.datetime.now(time_zone).hour % index.Send_Hour_Summary_timeInterval == 0:
+    if datetime.datetime.now(time_zone).hour % int(index.Send_Hour_Summary_timeInterval) == 0:
         Send_Hourly_Summary(session, conn, DB_Variable_Data)
         print("[INFO][Clock]Send the data to the user for hourly summary")
 

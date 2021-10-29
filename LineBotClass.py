@@ -572,7 +572,7 @@ def OEMSetDefaultRichmenu(linebot_api, event):
 
 
 #\ Callback for today's Data
-def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:bool=True, filter:List=index.DefaultFilterObject, DB_variableinfo=None, conn=None, DragonflyData_session=None):
+def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:bool=True, filter:List=index.DefaultFilterObject, conn=None, DragonflyData_session=None):
     """Callback for today's Data or data in certain time period(control by AllDayData) and apply the filter if needed
     Args:
         user_id (str, optional) : [description]. Defaults to None.
@@ -615,7 +615,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
                                                       )[0]
 
         #\ Get the latest ID
-        Latest_ID = DB_variableinfo["LatestDataID"]
+        Latest_ID = DragonflyData.GetMaxID(DragonflyData_session)
 
         #\ Check if the current crawling data is None or not
         if current_crawling_id_tmp is not None:
@@ -650,10 +650,21 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
                                                             int(Latest_ID),
                                                             filter
                                                             )
+
+
+        #\ Update the current ID and save the CCID(Current Crawling ID) to datbase
+        Database.InsertDB(conn,
+                        Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
+                        (Latest_ID, user_id)
+                        )
+        print(f"[INFO] Update the current crawling ID to the database: {Latest_ID}")
+
+
         #\ return in the returned data list is None
         if len(TimeIntevalDataList) is 0:
             print("[INFO] In GetTodayDataSend2LINEBot() No data need to update")
             return None
+
     #\ ------------------------------------------------------------------------
 
 
@@ -662,15 +673,6 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
     for data in TimeIntevalDataList:
         bubble_content = LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, data)
         content_list.append(bubble_content)
-
-
-    #\ Update the current ID and save the CCID(Current Crawling ID) to datbase
-    Update_current_ID = TimeIntevalDataList[-1].IdNumber
-    Database.InsertDB(conn,
-                      Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
-                      (Update_current_ID, user_id)
-                      )
-    print(f"[INFO] Update the current crawling ID to the database: {Update_current_ID}")
 
 
     #\ Handling the carsoul text message with limitation number by LINE API

@@ -437,8 +437,34 @@ RequestDataMsgText = {
             "wrap": True
           }
         ]
+      },
+      {
+        "type": "separator",
+        "margin": "sm"
+      },
+      {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "button",
+            "action": {
+              "type": "postback",
+              "label": "Show on map",
+              "data": "Show_on_map"
+            },
+            "style": "primary",
+            "gravity": "center",
+            "height": "sm",
+            "margin": "md",
+            "offsetTop": "none",
+            "offsetBottom": "none",
+            "adjustMode": "shrink-to-fit"
+          }
+        ]
       }
-    ]
+    ],
+    "paddingAll": "xl"
   },
   "styles": {
     "footer": {
@@ -446,6 +472,9 @@ RequestDataMsgText = {
     }
   }
 }
+
+#######################################################################################################
+
 
 #\ handle the RequestDataMsgText
 def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTableInfo) :
