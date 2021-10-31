@@ -433,8 +433,8 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List)->L
 
     Args:
         session ([type]): session
-        Start_ID (int): Start_ID
-        End_ID (int): End_ID
+        Start_ID (int): Start_ID (last)
+        End_ID (int): End_ID (initial)
         filter_object (list of lists):
 
     Returns:
@@ -446,7 +446,7 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List)->L
     condition = True
     result_list = []
     while condition:
-        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, Start_ID, Max_ID_Num)
+        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, End_ID, Max_ID_Num)
 
         #\ Return if overflow
         if overflow:
@@ -455,16 +455,17 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List)->L
 
         #\ Go to the next ID
         counter += 1
-        Start_ID = Max_ID_Num - counter
+        End_ID = Max_ID_Num - counter
 
         #\ Check the condition
-        if Start_ID >= End_ID:
+        if End_ID >= Start_ID:
             #\ Filter out the unwanted info
             if DataFilter(ID_find_result, User_filter, Species_filter, KeepOrFilter):
                 result_list.append(ID_find_result)
 
         else :
             condition = False
+
     # print(f"[INFO] In CrawlDataByIDRange() the result list is {result_list}")
     return result_list
 
@@ -473,7 +474,7 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List)->L
 #\ Craw today's data
 def CrawTodayData(session, TodayFirstID:int, filter_object:List):
     #CrawDataByDate(session, datetime.now(), datetime.now())
-    return CrawlDataByIDRange(session, None, TodayFirstID, filter_object)
+    return CrawlDataByIDRange(session, TodayFirstID, None, filter_object)
 
 
 
