@@ -758,6 +758,10 @@ def handle_postback_event(event):
 
 
 #\ Check the post event
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\       USE THE LOWERCASE
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 def CheckPostEvent(event_text:str):
     if event_text == "others":
         return eLineBotPostEvent.OTHERS.value
@@ -765,7 +769,7 @@ def CheckPostEvent(event_text:str):
     elif event_text == "gobackmain":
         return eLineBotPostEvent.GOBACKMAIN.value
 
-    elif event_text.split("_")[0] == "ShowOnMap":
+    elif event_text.split("_")[0] == "showonmap":
         return eLineBotPostEvent.SHOWONMAP.value
 
     else:
