@@ -516,9 +516,9 @@ def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTa
   local_RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DrgonflyData.Description
 
   #\ Set the Button function to send the data for Post back event
-  Set_PostMsg_Map_Request(local_RequestDataMsgText, DrgonflyData.IdNumber, f"{Address} {DrgonflyData.Place}", Lat, Lng)
+  Return_List = Set_PostMsg_Map_Request(local_RequestDataMsgText, DrgonflyData.IdNumber, f"{Address} {DrgonflyData.Place}", Lat, Lng)
 
-  return local_RequestDataMsgText
+  return Return_List
 
 
 
