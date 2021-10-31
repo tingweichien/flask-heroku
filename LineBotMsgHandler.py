@@ -451,7 +451,7 @@ RequestDataMsgText = {
             "action": {
               "type": "postback",
               "label": "Show on map",
-              "data": "Show_on_map"
+              "data": "ShowOnMap"
             },
             "style": "primary",
             "gravity": "center",
@@ -493,15 +493,19 @@ def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTa
   local_RequestDataMsgText["body"]["contents"][3]["contents"][0]["contents"][1]["text"] = DrgonflyData.User
 
   #\ City and District
-  local_RequestDataMsgText["body"]["contents"][3]["contents"][1]["contents"][1]["text"] = f"{DrgonflyData.City} {DrgonflyData.District}"
+  Address = f"{DrgonflyData.City} {DrgonflyData.District}"
+  local_RequestDataMsgText["body"]["contents"][3]["contents"][1]["contents"][1]["text"] = Address
 
   #\ Place
   local_RequestDataMsgText["body"]["contents"][3]["contents"][2]["contents"][1]["text"] = DrgonflyData.Place
 
   #\ Longitude and Latitude
   try :
-    LatLngData = f"({round(float(DrgonflyData.Latitude), index.PositionPrecision)}, {round(float(DrgonflyData.Longitude), index.PositionPrecision)})"
+    Lat = round(float(DrgonflyData.Latitude), index.PositionPrecision)
+    Lng = round(float(DrgonflyData.Longitude), index.PositionPrecision)
+    LatLngData = f"({Lat}, {Lng})"
   except :
+    Lat, Lng = None, None
     LatLngData = "None"
   local_RequestDataMsgText["body"]["contents"][3]["contents"][3]["contents"][1]["text"] = LatLngData
 
@@ -510,10 +514,33 @@ def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTa
 
   #\ Description
   local_RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DrgonflyData.Description
+
+  #\ Set the Button function to send the data for Post back event
+  Set_PostMsg_Map_Request(local_RequestDataMsgText, DrgonflyData.IdNumber, f"{Address} {DrgonflyData.Place}", Lat, Lng)
+
   return local_RequestDataMsgText
 
 
 
+
+#\ Post back data message to display the info for the ID, position, address infomation
+ShowOnMapMsgBtn = lambda ID, Address, lat, lng : f"ShowOnMap_{ID}_{Address}_{lat}_{lng}"
+
+#\ Set the Post back message for the RequestDataMsgText when button event triggering.
+def Set_PostMsg_Map_Request(_RequestDataMsgText:dict, ID:str, Address:str, Lat:str, Lng:str):
+  local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
+
+  #\ set the lat and long to the post back data
+  #\ "ShowOnMap_Lat_Lng"
+  local_RequestDataMsgText["body"]["contents"][7]["contents"][0]["action"]["data"] = ShowOnMapMsgBtn(ID,
+                                                                                                     Address,
+                                                                                                     Lat,
+                                                                                                     Lng)
+
+  return local_RequestDataMsgText
+
+
+#\ -----------------------------------------------------------------------------------------------------------------------------------
 #\ testing
 # l = []
 # test = [DetailedTableInfo("123", "123","123","123","123","123","123","123","123","123","123","123","123","123","123"),

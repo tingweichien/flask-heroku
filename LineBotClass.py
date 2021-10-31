@@ -741,6 +741,16 @@ def handle_postback_event(event):
         print("[INFO] Go back to the Main Richmenu")
 
     elif PostbackEvent == eLineBotPostEvent.SHOWONMAP.value:
+        [ID, Addr, Lat, Lng] = PostbackEvent.split("_")[1:]
+        print("[INFO] In the POST back event, the ID: {ID}, Addr: {Addr}, Lat: {Lat}, Lng: {Lng}")
+        if Lat and Lng is not None:
+            gLine_bot_api.push_message(event.source.user_id,
+                                        LocationSendMessage(title=f'# {ID}',
+                                                            address=Addr,
+                                                            latitude=float(Lat),
+                                                            longitude=float(Lng)
+                                                            )
+                                        )
         print("[INFO] Show the address on the map")
 
     else :
@@ -755,7 +765,7 @@ def CheckPostEvent(event_text:str):
     elif event_text == "gobackmain":
         return eLineBotPostEvent.GOBACKMAIN.value
 
-    elif event_text == "Show_on_map":
+    elif event_text.split("_")[0] == "ShoWOnMap":
         return eLineBotPostEvent.SHOWONMAP.value
 
     else:
