@@ -1,43 +1,52 @@
-    <!--Place the common part here-->
+<!--Place the common part here-->
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>{% block title %}{% endblock %}</title>
 
-        <!--icon file-->
-        <link rel="icon" href="{{ url_for('static', filename='image/dragonfly_ico.ico') }}" type="image/x-icon" />
-        <link rel="shortcut icon" href="{{ url_for('static', filename='image/dragonfly_ico.ico') }}" type="image/x-icon" />
-        <link rel="apple-touch-icon"  sizes="180x180" href="{{ url_for('static', filename='image/dragonfly_ico.png') }}" type="image/png"/>
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %}</title>
 
-        <!--load static file-->
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/layout.css') }}"/>
+    <!--Icon File-->
+    <link rel="icon" href="{{ url_for('static', filename='image/dragonfly_ico.ico') }}" type="image/x-icon" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='image/dragonfly_ico.ico') }}" type="image/x-icon" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='image/dragonfly_ico.png') }}" type="image/png" />
 
-        {% block head %}
-        {% endblock %}
+    <!--Load Static File-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/layout.css') }}" /> {% block head %} {% endblock %}
 
-    </head>
+</head>
+<body>
+    <!-- <div id="menu-bar">
+        <ul>
+            <li><a href="{{ url_for('Home') }}" class="btn active">Home</a></li>
+            <li><a href="{{ url_for('About') }}" class="btn">About</a></li>
+            <li><a href="{{ url_for('Weather') }}" class="btn">Weather</a></li>
+            <li><a href="{{ url_for('OSMmap') }}" class="btn">OSM</a></li>
+            <li><a href="{{ url_for('Leaflet') }}" class="btn">leaflet</a></li>
+        </ul>
+    </div>
+    <script src="static/js/layout.js"></script> -->
+    <div id="menu-bar">
+        <ul>
+            {% for menu_idx in _MenuBarSetting %}
+            <li><a href={{ url_for(menu_idx["url"]) }} class={{ menu_idx["class"] }}>{{ menu_idx["name"] }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
 
-    <body>
-        <div class="navbar">
-                <a href="{{ url_for('home') }}" class="navbar-brand">Home</a>
-                <a href="{{ url_for('about') }}" class="navbar-item">About</a>
-                <a href="{{ url_for('contact') }}" class="navbar-item">contact</a>
-                <a href="{{ url_for('OSMmap') }}" class="navbar-item">OSM</a>
-        </div>
 
-        {% block content1 %}
-        {% endblock %}
+    <!--The Main Block For Content Which Below The Bar -->
+    {% block content1 %} {% endblock %}
 
-        <div class="body-content">
+    <div class="body-content">
 
-            {% block content %}
-            {% endblock %}
+        {% block content %} {% endblock %}
 
-            <hr/>
-            <footer>
-                <p>© 2020 Tim Wei Chien</p>
-            </footer>
-        </div>
-    </body>
+        <hr/>
+        <footer>
+            <p>© 2020 Tim Wei Chien</p>
+        </footer>
+    </div>
+</body>
+
 </html>

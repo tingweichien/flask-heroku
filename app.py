@@ -6,8 +6,12 @@ from datetime import timedelta
 import LineBotClass
 import index
 from VarIndex import cache
+import gSheetAPI
+import json
 
 
+################################################################################
+#\ -- Global and Init --
 
 #\ __name__ represent the current module
 app = Flask(__name__)
@@ -21,31 +25,50 @@ Session(app)
 app.secret_key = index.APP_Pri_Key
 app.permanent_session_lifetime = timedelta(seconds=5)
 
-#\ cache for global variable
+#\ Cache for global variable
 cache.init_app(app=app, config={"CACHE_TYPE": "filesystem", "CACHE_DIR":"/tmp"})
 
-#\set cache data
+#\ Set cache data
+#\ use cache.get("name") or cache.set("name", "value")
 LineBotClass.InitCache(cache)
 
-#\ Init default richmenu
-# gLine_bot_api.set_default_rich_menu(cache.get("RichMenuID")["Login Richmenu"])
 
 
 ################################################################################
+#\ -- App menu css setting --
+#\ Remeber to update this when adding another router in the menu bar
+MenuBarSetting = [
+    {"url":"Home", "class":"btn", "name":"Home"},
+    {"url":"About", "class":"btn", "name":"About"},
+    {"url":"Weather", "class":"btn", "name":"Weather"},
+    {"url":"OSMmap", "class":"btn", "name":"OSMmap"},
+    {"url":"Leaflet", "class":"btn", "name":"Leaflet"}
+]
+Pre_Menu = 0
+
+
 #\ -- APP ROUTER --
 #\ Decorator 函式的裝飾:以函式為基礎,提供附加功能
 @app.route("/")
-def home():
-    return render_template("home.html")
+def Home():
+    #\ Active the menu bar
+    global Pre_Menu
+    L_MenuBarSetting = MenuBarSetting
+    L_MenuBarSetting[Pre_Menu]["class"] = "btn"
+    L_MenuBarSetting[0]["class"] = "btn-active"
+    Pre_Menu = 0
+    return render_template("Home.html", _MenuBarSetting=L_MenuBarSetting)
 
 
-@app.route("/test") # 代表我們要處理的路徑
-def text():
-    return "This is test"
+@app.route("/About", methods=["GET", "POST"])
+def About():
+    #\ Active the menu bar
+    global Pre_Menu
+    L_MenuBarSetting = MenuBarSetting
+    L_MenuBarSetting[Pre_Menu]["class"] = "btn"
+    L_MenuBarSetting[1]["class"] = "btn-active"
+    Pre_Menu = 1
 
-
-@app.route("/about", methods=["GET", "POST"])
-def about():
     if request.method == "POST":
         #session.permanent = True
         user = request.form['nm']
@@ -55,23 +78,68 @@ def about():
         if 'user' in session:
             return redirect(url_for("user"))
 
-        return render_template("about.html")
+        return render_template("About.html", _MenuBarSetting=L_MenuBarSetting)
 
 
-@app.route("/contact")
-def contact():
-    return render_template("contact.html")
+@app.route("/Weather")
+def Weather():
+    #\ Active the menu bar
+    global Pre_Menu
+    L_MenuBarSetting = MenuBarSetting
+    L_MenuBarSetting[Pre_Menu]["class"] = "btn"
+    L_MenuBarSetting[2]["class"] = "btn-active"
+    Pre_Menu = 2
+    return render_template("Weather.html", _MenuBarSetting=L_MenuBarSetting)
 
 
 @app.route("/OSMmap")
 def OSMmap():
-    return render_template("OSMmap.html", apikey = index.GMAPapikey, api_on = index.bAPIon)
+    #\ Active the menu bar
+    global Pre_Menu
+    L_MenuBarSetting = MenuBarSetting
+    L_MenuBarSetting[Pre_Menu]["class"] = "btn"
+    L_MenuBarSetting[3]["class"] = "btn-active"
+    Pre_Menu = 3
+    return render_template("OSMmap.html", apikey = index.GMAPapikey, api_on = index.bAPIon, _MenuBarSetting=L_MenuBarSetting)
+
+
+@app.route("/Leaflet", methods=['GET','POST'])
+def Leaflet():
+    #\ Active the menu bar
+    global Pre_Menu
+    L_MenuBarSetting = MenuBarSetting
+    L_MenuBarSetting[Pre_Menu]["class"] = "btn"
+    L_MenuBarSetting[4]["class"] = "btn-active"
+    Pre_Menu = 4
+
+    #\ Handling the POST and GET method
+    #\ POST
+    MapData = []
+    MapDataStatus = 0
+    if request.method == "POST":
+        print(f"request.form: {request.form}") #\ i.e. request.form: ImmutableMultiDict([('Orders', 'Damselfly'), ('Family', 'Calopterygidae'), ('Species', '01')])
+        [MapDataStatus, MapData] = gSheetAPI.GetDragonflyDataGoogleSheets(request.form['Family']+request.form['Species'],
+                                                         None
+                                                         )
+        # print(f"[INFO] MapData : {MapData}")
+        print("[INFO] Leaflet router method : POST")
+    else:
+        print("[INFO] Leaflet router method : GET")
+
+    return render_template("Leaflet.html",
+                            _index=index,
+                            _MenuBarSetting=L_MenuBarSetting,
+                            _MapDataStatus=json.dumps(MapDataStatus),
+                            _MapData=json.dumps(MapData)
+                            )
+
 
 
 #\ -- to HTTP method --
 @app.route("/urlREST/<name>")
 def urlREST(name):
     return "<h1>Hello {} !! This is urlREST example</h1>".format(name)
+
 
 @app.route("/Query/")
 def Query():
@@ -100,9 +168,33 @@ def LineBotEcho():
     #\ Init the cache
     if cache.get("gIsJustText") is None:
         LineBotClass.InitCache(cache)
+
+    #\ Check if the LINE Notify is available or not
+    if cache.get("gLN_AccessToken") is None:
+        body = json.loads(request.get_data(as_text=True))
+        LineBotClass.Check_LN_Key_exist(body["events"][0]["source"]["userId"])
+
     #\ handler
     LineBotClass.LineBotHandler(app)
     return "ok"
+
+
+#\ Line bot for Line Notify
+@app.route("/callback/notify", methods=['GET'])
+def callback_nofity():
+    try:
+        assert request.headers['referer'] == 'https://notify-bot.line.me/'
+        code = request.args.get('code')
+        state = request.args.get('state')
+
+        # 接下來要繼續實作的函式
+        access_token = LineBotClass.LN_get_token(code, index.LN_Client_ID, index.LN_Client_Secret, index.LN_redirect_uri)
+
+        return "恭喜完成 LINE Notify 連動！請關閉此視窗。"
+
+    except:
+        return "Failed to execute the LINE Notify callback redirect URL"
+
 
 
 #\ handle the message
@@ -111,13 +203,13 @@ def LineBotEcho():
 #     LineBotClass.gLine_bot_api.reply_message(
 #                             event.reply_token,
 #                             TextSendMessage(text=event.message.text)
-#                             )
+#                             )y
 
 
 
 
 ################################################################################
-#\ start the server
+#\ -- Start the server --
 if __name__ == "__main__":
     #\ auto reload page
     app.config['TEMPLATES_AUTO_RELOAD'] = True

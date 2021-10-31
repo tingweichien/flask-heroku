@@ -13,15 +13,19 @@
 import json
 
 
-
 #\ Load data from json file
-with open("Index.json", encoding="utf-8") as f:
+with open("./Setting/Index.json", encoding="utf-8") as f:
     INDEX = json.load(f)
+    #\ use this to print the data from the json file
     # print(f'{"x"*25}\n| [INFO]The Index data |\n{"x"*25}\n{json.dumps(INDEX, indent=4)}')
 
 #\ Load the private data from json file
-with open("Private_Index.json") as p_f:
+with open("./Setting/Private_Index.json") as p_f:
     INDEX_PRIVATE = json.load(p_f)
+
+#\ Load Species directory
+with open("./Setting/SpeciesDirectory.json", encoding="utf-8") as SD_f:
+    INDEX_SPECIES = json.load(SD_f)
 
 
 
@@ -34,6 +38,21 @@ APP_Pri_Key = INDEX_PRIVATE["APP_Pri_Key"]
 #\ ---- OSM API ----
 bAPIon = INDEX["OSM"]["bAPIon"]
 GMAPapikey = INDEX_PRIVATE["OSM"]["GMAPapikey"]
+
+#\ limit the map marker amount
+MapMarksLimit = INDEX["OSM"]["MapMarksLimit"]
+
+#\ default map view location
+DefaultMapViewLocation = INDEX["OSM"]["DefaultMapViewLocation"]
+
+#\ accuracy for the latitude and longitude
+LatLonAccuracy = 10**INDEX["OSM"]["LatLonAccuracy"]
+
+
+#\ ---- Google sheet API ----
+GSheetApiKeyPath = INDEX["GCP"]["GSheetApiKeyPath"]
+
+
 
 #\ -- Server url--
 ServerURL = INDEX["Server"]
@@ -56,6 +75,12 @@ Main2RichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["Main2RichMen
 CarsoulBubbleLimit = INDEX["LineBot"]["CarsoulBubbleLimit"]
 
 
+#\ ---- Line Notify----
+LN_Client_ID = INDEX_PRIVATE["Line_Notify"]["Client_ID"]
+LN_Client_Secret = INDEX_PRIVATE["Line_Notify"]["Client_Secret"]
+LN_redirect_uri = INDEX_PRIVATE["Line_Notify"]["redirect_uri"]
+
+
 #\ ---- Dragonfly ----
 #\ Retry for login
 re_try_limit = INDEX["DragonflyData"]["re_try_limit"]
@@ -72,6 +97,7 @@ species_all_record_data_first_url = INDEX["DragonflyData"]["URL"]["species_all_r
 species_all_record_data_page_url = INDEX["DragonflyData"]["URL"]["species_all_record_data_page_url"]
 species_all_record_data_species_url = INDEX["DragonflyData"]["URL"]["species_all_record_data_species_url"]
 total_num_species_url = INDEX["DragonflyData"]["URL"]["total_num_species_url"]
+species_number_rank_url = general_url + INDEX["DragonflyData"]["URL"]["species_number_rank_url"]
 
 #\ Dragonfly simple info species column name
 dragonfly_simple_info_species_col_name = INDEX["DragonflyData"]["Simple_info_table"]["dragonfly_simple_info_species_col_name"]
@@ -94,13 +120,29 @@ URI = INDEX_PRIVATE["DataBase"]["DataBaseInfo"]["URI"]
 
 #\ Database table name
 UserInfoTableName = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableName"]
+UserInfo_record_no = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_record_no"]
+UserInfo_name = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_name"]
+UserInfo_userid = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_userid"]
+UserInfo_join_date = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_join_date"]
+UserInfo_account = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_account"],
+UserInfo_password = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_password"]
+UserInfo_current_crawling_id = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_current_crawling_id"]
+UserInfo_access_token = INDEX["DataBase"]["DataBaseTable"]["UserInfoTable"]["TableVarName"]["UserInfo_access_token"]
 VariableTableName = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableName"]
-VarLatestDataID = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVar"]["LatestDataID"]
+VarLatestDataID = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVarName"]["VarLatestDataID"]
+VarLatestDataIDDate = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["TableVarName"]["VarLatestDataIDDate"]
+
+#\ Create database (or to update the current database column name or attribute)
+CreateDataBase = INDEX["DataBase"]["CreateDataBase"]
 
 
 
 #\ Filter object [User_filter, Species_filter, KeepOrFilter]
 DefaultFilterObject = [None, None, None]
+Hourly_Summary_default_data_filter = INDEX["DataBase"]["filter"]["Hourly_Summary_default_data_filter"]
+HSDDFilter_start_index = INDEX["DataBase"]["filter"]["HSDDFilter_start_index"] #\ this set the start number to the end of the species rank list for which you want to use to filter out
+Species_rare_rank_first_60 = INDEX["DataBase"]["filter"]["Species_rare_rank_first_60"]
+
 
 #\ Alarm (This is for wake the free dyno Heroku up)
 HourFrom = INDEX["Alarm"]["WakeUpAlarm"]["HourFrom"]
@@ -109,7 +151,40 @@ HourRange = f"{HourFrom}-{HourEnd}"
 IntervalPerHour = INDEX["Alarm"]["WakeUpAlarm"]["IntervalPerHour"]
 IntervalPerMin = INDEX["Alarm"]["WakeUpAlarm"]["IntervalPerMin"]
 HOURAlarm = {"hour" : HourRange+"/"+IntervalPerHour} if IntervalPerHour != "" else {"minute" : "*/"+IntervalPerMin}
+Send_Hour_Summary_timeInterval = INDEX["Alarm"]["Send_Hour_Summary_timeInterval"]
 
-#\ Daily routin
+
+#\ Daily routine
 DAYAlarm = {"hour": INDEX["Alarm"]["DailyUpdate"]["Hour"], "minute": INDEX["Alarm"]["DailyUpdate"]["Minute"], "second": INDEX["Alarm"]["DailyUpdate"]["Second"]}
 
+
+
+
+#\ --Species directory--
+# Dragonfly_Orders
+
+
+
+
+#\ --Google sheet api--
+#\ General google sheet url
+GeneralgSheetUrl = lambda SpeciesID: INDEX["GoogleSheet"]["GeneralgSheetUrl_head"] + str(SpeciesID) + INDEX["GoogleSheet"]["GeneralgSheetUrl_end"]
+
+
+
+
+#\ --Clock--
+#\ Switch token
+ClockStandAloneVer = INDEX["Clock"]["ClockStandAloneVer"]
+
+ClockHerokuDependancyVer = INDEX["Clock"]["ClockHerokuDependancyVer"]
+
+#\ Time for the update database
+Time_UpdateDatabase = INDEX["Clock"]["Update_Time"]["Time_UpdateDatabase"]
+
+
+
+
+########################################################################
+#\ For testing
+# print(Species_rare_rank_first_60)

@@ -5,6 +5,7 @@
 ##############################
 #\ This is the main function to handle the line bot e=vent
 
+from typing import List
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEvent, FlexSendMessage, PostbackEvent, LocationSendMessage, flex_message
@@ -18,13 +19,17 @@ import Database
 import datetime
 import LineBotMsgHandler
 import random
-
+from gSheetAPI import Sheet_id_dict
+import urllib
+import urllib.request, urllib.parse
+import json
+import yaml
 
 
 #\ -- Global --
 #\ Line bot basic info
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('./Key/config.ini')
 gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
 gHandler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 
@@ -141,10 +146,9 @@ def handle_text_message(event):
             search_flex_message = FlexSendMessage(alt_text="Please type IDRequest or Advance Search",
                                                   contents=LineBotMsgHandler.Search_event_text
                                                   )
-            gLine_bot_api.reply_message(
-                            event.reply_token,
-                            search_flex_message
-                            )
+            gLine_bot_api.reply_message(event.reply_token,
+                                        search_flex_message
+                                        )
             #\ reset the is-just-text flag
             cache.set("gIsJustText", True)
 
@@ -153,7 +157,12 @@ def handle_text_message(event):
         if pleaseLogin(event) is True :
 
             #\ Get today's data
-            GetTodayData(event)
+            index.Hourly_Summary_default_data_filter[1] = index.Species_rare_rank_first_60.copy()
+            GetTodayDataSend2LINEBot(event.source.user_id,
+                                     event.reply_token,
+                                     True,
+                                     index.Hourly_Summary_default_data_filter
+                                     )
 
             #\ reset the is-just-text flag
             cache.set("gIsJustText", True)
@@ -208,7 +217,7 @@ def CheckEvent(event_text:str):
 #\ Check User Info from database to see if there are any records or not
 def CheckUserInfo(event):
     DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
-                                    Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id),
+                                    Database.Read_userinfo_query(event.source.user_id),
                                     True)
     print(f"[INFO] In the CkeckUserInfo() the Data return from the DB is {DB_Data}")
     if DB_Data is not None:
@@ -304,7 +313,7 @@ def IDRequestCallback(event):
                                                         f"[Longitude]: {ID_find_result.Longitude}\n"\
                                                         f"[Speceis]: {', '.join(ID_find_result.SpeciesList)}\n"+\
                                                         f"[Description]: {ID_find_result.Description}\n",
-                                                contents=LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText,ID_find_result)
+                                                contents=LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, ID_find_result)
                                             )
 
             gLine_bot_api.reply_message(event.reply_token,
@@ -337,7 +346,7 @@ def CreateWebSession(event=None, CloseDBConn=True):
         conn
     """
     if event is not None:
-        read_query = Database.Read_userinfo_query(index.UserInfoTableName, event.source.user_id)
+        read_query = Database.Read_userinfo_query(event.source.user_id)
         fetchone = True
     else:
         read_query = Database.Read_all_query(index.UserInfoTableName)
@@ -346,6 +355,10 @@ def CreateWebSession(event=None, CloseDBConn=True):
 
     #\ read the data from DB
     conn = Database.CreateDBConection()
+    if conn is None:
+        print("[Warming] Fail to do CreateWebSession() due to the CreateDBConnection() fail")
+        return None, None
+
     DB_Data = Database.ReadFromDB(conn,
                                     read_query,
                                     fetchone,
@@ -470,7 +483,8 @@ def LoginProgress(event):
             #\ Store the user info if success to skip login process
             if cache.get("gLoginStatus") is True:
                 #\ Connect and Create the database if not exist
-                # Database.ExecuteDB(Database.CreateDBConection(), Database.UserInfo_create_table_query)
+                if index.CreateDataBase:
+                    Database.ExecuteDB(Database.CreateDBConection(), Database.UserInfo_create_table_query)
 
                 #\ Request the user info
                 #\      self.display_name = display_name
@@ -491,7 +505,7 @@ def LoginProgress(event):
 
                 #\ Save the PW and ACCOUNT to the database
                 Database.InsertDB(Database.CreateDBConection(),
-                                    Database.Insert_userinfo_query(index.UserInfoTableName),
+                                    Database.Insert_userinfo_query(),
                                     InsertData
                                 )
 
@@ -558,39 +572,132 @@ def OEMSetDefaultRichmenu(linebot_api, event):
 
 
 #\ Callback for today's Data
-def GetTodayData(event):
+def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:bool=True, filter:List=index.DefaultFilterObject, conn=None, DragonflyData_session=None):
+    """Callback for today's Data or data in certain time period(control by AllDayData) and apply the filter if needed
+    Args:
+        user_id (str, optional) : [description]. Defaults to None.
+        reply_token (str, optional) : This is for rely function, you can choose whether you want to use or not. Defaults to None.
+        AllDayData (bool, optional) : Whether to get all the data in this day or do the seperate. If this set to false, then the data return will
+                                     be based on the current_crawling_id. The current_crawling_id will be updated after that and so does the daily update.
+                                     Defaults to True.
+        filter (list of list, optional): Filter to filter out the data you want. Defaults to index.DefaultFilterObject.
+    """
+    #\ Check the input args
+    if user_id is None:
+        print("[Error] In GetTodayDataSend2LINEBot() No user id been specify")
+        return
 
-    gLine_bot_api.reply_message(event.reply_token,
-                                TextSendMessage(text="Please be patient, it might take a while~~")
-                                )
+    if reply_token is not None:
+        gLine_bot_api.reply_message(reply_token,
+                                    TextSendMessage(text="Please be patient, it might take a while~~")
+                                    )
 
-    #\ Get the data
-    DragonflyData_session, _ = CreateWebSession(event)
-    TodayDataList = DragonflyData.CrawTodayData(DragonflyData_session, int(cache.get("DataBaseVariable")["LatestDataID"]), index.DefaultFilterObject)
+    #\ Check the web session
+    if DragonflyData_session is None:
+        DragonflyData_session, conn = CreateWebSession(CloseDBConn=False)
+
+    #\ --- Get all the data today ---
+    #\ ------------------------------------------------------------------------
+    if AllDayData is True:
+        TimeIntevalDataList = DragonflyData.CrawTodayData(DragonflyData_session,
+                                                          int(cache.get("DataBaseVariable")["LatestDataID"]),
+                                                          filter
+                                                          )
+
+    #\ --- Get the specific time interval data based on current_crawling_id ---
+    #\ ------------------------------------------------------------------------
+    else :
+        #\ Get the data for certain time interval
+        current_crawling_id_tmp = Database.ReadFromDB(conn,
+                                                      Database.Read_col_userinfo_query("current_crawling_id", user_id),
+                                                      True,
+                                                      False
+                                                      )[0]
+
+        #\ Get the latest ID
+        Latest_ID = DragonflyData.GetMaxID(DragonflyData_session)
+
+        #\ Check if the current crawling data is None or not
+        if current_crawling_id_tmp is not None:
+            current_cawling_ID = current_crawling_id_tmp
+
+        elif current_crawling_id_tmp is None and Latest_ID is not None:
+            current_cawling_ID = Latest_ID
+            #\ Update the current crawling data
+            Database.InsertDB(  conn,
+                                Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
+                                (Latest_ID, user_id)
+                             )
+
+            #\ Save the CCID(Current Crawling ID) to datbase
+            print("[INFO] Update the current crawling ID to the database since there is no current crawling ID")
+            Database.InsertDB(conn,
+                              Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
+                              (current_cawling_ID, user_id)
+                              )
+            #\ Since the current latest ID is equal to the current crawling ID so there will be no data to upate, return this function
+            return None
+
+        else:
+            print("[Warning] In GetTodayDataSend2LINEBot() both current_crawling_id_tmp and Latest_ID read from the database are None,\
+                    please check the database query execution")
+            return None
+
+
+        #\ Get the data
+        TimeIntevalDataList = DragonflyData.CrawlDataByIDRange(DragonflyData_session,
+                                                            int(current_cawling_ID),
+                                                            int(Latest_ID),
+                                                            filter
+                                                            )
+
+
+        #\ Update the current ID and save the CCID(Current Crawling ID) to datbase
+        Database.InsertDB(conn,
+                        Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
+                        (Latest_ID, user_id)
+                        )
+        print(f"[INFO] Update the current crawling ID to the database: {Latest_ID}")
+
+
+        #\ return in the returned data list is None
+        if len(TimeIntevalDataList) is 0:
+            print("[INFO] In GetTodayDataSend2LINEBot() No data need to update")
+            return None
+
+    #\ ------------------------------------------------------------------------
+
 
     #\ Handling the data for the bubble in the carsoul message
     content_list = []
-    for data in TodayDataList:
+    for data in TimeIntevalDataList:
         bubble_content = LineBotMsgHandler.RequestDataMsgText_handler(LineBotMsgHandler.RequestDataMsgText, data)
         content_list.append(bubble_content)
 
-    #\ Handling the carsoul text message with limitation number by line api
-    # print(f"[INFO] in GetTodayData() content list\n{content_list}")
-    for content_idx in range(0, len(content_list), index.CarsoulBubbleLimit):
-        end = content_idx + index.CarsoulBubbleLimit
-        #\ handle overflow
-        if end > len(content_list):
-            content_limit_list = content_list[content_idx:]
-        else:
-            content_limit_list = content_list[content_idx:end]
 
-        Msgtext = FlexSendMessage(alt_text="No data",
-                                contents=LineBotMsgHandler.MultiRequestDataMsgText(content_limit_list)
-                                )
+    #\ Handling the carsoul text message with limitation number by LINE API
+    # print(f"[INFO] in GetTodayDataSend2LINEBot() content list\n{content_list}")
+    if len(content_list) is 0:
+        print("[INFO] In GetTodayDataSend2LINEBot() No data need to update")
+        gLine_bot_api.push_message(user_id,
+                        TextSendMessage(text="No data updated today")
+                        )
+    else:
+        for content_idx in range(0, len(content_list), index.CarsoulBubbleLimit):
+            end = content_idx + index.CarsoulBubbleLimit - 1
+            #\ handle overflow
+            if end >= len(content_list):
+                content_limit_list = content_list[content_idx:]
+            else:
+                content_limit_list = content_list[content_idx:end]
 
-        gLine_bot_api.push_message(event.source.user_id,
-                                Msgtext
-                                )
+            Msgtext = FlexSendMessage(alt_text="No data",
+                                    contents=LineBotMsgHandler.MultiRequestDataMsgText(content_limit_list)
+                                    )
+
+            gLine_bot_api.push_message(user_id,
+                                    Msgtext
+                                    )
 
 
 
@@ -602,6 +709,7 @@ def InitCache(_cache):
     _cache.set("gIsJustText", True)
     _cache.set("gLoginDataConfirm", False)
     _cache.set("gLoginStatus", False)
+    _cache.set("gUserID", None)
     _cache.set("gAccount", None)
     _cache.set("gPassword", None)
     _cache.set("Dragonfly_session", None)
@@ -613,6 +721,9 @@ def InitCache(_cache):
                                         ))
                )
     _cache.set("DAYAlarm", index.DAYAlarm)
+    _cache.set("gGSheetList", Sheet_id_dict())
+    _cache.set("gLN_AccessToken", None)
+
 
 
 #\ handle post back event
@@ -624,11 +735,16 @@ def handle_postback_event(event):
     if PostbackEvent == eLineBotPostEvent.OTHERS.value:
         gLine_bot_api.link_rich_menu_to_user(event.source.user_id,cache.get("RichMenuID")["Main2 Richmenu"])
         print("[INFO] Switch to the Main2 Richmenu")
+
     elif PostbackEvent == eLineBotPostEvent.GOBACKMAIN.value:
         gLine_bot_api.link_rich_menu_to_user(event.source.user_id,cache.get("RichMenuID")["Main Richmenu"])
         print("[INFO] Go back to the Main Richmenu")
+
+    elif PostbackEvent == eLineBotPostEvent.SHOWONMAP.value:
+        print("[INFO] Show the address on the map")
+
     else :
-        pass
+        print("[INFO] No POST event been dpecified")
 
 
 #\ Check the post event
@@ -639,5 +755,139 @@ def CheckPostEvent(event_text:str):
     elif event_text == "gobackmain":
         return eLineBotPostEvent.GOBACKMAIN.value
 
+    elif event_text == "Show_on_map":
+        return eLineBotPostEvent.SHOWONMAP.value
+
     else:
         return eLineBotPostEvent.NONE.value
+
+
+
+#\ ------------------------------------------------------------------------------------------------
+#\ --- Line Bot for Line Notify ---
+#\ send this url to the user to get the access token
+def create_auth_link(user_id, client_id=index.LN_Client_ID, redirect_uri=index.LN_redirect_uri):
+    print("[LINE Notify] Request the user to authorize the LINE Notify")
+    data = {
+        'response_type': 'code',
+        'client_id': client_id,
+        'redirect_uri': redirect_uri,
+        'scope': 'notify',
+        'state': user_id
+    }
+    query_str = urllib.parse.urlencode(data)
+
+    #\ return f'https://notify-bot.line.me/oauth/authorize?{query_str}'
+    gLine_bot_api.push_message(user_id,
+                                TextSendMessage(text=f"Please click the following link to authorize the LINE Notify, select \"1-on-1 chat with LINE Notify\"\nhttps://notify-bot.line.me/oauth/authorize?{query_str}")
+                                )
+
+
+#\ Check if the LINE Notify key already exit or not
+def Check_LN_Key_exist(userid: str):
+    #\ read the database
+    Userinfo_access_token = Database.ReadFromDB(Database.CreateDBConection(),
+                                                Database.Read_col_userinfo_query("access_token", userid),
+                                                True
+                                                )
+
+    #\ Set the User ID to cache
+    cache.set("gUserID", userid)
+
+    print(f"[Info] In Check_LN_Key_exist() the access token is {Userinfo_access_token}")
+    if Userinfo_access_token[0] is None:
+        print("[Info] Updating the LINE Notify access token")
+        #\ Send the link to the user to authorize and get the access token
+        #\ After the user click authorize, it'll redirect to the callback_nofity() in app.py
+        #\ the code can be got, then can start to ask the LINE Notify for the access token
+        create_auth_link(userid)
+    else:
+        cache.set("gLN_AccessToken", Userinfo_access_token)
+
+
+
+
+#\ Get the token
+def LN_get_token(code:str, client_id:str=index.LN_Client_ID, client_secret:str=index.LN_Client_Secret, redirect_uri:str=index.LN_redirect_uri):
+    """Get the token from the user to access the LIne Notify message
+
+    Args:
+        code (str): The code that get after user click authorize
+        client_id (str, optional): Put the user ID here and it'll return the corresponding access token back. Defaults to index.LN_Client_ID.
+        client_secret (str, optional): . Defaults to index.LN_Client_Secret.
+        redirect_uri (str, optional): . Defaults to index.LN_redirect_uri.
+
+    Returns:
+        str: access token
+    """
+    print("[LINE Notify] Get Token")
+    url = 'https://notify-bot.line.me/oauth/token'
+    headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+    data = {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': redirect_uri,
+        'client_id': client_id,
+        'client_secret': client_secret
+    }
+    data = urllib.parse.urlencode(data).encode()
+    req = urllib.request.Request(url, data=data, headers=headers)
+    page = urllib.request.urlopen(req).read()
+
+    #res = json.loads(page.decode('utf-8'))
+    #\ Use the yaml loads to fix the unicode output by json.loads
+    res = yaml.safe_load(page)
+
+
+    #\ Save the token to the database
+    Database.InsertDB(Database.CreateDBConection(),
+                      Database.Update_userinfo_query("access_token"),
+                      (res['access_token'], cache.get("gUserID")))
+    #\ Set to the cache
+    cache.set("gLN_AccessToken", res['access_token'])
+    print(f"[LINE Notify] Access Token : {res['access_token']}")
+    return res['access_token']
+
+
+###########################################################################################
+#\ Use this to send the message via LINE Notify, but the message will not show in your APP.
+#\ Send the message
+def LN_send_message(access_token:str=None, text_message:str=None, picurl:str=None):
+    """Send the message using LINE Notify
+
+    Args:
+        access_token (str, optional): [Access token for the LINE Notify]. Defaults to None.
+        text_message (str, optional): [test message to sen]. Defaults to None.
+        picurl (str, optional): [piecture url]. Defaults to None.
+    """
+    print("[LINE Notify] Send message")
+
+    #\ Handle the access token and check the input data vaildation
+    if access_token is None:
+        print("[Warning][LINE Notify] access token is None")
+        return
+    else:
+        url = 'https://notify-api.line.me/api/notify'
+        headers = {"Authorization": "Bearer "+ access_token}
+
+    #\ The LINE Notify required the text message no matter whether the picture url is specify or not
+    if text_message is None:
+        print("[Warning][LINE Notify] Not specify the mandatory text message to send")
+        return
+
+    DataToSend = dict()
+    DataToSend = {'message': text_message}
+    if picurl is not None:
+        temp_data = {"stickerPackageId": 2, 'stickerId': 38,
+                    'imageThumbnail':picurl, 'imageFullsize':picurl}
+        DataToSend.update(temp_data)
+
+
+    # data = {'message': text_message,
+    #         "stickerPackageId": 2, 'stickerId': 38,
+    #         'imageThumbnail':picurl, 'imageFullsize':picurl}
+
+    data = urllib.parse.urlencode(DataToSend).encode()
+    req = urllib.request.Request(url, data=data, headers=headers)
+    page = urllib.request.urlopen(req).read()
+    ###########################################################################################

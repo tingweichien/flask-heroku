@@ -28,8 +28,28 @@
     </style>
 {% endblock %}
 
-
 {% block content1 %}
+    <!---->
+    <form action="/action_page.php">
+        <label for="cars">Choose a car:</label>
+        <select name="cars" id="cars">
+          <option value="volvo">Volvo</option>
+          <option value="saab">Saab</option>
+          <option value="opel">Opel</option>
+          <option value="audi">Audi</option>
+        </select>
+
+        <label for="cars2">Choose a car:</label>
+        <select name="cars" id="cars">
+          <option value="volvo">Volvo</option>
+          <option value="saab">Saab</option>
+          <option value="opel">Opel</option>
+          <option value="audi">Audi</option>
+        </select>
+
+        <input type="submit" value="Submit">
+    </form>
+    <!---->
     <div id="map" style="float: left;"></div>
 
     <div id="footer">&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>

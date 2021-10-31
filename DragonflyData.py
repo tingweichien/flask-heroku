@@ -1,24 +1,26 @@
-import proxyscrape
 from typing import List
+import proxyscrape
 import requests
 from bs4 import BeautifulSoup
 import DataClass
 import index
-from fake_useragent import UserAgent
+from fake_useragent import UserAgent, FakeUserAgentError
 import re
 from datetime import datetime
-import Database
-
 
 
 
 
 #\--->Now use random fake user agent
 # https://ithelp.ithome.com.tw/articles/10209356
-UA = UserAgent()
-headers = {
-        'User-Agent' : UA.random,
-}
+#\ if there is error orrcur then do not use this
+try:
+    UA = UserAgent()
+    headers = {
+            'User-Agent' : UA.random,
+    }
+except FakeUserAgentError:
+    headers = {}
 
 
 #\ Proxy auto crawling
@@ -287,7 +289,7 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None)->list:
                                                     Description
                                                     )
 
-    print(f"[INFO] Return Object: {ID_find_result}")
+    # print(f"[INFO] Return Object: {ID_find_result}")
     return [ID_find_result, overflow, int(Max_ID_Num)]
 
 
@@ -309,7 +311,7 @@ def GetMaxID(session)->int:
 
 #\ ------------------------------------------------------------------------------
 #\ for testing
-# [session, Login_Response, Login_state] = Login_Web("簡庭威", "tim960622")
+# [session, Login_Response, Login_state] = Login_Web("-----", "-------")
 # DataCrawler(session, "77257")
 
 
@@ -374,25 +376,22 @@ def CheckDataSameOrNot(result_list:list, ID_find_result:list):
                 result_list[idx].append(ID_find_result)
 
 
-
-
-
-
 #\ filter to filter out the data with specific condition
 def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_filter:list=None, KeepOrFilter:bool=None)->bool:
     """
-     params:
+     @params:
           user to filter
           species to filter
           KeepOrFilter: indicate to do filter(False) or keep(True) the data if satisfied the condition
-     return:
+     @return:
         if KeepOrFilter True to keep the data
           True: Filter out
-          Flase: Not Filter out to keep
+          False: Not Filter out to keep
         if KeepOrFilter False to filter the data
           True: keep
-          Flase: not to keep to filter out
+          False: not to keep to filter out
     """
+
     Filter_State = False
 
     #\ No input then return True, since nothing is going to filter
@@ -401,19 +400,23 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
 
     #\ user filter
     if user_filter is not None:
-        for user2filter in user_filter:
-            if user2filter == Data.User:
-                Filter_State = True
+        if len(user_filter) > 0:
+            Filter_State = Data.User in user_filter
+            # for user2filter in user_filter:
+            #     if user2filter == Data.User:
+            #         Filter_State = True
 
     #\ species filter
     if species_filter is not None:
-        for species in Data.SpeciesList:
-            for species2filter in species_filter:
-                if species2filter == species:
-                    Filter_State = True
-                    break
-                else:
-                    Filter_State = False
+        if len(species_filter) > 0:
+            Filter_State = len(set(Data.SpeciesList) & set(species_filter)) > 0
+            # for species in Data.SpeciesList:
+            #     for species2filter in species_filter:
+            #         if species2filter == species:
+            #             Filter_State = True
+            #             break
+            #         else:
+            #             Filter_State = False
 
     return Filter_State if KeepOrFilter is True else not Filter_State
 
@@ -425,14 +428,25 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
 #\  same as the it's record date. Therefore, we select the data
 #\  based on the ID renew in the midnight everyday to tell which
 #\  ID correspond to the start of the that day to indicate the time.
-def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->list:
+def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List)->List[DataClass.DetailedTableInfo]:
+    """[summary]
+
+    Args:
+        session ([type]): session
+        Start_ID (int): Start_ID (last)
+        End_ID (int): End_ID (initial)
+        filter_object (list of lists):
+
+    Returns:
+        list:
+    """
     [User_filter, Species_filter, KeepOrFilter] = filter_object
     Max_ID_Num = None
     counter = 0
     condition = True
     result_list = []
     while condition:
-        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, Start_ID, Max_ID_Num)
+        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, End_ID, Max_ID_Num)
 
         #\ Return if overflow
         if overflow:
@@ -441,27 +455,72 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->l
 
         #\ Go to the next ID
         counter += 1
-        Start_ID = Max_ID_Num - counter
+        End_ID = Max_ID_Num - counter
 
         #\ Check the condition
-        if Start_ID >= End_ID:
+        if End_ID >= Start_ID:
             #\ Filter out the unwanted info
-            if DataFilter(User_filter, Species_filter, KeepOrFilter):
+            if DataFilter(ID_find_result, User_filter, Species_filter, KeepOrFilter):
                 result_list.append(ID_find_result)
 
         else :
             condition = False
-    print(f"[INFO] In CrawlDataByIDRange() the result list is {result_list}")
+
+    # print(f"[INFO] In CrawlDataByIDRange() the result list is {result_list}")
     return result_list
 
 
 
 #\ Craw today's data
-def CrawTodayData(session, TodayFirstID:int, filter_object:list):
+def CrawTodayData(session, TodayFirstID:int, filter_object:List):
     #CrawDataByDate(session, datetime.now(), datetime.now())
-    return CrawlDataByIDRange(session, None, TodayFirstID, filter_object)
+    return CrawlDataByIDRange(session, TodayFirstID, None, filter_object)
+
+
+
+#\ Get the species recording number rank from the website
+def GetSpeciesRecordingNumberRank(session)->list:
+    """[summary]
+
+    Args:
+        session ([type]): [description]
+
+    Returns:
+        list: [[name, count],[name2, count2],....]
+        list: [name, name1, name2, ......]
+    """
+
+    #\ Get the data from the website via beautiful soup
+    species_number_rank_response = session.post(index.species_number_rank_url, headers=headers)
+    soup_number_species_check = BeautifulSoup(species_number_rank_response.text, 'html.parser')
+    Data_td_tag = soup_number_species_check.find_all('td')
+    #Data_td_tag = Data_tr_tag.find_all('td')
+
+    #\ Extract the text from the html tags <td>
+    #\ The return list : Species_rank_list will be Species_rank_list[the_rank_number] = ["species_name", "total_recording_number"]
+    #\   <tr>
+    #\      <td align="center">1</td>
+    #\      <td>薄翅蜻蜓</td>
+    #\      <td align="right">11267</td>
+    #\      <td align="right">5.96 %</td>
+    #\  <tr>
+    Species_rank_list = []
+    Species_rank_list_only_name = []
+    #\ i = 2--> workaround to skip the unused column name and title
+    for i in range(2, len(Data_td_tag), 4):
+        td = Data_td_tag[i:i+3]
+        Species_rank_list.append([td[0].text, td[1].text])
+        Species_rank_list_only_name.append(td[0].text)
+
+    #\ The first is the most common one which own most records
+    return Species_rank_list, Species_rank_list_only_name
+
+
 
 
 #\ Test
-# [session, Login_Response, Login_state] = Login_Web("簡庭威", "tim960622")
-# print(CrawTodayData(session))
+#\ Use this to test the function required session
+# [session, Login_Response, Login_state] = Login_Web("USER", "PW")
+# print(GetSpeciesRecordingNumberRank(session)[1][60:])
+# print(GetSpeciesRecordingNumberRank(session)[1])
+# print(GetSpeciesRecordingNumberRank(session))

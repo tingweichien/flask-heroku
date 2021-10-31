@@ -24,6 +24,7 @@ class eLineBotPostEvent(IntEnum):
     NONE        = 0
     OTHERS      = 1
     GOBACKMAIN  = 2
+    SHOWONMAP   = 3
 
 
 

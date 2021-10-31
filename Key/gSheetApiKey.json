@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "dragonflyweblinebot",
+  "private_key_id": "be18b7fcd38e2cbd7c3782902dc825da37f284ed",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC0KNhSDM4+TDcW\n1x5nDHFvPVmz7of6b94e9WG4ty1pohfNlLBRD0UaQ1Kl9j5r0c8Z2J6iC4E7yl7s\nlm9CT33CnCkbJOGZj+fOJgEf7ZTu5KhPdwIOaBR9HU2NO6svye+TpJ/Scmz+r6Qc\nxWM9dcdnH6d4euqInJDsG/h6e7AOHGJLRw9h6+R9ZC6T6AtC2ctckrrSTYB+Itk5\nU4/C65pC1+PNdMrKPzxUrByhdyRzkJfAynMf+0WrmQyZFUcotRfrSqDLaQzxc8bz\nt/X/lZAXv7tBsTNAKmjd1SbSIPzjTnTvtlF5/YMBOWHGNczc+10Ht1BbQyLE5SAG\nPp11VZ3ZAgMBAAECggEAHz36DXiFB46l+wMBFbO1tCm6dZaG5CokJdA9yw+RA4GF\niTQgw13XiO9l1Lv4JTB0LrI/CDDgj2LPxU1tK92nHGmCQ1/I851eAITcqxHDQw5K\nFcW4iJEKBIxhV32ieR4Wus7QnGkVd7Ezz313cUAMfVii7SS7qUclZpyPIYZziG6e\nutD9Wy2d08AoouqYm+JEZyovhpW687OCWUwDEugr/XcFx4wV2kcyfd8jaWGOHqe8\nnrehJsX03Nh9cq5xXBD8Lcg6L9ElH8zwHvxoqankEvbxP9f4ffzcZBPQy2X4XbH7\njhqDt56gC/kAxQaBJoOcT3LZezo319J0mRbgodl8tQKBgQDvk9wENPep+HModkP4\n/+06/1NX/eSv+jEpiFgWRKyaaISee+zbtFA4HiCTzJxpt4W6DBJ31gN/zMapLbsH\nciwFi9ONeV0cUW6cbkys4OxQ37pR1Je9L4gTUEBcttlR4L8NkJCw27Q0lM1vdvZa\noUjA6v0blx7g8ZO0AOC5gFVDGwKBgQDAgk9PphK6TAr8oYVyl1/MAGKT2ZWgtP5p\ndjpsp9J/VOhcNsBfkZ5y2xQCRrKw0ZRxwSWjQEHMnCOV30UqDgQTr0Nbq7ZeHyyQ\nijpBhvDWl5K1S9MbbJMNsuDiAEcFJCj5wvo/aysykZwchXXF9ZTyrPQHtr7vz1jN\nAKu4vLU+GwKBgF2ZIqfyGaAqFLOGIOAy/HfEMMd7xdCKqpJTVja89cINe2J/f/YF\n6CFEg+26TpFuxav982kmD4/qbOLDnwI1tMUl76yh8aKSneg3n3UbGrgt8BjwOagL\n3dnNzJdsSFMYvwuJoz21WB4C1I/rpiuaP1Y/eEtDKykuuEnm3eUbIjRpAoGAXuwi\nJVjzJQ8336fZQE6putJ5yQNhxzNXuzLDzi3WGlkIleedZcJMyb+Clzi7BXrh4lFl\nuKCHkVdwKIdF+F2e3wHtibcankBq3f56iTL7cCSe/2wa9QvNWtTYFDgkzMEuvzDH\n6hty2mV3/4xDLVBRmHN1hJQ0g9TOqY7qHZZXG/8CgYEAwehtB35SgmCj/2euZgr0\nJztqejCMc/tva7LeeXPERibX1bA8pMXK+CrriTD2Cqbs8Zvpya7nQlLc7pHTam4d\n11Az7ofcoNiGCMsCMB1ag9miDUv593+9JnfLVjHWZGAKi3uRLTMV6hF9cnDE+23d\nlrgfkVYp1cxvAV7J2C9k2T8=\n-----END PRIVATE KEY-----\n",
+  "client_email": "dragonflyweblinebot@dragonflyweblinebot.iam.gserviceaccount.com",
+  "client_id": "115175647734105559133",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/dragonflyweblinebot%40dragonflyweblinebot.iam.gserviceaccount.com"
+}
