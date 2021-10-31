@@ -754,7 +754,7 @@ def handle_postback_event(event):
         print("[INFO] Show the address on the map")
 
     else :
-        print("[INFO] No POST event been dpecified")
+        print("[INFO] No POST event been specified")
 
 
 #\ Check the post event
@@ -765,7 +765,7 @@ def CheckPostEvent(event_text:str):
     elif event_text == "gobackmain":
         return eLineBotPostEvent.GOBACKMAIN.value
 
-    elif event_text.split("_")[0] == "ShoWOnMap":
+    elif event_text.split("_")[0] == "ShowOnMap":
         return eLineBotPostEvent.SHOWONMAP.value
 
     else:
