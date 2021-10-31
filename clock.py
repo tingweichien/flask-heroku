@@ -125,7 +125,7 @@ def RunClockFunctionbyHeroku():
         print("[INFO][Clock]Send the data to the user for hourly summary")
 
     #\ for testing (remove when pushing to heroku master)
-    Send_Hourly_Summary(session, conn, DB_Variable_Data)
+    # Send_Hourly_Summary(session, conn, DB_Variable_Data)
 
 
 
