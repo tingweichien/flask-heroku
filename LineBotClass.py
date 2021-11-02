@@ -156,9 +156,6 @@ def handle_text_message(event):
     elif cache.get("gEvent") == eLineBotEvent.TODAYDATA.value:
         if pleaseLogin(event) is True :
 
-            #\ Get the Species_rank_dict
-            Species_rank_dict, _ = DragonflyData.GetSpeciesRecordingNumberRank(cache.get("Dragonfly_session"))
-
             #\ Get today's data
             index.Hourly_Summary_default_data_filter[1] = index.Species_rare_rank_first_60.copy()
             GetTodayDataSend2LINEBot(event.source.user_id,
