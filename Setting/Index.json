@@ -29,6 +29,10 @@
                 "Main2RichMenuImgPath": "./Notes/image/richmenu_main2.jpg"
             }
         },
+        "RequestMsgBubble":{
+            "StarURL": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+            "GrayStarURL": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gray_star_28.png"
+        },
         "CarsoulBubbleLimit": 12
     },
     "DragonflyData": {
@@ -94,7 +98,9 @@
                 "秋紅蜻蜓", "黃尾弓蜓", "八仙蜻蜓", "刃鋏晏蜓", "朱紅細蟌", "臺灣弓蜓", "耀沂弓蜓", "紹德春蜓指名亞種", "海霸蜻蜓粗斑亞種", "黑翅蜻蜓", "短鋏晏蜓",
                 "丹頂細蟌", "褐面弓蜓", "烏齒樸蟌", "赭黃蜻蜓", "仲夏蜻蜓", "淺褐蜻蜓", "簾格鼓蟌", "月斑細蟌", "錢博細蟌", "綠翅珈蟌", "灰脈蜻蜓", "褐頂蜻蜓",
                 "南山春蜓", "短痣蜻蜓", "赤衣蜻蜓", "闊翼勾蜓", "美姿琵蟌", "孔凱蜻蜓", "鑲紋絲蟌"
-            ]
+            ],
+            "StartOfSR_Species": "浡鋏晏蜓",
+            "StartOfR_Species": "窄胸春蜓"
         }
     },
     "Alarm": {

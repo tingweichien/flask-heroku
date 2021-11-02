@@ -156,6 +156,9 @@ def handle_text_message(event):
     elif cache.get("gEvent") == eLineBotEvent.TODAYDATA.value:
         if pleaseLogin(event) is True :
 
+            #\ Get the Species_rank_dict
+            Species_rank_dict, _ = DragonflyData.GetSpeciesRecordingNumberRank(cache.get("Dragonfly_session"))
+
             #\ Get today's data
             index.Hourly_Summary_default_data_filter[1] = index.Species_rare_rank_first_60.copy()
             GetTodayDataSend2LINEBot(event.source.user_id,
@@ -572,7 +575,8 @@ def OEMSetDefaultRichmenu(linebot_api, event):
 
 
 #\ Callback for today's Data
-def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:bool=True, filter:List=index.DefaultFilterObject, conn=None, DragonflyData_session=None):
+def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:bool=True,
+                             filter:List=index.DefaultFilterObject, conn=None, DragonflyData_session=None):
     """Callback for today's Data or data in certain time period(control by AllDayData) and apply the filter if needed
     Args:
         user_id (str, optional) : [description]. Defaults to None.
@@ -596,6 +600,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
     if DragonflyData_session is None:
         DragonflyData_session, conn = CreateWebSession(CloseDBConn=False)
 
+
     #\ --- Get all the data today ---
     #\ ------------------------------------------------------------------------
     if AllDayData is True:
@@ -608,6 +613,10 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
     #\ ------------------------------------------------------------------------
     else :
         #\ Get the data for certain time interval
+        if conn is None:
+            print("[Warning] The connection(conn) is None")
+            return
+
         current_crawling_id_tmp = Database.ReadFromDB(conn,
                                                       Database.Read_col_userinfo_query("current_crawling_id", user_id),
                                                       True,
@@ -665,7 +674,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
             print("[INFO] In GetTodayDataSend2LINEBot() No data need to update")
             return None
 
-    #\ ------------------------------------------------------------------------
+    #\ End of the AllDayData is False ------------------------------------------------------------------------
 
 
     #\ Handling the data for the bubble in the carsoul message
@@ -758,11 +767,11 @@ def handle_postback_event(event):
 
 
 #\ Check the post event
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-#\       USE THE LOWERCASE
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\       USE THE LOWERCASE for Sting compare
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-def CheckPostEvent(event_text:str):
+def  v(event_text:str):
     if event_text == "others":
         return eLineBotPostEvent.OTHERS.value
 

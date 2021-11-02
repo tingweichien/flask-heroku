@@ -377,7 +377,7 @@ def CheckDataSameOrNot(result_list:list, ID_find_result:list):
 
 
 #\ filter to filter out the data with specific condition
-def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_filter:list=None, KeepOrFilter:bool=None)->bool:
+def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_filter:list=None, KeepOrFilter:bool=None)->list:
     """
      @params:
           user to filter
@@ -409,7 +409,8 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
     #\ species filter
     if species_filter is not None:
         if len(species_filter) > 0:
-            Filter_State = len(set(Data.SpeciesList) & set(species_filter)) > 0
+            Species_intersection_set = set(Data.SpeciesList) & set(species_filter)
+            Filter_State = len(Species_intersection_set) > 0
             # for species in Data.SpeciesList:
             #     for species2filter in species_filter:
             #         if species2filter == species:
@@ -418,7 +419,20 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
             #         else:
             #             Filter_State = False
 
-    return Filter_State if KeepOrFilter is True else not Filter_State
+    return [Filter_State if KeepOrFilter is True else not Filter_State, Species_intersection_set]
+
+
+#\ Check the species rank rates
+#\ return the maximum rank number in the list
+def CheckSpeciesRarityRates(Species_intersection_set:set, species_filter:list)->str:
+    rarity = max([species_filter.index(species) for species in Species_intersection_set])
+
+    if rarity >= species_filter.index(index.StartOfSR_Species) :
+        return "SR" #\ Super Rare
+    elif rarity >= species_filter.index(index.StartOfR_Species) :
+        return "R" #\ Rare
+    else:
+        return "N" #\ Normal
 
 
 
@@ -428,7 +442,7 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
 #\  same as the it's record date. Therefore, we select the data
 #\  based on the ID renew in the midnight everyday to tell which
 #\  ID correspond to the start of the that day to indicate the time.
-def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List)->List[DataClass.DetailedTableInfo]:
+def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->List[DataClass.DetailedTableInfo]:
     """[summary]
 
     Args:
@@ -460,7 +474,10 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List)->L
         #\ Check the condition
         if End_ID >= Start_ID:
             #\ Filter out the unwanted info
-            if DataFilter(ID_find_result, User_filter, Species_filter, KeepOrFilter):
+            [Status, Species_intersection_set] = DataFilter(ID_find_result, User_filter, Species_filter, KeepOrFilter)
+            if Status:
+                #\  Set the rarity for the species
+                ID_find_result.rarity = CheckSpeciesRarityRates(Species_intersection_set, Species_filter)
                 result_list.append(ID_find_result)
 
         else :
@@ -486,7 +503,7 @@ def GetSpeciesRecordingNumberRank(session)->list:
         session ([type]): [description]
 
     Returns:
-        list: [[name, count],[name2, count2],....]
+        dict: {name:count ,name2:count2,....}
         list: [name, name1, name2, ......]
     """
 
@@ -504,16 +521,16 @@ def GetSpeciesRecordingNumberRank(session)->list:
     #\      <td align="right">11267</td>
     #\      <td align="right">5.96 %</td>
     #\  <tr>
-    Species_rank_list = []
+    Species_rank_dict = dict()
     Species_rank_list_only_name = []
     #\ i = 2--> workaround to skip the unused column name and title
     for i in range(2, len(Data_td_tag), 4):
         td = Data_td_tag[i:i+3]
-        Species_rank_list.append([td[0].text, td[1].text])
+        Species_rank_dict[td[0].text] = td[1].text
         Species_rank_list_only_name.append(td[0].text)
 
     #\ The first is the most common one which own most records
-    return Species_rank_list, Species_rank_list_only_name
+    return [Species_rank_dict, Species_rank_list_only_name]
 
 
 

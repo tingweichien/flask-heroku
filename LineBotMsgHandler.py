@@ -275,12 +275,33 @@ RequestDataMsgText = {
     "layout": "vertical",
     "contents": [
       {
-        "type": "text",
-        "text": "ID",
-        "weight": "bold",
-        "size": "xxl",
-        "margin": "md",
-        "offsetBottom": "sm"
+        "type": "box",
+        "layout": "baseline",
+        "contents": [
+          {
+            "type": "text",
+            "text": "ID",
+            "weight": "bold",
+            "size": "xxl",
+            "margin": "xs",
+            "offsetBottom": "sm"
+          },
+          {
+            "type": "icon",
+            "size": "xxl",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png"
+          },
+          {
+            "type": "icon",
+            "size": "xxl",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gray_star_28.png"
+          },
+          {
+            "type": "icon",
+            "size": "xxl",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gray_star_28.png"
+          }
+        ]
       },
       {
         "type": "text",
@@ -291,12 +312,12 @@ RequestDataMsgText = {
       },
       {
         "type": "separator",
-        "margin": "xxl"
+        "margin": "sm"
       },
       {
         "type": "box",
         "layout": "vertical",
-        "margin": "xxl",
+        "margin": "md",
         "spacing": "sm",
         "contents": [
           {
@@ -384,12 +405,12 @@ RequestDataMsgText = {
           },
           {
             "type": "separator",
-            "margin": "xxl"
+            "margin": "md"
           },
           {
             "type": "box",
             "layout": "vertical",
-            "margin": "xxl",
+            "margin": "md",
             "contents": [
               {
                 "type": "text",
@@ -414,7 +435,7 @@ RequestDataMsgText = {
       },
       {
         "type": "separator",
-        "margin": "xxl"
+        "margin": "md"
       },
       {
         "type": "box",
@@ -440,7 +461,7 @@ RequestDataMsgText = {
       },
       {
         "type": "separator",
-        "margin": "sm"
+        "margin": "md"
       },
       {
         "type": "box",
@@ -456,7 +477,7 @@ RequestDataMsgText = {
             "style": "primary",
             "gravity": "center",
             "height": "sm",
-            "margin": "md",
+            "margin": "lg",
             "offsetTop": "none",
             "offsetBottom": "none",
             "adjustMode": "shrink-to-fit"
@@ -507,6 +528,7 @@ def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTa
   except :
     Lat, Lng = None, None
     LatLngData = "None"
+
   local_RequestDataMsgText["body"]["contents"][3]["contents"][3]["contents"][1]["text"] = LatLngData
 
   #\ Species name
@@ -516,19 +538,23 @@ def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTa
   local_RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DrgonflyData.Description
 
   #\ Set the Button function to send the data for Post back event
-  Return_List = Set_PostMsg_Map_Request(local_RequestDataMsgText, DrgonflyData.IdNumber, f"{Address} {DrgonflyData.Place}", Lat, Lng)
+  local_RequestDataMsgText_tmp = Set_PostMsg_Map_Request(local_RequestDataMsgText, DrgonflyData.IdNumber, f"{Address} {DrgonflyData.Place}", Lat, Lng)
+
+  #\ Update the star icon for the rarity
+  Return_List = SetRarity2Species(local_RequestDataMsgText_tmp, DrgonflyData)
 
   return Return_List
 
 
 
-
-#\ Post back data message to display the info for the ID, position, address infomation
-ShowOnMapMsgBtn = lambda ID, Address, lat, lng : f"ShowOnMap_{ID}_{Address}_{lat}_{lng}"
-
 #\ Set the Post back message for the RequestDataMsgText when button event triggering.
 def Set_PostMsg_Map_Request(_RequestDataMsgText:dict, ID:str, Address:str, Lat:str, Lng:str):
+
+  #\ Copy the list of list (2D arary)
   local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
+
+  #\ Post back data message to display the info for the ID, position, address infomation
+  ShowOnMapMsgBtn = lambda ID, Address, lat, lng : f"ShowOnMap_{ID}_{Address}_{lat}_{lng}"
 
   #\ set the lat and long to the post back data
   #\ "ShowOnMap_Lat_Lng"
@@ -538,6 +564,27 @@ def Set_PostMsg_Map_Request(_RequestDataMsgText:dict, ID:str, Address:str, Lat:s
                                                                                                      Lng)
 
   return local_RequestDataMsgText
+
+
+
+#\ Set the Star for the rarity of the species
+def SetRarity2Species(_RequestDataMsgText:dict, DrgonflyData:DetailedTableInfo)->dict:
+  #\ Copy the list of list (2D arary)
+  local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
+
+  if DrgonflyData is not None:
+    #\ set the rank to the three ranks and there will be three stars for displaying.
+    if DrgonflyData.rarity is "SR" :
+      local_RequestDataMsgText["body"]["contents"][1]["contents"][2]["url"] = index.StarURL
+      local_RequestDataMsgText["body"]["contents"][1]["contents"][3]["url"] = index.StarURL
+
+    elif DrgonflyData.rarity is "R" :
+      local_RequestDataMsgText["body"]["contents"][1]["contents"][2]["url"] = index.StarURL
+
+    else:
+      pass
+
+    return local_RequestDataMsgText
 
 
 #\ -----------------------------------------------------------------------------------------------------------------------------------

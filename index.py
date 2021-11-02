@@ -71,6 +71,17 @@ LoginRichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["LoginRichMen
 MainRichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["MainRichMenuImgPath"]
 Main2RichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["Main2RichMenuImgPath"]
 
+#\ Request Bubble Carousel Msg
+StarURL = INDEX["LineBot"]["RequestMsgBubble"]["StarURL"]
+GrayStarURL = INDEX["LineBot"]["RequestMsgBubble"]["GrayStarURL"]
+
+#\ Start of the rarity species
+#\ Super Rare
+StartOfSR_Species = INDEX["DataBase"]["filter"]["StartOfSR_Species"]
+#\ Rare
+StartOfR_Species = INDEX["DataBase"]["filter"]["StartOfR_Species"]
+
+
 #\ Carsoul Bubble Limit number due to line bot api limitation
 CarsoulBubbleLimit = INDEX["LineBot"]["CarsoulBubbleLimit"]
 
