@@ -157,7 +157,7 @@ def handle_text_message(event):
         if pleaseLogin(event) is True :
 
             #\ Get today's data
-            index.Hourly_Summary_default_data_filter[1] = index.Species_rare_rank_first_60.copy()
+            index.Hourly_Summary_default_data_filter[1] = index.Species_rare_rank_from_last_60.copy()
             GetTodayDataSend2LINEBot(event.source.user_id,
                                      event.reply_token,
                                      True,
@@ -321,13 +321,13 @@ def IDRequestCallback(event):
                                         )
 
             #\ loaction message
-            gLine_bot_api.push_message(event.source.user_id,
-                                        LocationSendMessage(title=f'# {ID_find_result.IdNumber}',
-                                                            address=f'{ID_find_result.City} {ID_find_result.District} {ID_find_result.Place}',
-                                                            latitude=float(ID_find_result.Latitude),
-                                                            longitude=float(ID_find_result.Longitude)
-                                                            )
-                                        )
+            # gLine_bot_api.push_message(event.source.user_id,
+            #                             LocationSendMessage(title=f'# {ID_find_result.IdNumber}',
+            #                                                 address=f'{ID_find_result.City} {ID_find_result.District} {ID_find_result.Place}',
+            #                                                 latitude=float(ID_find_result.Latitude),
+            #                                                 longitude=float(ID_find_result.Longitude)
+            #                                                 )
+            #                             )
 
 
         #\ reset the counter
@@ -707,6 +707,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
 
 
 
+
 #\ Init the cache data
 def InitCache(_cache):
     _cache.set("gEventText", None)
@@ -757,7 +758,10 @@ def handle_postback_event(event):
                                                             longitude=float(Lng)
                                                             )
                                         )
-        print("[INFO] Show the address on the map")
+            print("[INFO] Show the address on the map")
+
+        else:
+            print("[INFO] The Latitude and Longitude is None")
 
     else :
         print("[INFO] No POST event been specified")
@@ -768,7 +772,7 @@ def handle_postback_event(event):
 #\       USE THE LOWERCASE for Sting compare
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-def  v(event_text:str):
+def CheckPostEvent(event_text:str):
     if event_text == "others":
         return eLineBotPostEvent.OTHERS.value
 

@@ -425,7 +425,9 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
 #\ Check the species rank rates
 #\ return the maximum rank number in the list
 def CheckSpeciesRarityRates(Species_intersection_set:set, species_filter:list)->str:
+
     rarity = max([species_filter.index(species) for species in Species_intersection_set])
+    print(f"[INFO] in CheckSpeciesRarityRates() the rarity is : {rarity}")
 
     if rarity >= species_filter.index(index.StartOfSR_Species) :
         return "SR" #\ Super Rare

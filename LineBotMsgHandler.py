@@ -505,7 +505,7 @@ def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTa
   local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
 
   #\ ID number
-  local_RequestDataMsgText["body"]["contents"][0]["text"] = DrgonflyData.IdNumber
+  local_RequestDataMsgText["body"]["contents"][0]["contents"][0]["text"] = DrgonflyData.IdNumber
 
   #\ Dates and Times
   local_RequestDataMsgText["body"]["contents"][1]["text"] = f"{DrgonflyData.Dates}, {DrgonflyData.Times}"
@@ -572,14 +572,15 @@ def SetRarity2Species(_RequestDataMsgText:dict, DrgonflyData:DetailedTableInfo)-
   #\ Copy the list of list (2D arary)
   local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
 
+  print(f"[INFO] In SetRarity2Species() the rarity is :{DrgonflyData.rarity}")
   if DrgonflyData is not None:
     #\ set the rank to the three ranks and there will be three stars for displaying.
     if DrgonflyData.rarity is "SR" :
-      local_RequestDataMsgText["body"]["contents"][1]["contents"][2]["url"] = index.StarURL
-      local_RequestDataMsgText["body"]["contents"][1]["contents"][3]["url"] = index.StarURL
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][3]["url"] = index.StarURL
 
     elif DrgonflyData.rarity is "R" :
-      local_RequestDataMsgText["body"]["contents"][1]["contents"][2]["url"] = index.StarURL
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
 
     else:
       pass
