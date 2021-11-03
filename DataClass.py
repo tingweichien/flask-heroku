@@ -25,7 +25,7 @@ class simplifyTableInfo:
 class DetailedTableInfo(simplifyTableInfo):
     def __init__(self, IdNumber:str="", Dates:str="", Times:str="", City:str="", District:str="", Place:str="",
                 Altitude:str="", User:str="", Latitude:str="", Longitude:str="", SpeciesFamily:str="",
-                Species:str="", SpeciesList:list=[""], Description:str="", weather:str="", rarity:str=""):
+                Species:str="", SpeciesList:list=[""], Description:str="", weather:str="", rarity:list=[""]):
         super(DetailedTableInfo, self).__init__(IdNumber, Dates, Times, City, District, Place, Altitude, User)
         self.Latitude       = Latitude
         self.Longitude      = Longitude
