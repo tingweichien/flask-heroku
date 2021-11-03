@@ -157,7 +157,7 @@ def handle_text_message(event):
         if pleaseLogin(event) is True :
 
             #\ Get today's data
-            index.Hourly_Summary_default_data_filter[1] = index.Species_rare_rank_from_last_60.copy()
+            # index.Hourly_Summary_default_data_filter[1] = index.Species_rare_rank_from_last_60.copy()
             GetTodayDataSend2LINEBot(event.source.user_id,
                                      event.reply_token,
                                      True,
