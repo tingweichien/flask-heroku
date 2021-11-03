@@ -321,14 +321,14 @@ def GetMaxID(session)->int:
 
 
 #\ Craw data as request date range
-def CrawDataByDate(session, start_time:datetime, end_time:datetime, filter_object:list):
+def CrawDataByDate(session, start_time:datetime, end_time:datetime, species_filter:list):
     condition = True
     initID = None
     counter = 0
     result_list = [] # this will be the 2D list
     Max_ID_Num = None
     while condition:
-        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, initID, Max_ID_Num, filter_object)
+        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, initID, Max_ID_Num, species_filter)
         print(f"ID: {initID}")
 
         #\ return if overflow

@@ -140,13 +140,14 @@ VarLatestDataIDDate = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["Table
 CreateDataBase = INDEX["DataBase"]["CreateDataBase"]
 
 
+#\ Species filter
+Species_rare_rank_from_last_60 = INDEX["DataBase"]["filter"]["Species_rare_rank_from_last_60"]
+HSDDFilter_start_index = INDEX["DataBase"]["filter"]["HSDDFilter_start_index"] #\ this set the start number to the end of the species rank list for which you want to use to filter out
 
 #\ Filter object [User_filter, Species_filter, KeepOrFilter]
 DefaultFilterObject = [None, None, None]
-Species_rare_rank_from_last_60 = INDEX["DataBase"]["filter"]["Species_rare_rank_from_last_60"]
 Hourly_Summary_default_data_filter = INDEX["DataBase"]["filter"]["Hourly_Summary_default_data_filter"]
 Hourly_Summary_default_data_filter[1] = Species_rare_rank_from_last_60.copy()
-HSDDFilter_start_index = INDEX["DataBase"]["filter"]["HSDDFilter_start_index"] #\ this set the start number to the end of the species rank list for which you want to use to filter out
 
 #\ Start of the rarity species
 #\ Super Rare
