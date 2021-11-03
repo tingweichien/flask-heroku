@@ -464,7 +464,7 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->L
     condition = True
     result_list = []
     while condition:
-        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, End_ID, Max_ID_Num, filter_object)
+        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, End_ID, Max_ID_Num, Species_filter)
 
         #\ Return if overflow
         if overflow:
