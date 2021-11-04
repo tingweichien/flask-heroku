@@ -25,7 +25,7 @@ class simplifyTableInfo:
 class DetailedTableInfo(simplifyTableInfo):
     def __init__(self, IdNumber:str="", Dates:str="", Times:str="", City:str="", District:str="", Place:str="",
                 Altitude:str="", User:str="", Latitude:str="", Longitude:str="", SpeciesFamily:str="",
-                Species:str="", SpeciesList:list=[""], Description:str="", weather:str=""):
+                Species:str="", SpeciesList:list=[""], Description:str="", weather:str="", rarity:list=[""]):
         super(DetailedTableInfo, self).__init__(IdNumber, Dates, Times, City, District, Place, Altitude, User)
         self.Latitude       = Latitude
         self.Longitude      = Longitude
@@ -34,6 +34,7 @@ class DetailedTableInfo(simplifyTableInfo):
         self.SpeciesList    = SpeciesList
         self.Description    = Description
         self.weather        = weather
+        self.rarity         = rarity
 
         #\ handle the Description to make it print better
         self.Description = list(self.Description.split("\n"))
@@ -64,4 +65,5 @@ class DetailedTableInfo(simplifyTableInfo):
                 '\n-->[SpeciesFamily]:  ' + self.SpeciesFamily + \
                 '\n-->[SpeciesList]:    ' + ", ".join(self.SpeciesList) + \
                 '\n-->[Description]:    ' + self.Description + \
-                '\n-->[weather]:        ' + self.weather
+                '\n-->[weather]:        ' + self.weather + \
+                '\n-->[rarity]:         ' + self.rarity

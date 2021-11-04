@@ -157,7 +157,7 @@ def handle_text_message(event):
         if pleaseLogin(event) is True :
 
             #\ Get today's data
-            index.Hourly_Summary_default_data_filter[1] = index.Species_rare_rank_first_60.copy()
+            # index.Hourly_Summary_default_data_filter[1] = index.Species_rare_rank_from_last_60.copy()
             GetTodayDataSend2LINEBot(event.source.user_id,
                                      event.reply_token,
                                      True,
@@ -276,7 +276,11 @@ def IDRequestCallback(event):
             cache.set("gEventCnt", 0)
             return False
 
-        [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, IDNumber)
+        #\ This will get the newest filter, but I think it will not changed dramatically.
+        # _, Species_filter_list_name = DragonflyData.GetSpeciesRecordingNumberRank(cache.get("Dragonfly_session"))
+        # index.Hourly_Summary_default_data_filter[1] = Species_filter_list_name[index.HSDDFilter_start_index:]
+
+        [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, IDNumber, None, index.Species_rare_rank_from_last_60)
 
         if overflow:
             print(f"[INFO] The ID is overflow, please use the ID smaller {Max_ID_Num}")
@@ -321,13 +325,13 @@ def IDRequestCallback(event):
                                         )
 
             #\ loaction message
-            gLine_bot_api.push_message(event.source.user_id,
-                                        LocationSendMessage(title=f'# {ID_find_result.IdNumber}',
-                                                            address=f'{ID_find_result.City} {ID_find_result.District} {ID_find_result.Place}',
-                                                            latitude=float(ID_find_result.Latitude),
-                                                            longitude=float(ID_find_result.Longitude)
-                                                            )
-                                        )
+            # gLine_bot_api.push_message(event.source.user_id,
+            #                             LocationSendMessage(title=f'# {ID_find_result.IdNumber}',
+            #                                                 address=f'{ID_find_result.City} {ID_find_result.District} {ID_find_result.Place}',
+            #                                                 latitude=float(ID_find_result.Latitude),
+            #                                                 longitude=float(ID_find_result.Longitude)
+            #                                                 )
+            #                             )
 
 
         #\ reset the counter
@@ -572,7 +576,8 @@ def OEMSetDefaultRichmenu(linebot_api, event):
 
 
 #\ Callback for today's Data
-def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:bool=True, filter:List=index.DefaultFilterObject, conn=None, DragonflyData_session=None):
+def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:bool=True,
+                             filter:List=index.DefaultFilterObject, conn=None, DragonflyData_session=None):
     """Callback for today's Data or data in certain time period(control by AllDayData) and apply the filter if needed
     Args:
         user_id (str, optional) : [description]. Defaults to None.
@@ -596,6 +601,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
     if DragonflyData_session is None:
         DragonflyData_session, conn = CreateWebSession(CloseDBConn=False)
 
+
     #\ --- Get all the data today ---
     #\ ------------------------------------------------------------------------
     if AllDayData is True:
@@ -608,6 +614,10 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
     #\ ------------------------------------------------------------------------
     else :
         #\ Get the data for certain time interval
+        if conn is None:
+            print("[Warning] The connection(conn) is None")
+            return
+
         current_crawling_id_tmp = Database.ReadFromDB(conn,
                                                       Database.Read_col_userinfo_query("current_crawling_id", user_id),
                                                       True,
@@ -665,7 +675,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
             print("[INFO] In GetTodayDataSend2LINEBot() No data need to update")
             return None
 
-    #\ ------------------------------------------------------------------------
+    #\ End of the AllDayData is False ------------------------------------------------------------------------
 
 
     #\ Handling the data for the bubble in the carsoul message
@@ -698,6 +708,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
             gLine_bot_api.push_message(user_id,
                                     Msgtext
                                     )
+
 
 
 
@@ -741,13 +752,30 @@ def handle_postback_event(event):
         print("[INFO] Go back to the Main Richmenu")
 
     elif PostbackEvent == eLineBotPostEvent.SHOWONMAP.value:
-        print("[INFO] Show the address on the map")
+        [ID, Addr, Lat, Lng] = PostbackEvent.split("_")[1:]
+        print("[INFO] In the POST back event, the ID: {ID}, Addr: {Addr}, Lat: {Lat}, Lng: {Lng}")
+        if Lat and Lng is not None:
+            gLine_bot_api.push_message(event.source.user_id,
+                                        LocationSendMessage(title=f'# {ID}',
+                                                            address=Addr,
+                                                            latitude=float(Lat),
+                                                            longitude=float(Lng)
+                                                            )
+                                        )
+            print("[INFO] Show the address on the map")
+
+        else:
+            print("[INFO] The Latitude and Longitude is None")
 
     else :
-        print("[INFO] No POST event been dpecified")
+        print("[INFO] No POST event been specified")
 
 
 #\ Check the post event
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\       USE THE LOWERCASE for Sting compare
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 def CheckPostEvent(event_text:str):
     if event_text == "others":
         return eLineBotPostEvent.OTHERS.value
@@ -755,7 +783,7 @@ def CheckPostEvent(event_text:str):
     elif event_text == "gobackmain":
         return eLineBotPostEvent.GOBACKMAIN.value
 
-    elif event_text == "Show_on_map":
+    elif event_text.split("_")[0] == "showonmap":
         return eLineBotPostEvent.SHOWONMAP.value
 
     else:

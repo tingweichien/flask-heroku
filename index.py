@@ -71,6 +71,10 @@ LoginRichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["LoginRichMen
 MainRichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["MainRichMenuImgPath"]
 Main2RichMenuImgPath = INDEX["LineBot"]["RichMenu"]["MenuImgPath"]["Main2RichMenuImgPath"]
 
+#\ Request Bubble Carousel Msg
+StarURL = INDEX["LineBot"]["RequestMsgBubble"]["StarURL"]
+GrayStarURL = INDEX["LineBot"]["RequestMsgBubble"]["GrayStarURL"]
+
 #\ Carsoul Bubble Limit number due to line bot api limitation
 CarsoulBubbleLimit = INDEX["LineBot"]["CarsoulBubbleLimit"]
 
@@ -136,12 +140,20 @@ VarLatestDataIDDate = INDEX["DataBase"]["DataBaseTable"]["VariableTable"]["Table
 CreateDataBase = INDEX["DataBase"]["CreateDataBase"]
 
 
+#\ Species filter
+Species_rare_rank_from_last_60 = INDEX["DataBase"]["filter"]["Species_rare_rank_from_last_60"]
+HSDDFilter_start_index = INDEX["DataBase"]["filter"]["HSDDFilter_start_index"] #\ this set the start number to the end of the species rank list for which you want to use to filter out
 
 #\ Filter object [User_filter, Species_filter, KeepOrFilter]
 DefaultFilterObject = [None, None, None]
 Hourly_Summary_default_data_filter = INDEX["DataBase"]["filter"]["Hourly_Summary_default_data_filter"]
-HSDDFilter_start_index = INDEX["DataBase"]["filter"]["HSDDFilter_start_index"] #\ this set the start number to the end of the species rank list for which you want to use to filter out
-Species_rare_rank_first_60 = INDEX["DataBase"]["filter"]["Species_rare_rank_first_60"]
+Hourly_Summary_default_data_filter[1] = Species_rare_rank_from_last_60.copy()
+
+#\ Start of the rarity species
+#\ Super Rare
+StartOfSR_Species = INDEX["DataBase"]["filter"]["StartOfSR_Species"]
+#\ Rare
+StartOfR_Species = INDEX["DataBase"]["filter"]["StartOfR_Species"]
 
 
 #\ Alarm (This is for wake the free dyno Heroku up)
@@ -187,4 +199,4 @@ Time_UpdateDatabase = INDEX["Clock"]["Update_Time"]["Time_UpdateDatabase"]
 
 ########################################################################
 #\ For testing
-# print(Species_rare_rank_first_60)
+# print(Species_rare_rank_from_last_60)

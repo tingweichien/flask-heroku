@@ -103,7 +103,7 @@ def Login_Web(Input_account:str, Input_password:str)->list:
 
 
 ###################################################################
-def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None)->list:
+def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None, Species_filter:list=[])->list:
     """
     params:
         session : from the return object of the requests.Session()
@@ -271,6 +271,8 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None)->list:
                 District = CityDistrict[3:]
                 # print(f"[INFO] City for ID : {Input_ID} -> {City}\n[INFO] District for ID : {Input_ID} -> {District}")
 
+        #\ Set the rarity for the species
+        rarity = CheckSpeciesRarityRates(SpeciesList, Species_filter)
 
         #\ Save the info to data class
         ID_find_result = DataClass.DetailedTableInfo(str(Input_ID),
@@ -286,7 +288,9 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None)->list:
                                                     "",
                                                     "",
                                                     SpeciesList,
-                                                    Description
+                                                    Description,
+                                                    "",
+                                                    rarity
                                                     )
 
     # print(f"[INFO] Return Object: {ID_find_result}")
@@ -317,14 +321,14 @@ def GetMaxID(session)->int:
 
 
 #\ Craw data as request date range
-def CrawDataByDate(session, start_time:datetime, end_time:datetime):
+def CrawDataByDate(session, start_time:datetime, end_time:datetime, species_filter:list):
     condition = True
     initID = None
     counter = 0
     result_list = [] # this will be the 2D list
     Max_ID_Num = None
     while condition:
-        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, initID, Max_ID_Num)
+        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, initID, Max_ID_Num, species_filter)
         print(f"ID: {initID}")
 
         #\ return if overflow
@@ -343,9 +347,6 @@ def CrawDataByDate(session, start_time:datetime, end_time:datetime):
                 #\ Append the result if not repeat
                 result_list.append([ID_find_result])
             """
-
-            #\ Add the filter here if needed
-            # FilterData()
 
             result_list.append([ID_find_result])
         else:
@@ -377,7 +378,7 @@ def CheckDataSameOrNot(result_list:list, ID_find_result:list):
 
 
 #\ filter to filter out the data with specific condition
-def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_filter:list=None, KeepOrFilter:bool=None)->bool:
+def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_filter:list=None, KeepOrFilter:bool=None)->list:
     """
      @params:
           user to filter
@@ -409,7 +410,8 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
     #\ species filter
     if species_filter is not None:
         if len(species_filter) > 0:
-            Filter_State = len(set(Data.SpeciesList) & set(species_filter)) > 0
+            Species_intersection_set = set(Data.SpeciesList) & set(species_filter)
+            Filter_State = len(Species_intersection_set) > 0
             # for species in Data.SpeciesList:
             #     for species2filter in species_filter:
             #         if species2filter == species:
@@ -418,7 +420,23 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
             #         else:
             #             Filter_State = False
 
-    return Filter_State if KeepOrFilter is True else not Filter_State
+    return [Filter_State if KeepOrFilter is True else not Filter_State, Species_intersection_set]
+
+
+#\ Check the species rank rates
+#\ return the maximum rank number in the list
+def CheckSpeciesRarityRates(Species_intersection:list, species_filter:list)->str:
+
+    if Species_intersection is not None and species_filter is not None:
+        rarity = max([species_filter.index(species) for species in Species_intersection])
+        print(f"[INFO] in CheckSpeciesRarityRates() the rarity is : {rarity}")
+
+        if rarity >= species_filter.index(index.StartOfSR_Species) :
+            return "SR" #\ Super Rare
+        elif rarity >= species_filter.index(index.StartOfR_Species) :
+            return "R" #\ Rare
+        else:
+            return "N" #\ Normal
 
 
 
@@ -428,7 +446,7 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
 #\  same as the it's record date. Therefore, we select the data
 #\  based on the ID renew in the midnight everyday to tell which
 #\  ID correspond to the start of the that day to indicate the time.
-def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List)->List[DataClass.DetailedTableInfo]:
+def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->List[DataClass.DetailedTableInfo]:
     """[summary]
 
     Args:
@@ -446,7 +464,7 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List)->L
     condition = True
     result_list = []
     while condition:
-        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, End_ID, Max_ID_Num)
+        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, End_ID, Max_ID_Num, Species_filter)
 
         #\ Return if overflow
         if overflow:
@@ -460,7 +478,8 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:List)->L
         #\ Check the condition
         if End_ID >= Start_ID:
             #\ Filter out the unwanted info
-            if DataFilter(ID_find_result, User_filter, Species_filter, KeepOrFilter):
+            [Status, Species_intersection_set] = DataFilter(ID_find_result, User_filter, Species_filter, KeepOrFilter)
+            if Status:
                 result_list.append(ID_find_result)
 
         else :
@@ -486,7 +505,7 @@ def GetSpeciesRecordingNumberRank(session)->list:
         session ([type]): [description]
 
     Returns:
-        list: [[name, count],[name2, count2],....]
+        dict: {name:count ,name2:count2,....}
         list: [name, name1, name2, ......]
     """
 
@@ -504,16 +523,16 @@ def GetSpeciesRecordingNumberRank(session)->list:
     #\      <td align="right">11267</td>
     #\      <td align="right">5.96 %</td>
     #\  <tr>
-    Species_rank_list = []
+    Species_rank_dict = dict()
     Species_rank_list_only_name = []
     #\ i = 2--> workaround to skip the unused column name and title
     for i in range(2, len(Data_td_tag), 4):
         td = Data_td_tag[i:i+3]
-        Species_rank_list.append([td[0].text, td[1].text])
+        Species_rank_dict[td[0].text] = td[1].text
         Species_rank_list_only_name.append(td[0].text)
 
     #\ The first is the most common one which own most records
-    return Species_rank_list, Species_rank_list_only_name
+    return [Species_rank_dict, Species_rank_list_only_name]
 
 
 

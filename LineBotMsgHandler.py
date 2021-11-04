@@ -275,12 +275,33 @@ RequestDataMsgText = {
     "layout": "vertical",
     "contents": [
       {
-        "type": "text",
-        "text": "ID",
-        "weight": "bold",
-        "size": "xxl",
-        "margin": "md",
-        "offsetBottom": "sm"
+        "type": "box",
+        "layout": "baseline",
+        "contents": [
+          {
+            "type": "text",
+            "text": "ID",
+            "weight": "bold",
+            "size": "xxl",
+            "margin": "xs",
+            "offsetBottom": "sm"
+          },
+          {
+            "type": "icon",
+            "size": "xxl",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png"
+          },
+          {
+            "type": "icon",
+            "size": "xxl",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gray_star_28.png"
+          },
+          {
+            "type": "icon",
+            "size": "xxl",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gray_star_28.png"
+          }
+        ]
       },
       {
         "type": "text",
@@ -291,12 +312,12 @@ RequestDataMsgText = {
       },
       {
         "type": "separator",
-        "margin": "xxl"
+        "margin": "sm"
       },
       {
         "type": "box",
         "layout": "vertical",
-        "margin": "xxl",
+        "margin": "md",
         "spacing": "sm",
         "contents": [
           {
@@ -384,12 +405,12 @@ RequestDataMsgText = {
           },
           {
             "type": "separator",
-            "margin": "xxl"
+            "margin": "md"
           },
           {
             "type": "box",
             "layout": "vertical",
-            "margin": "xxl",
+            "margin": "md",
             "contents": [
               {
                 "type": "text",
@@ -414,7 +435,7 @@ RequestDataMsgText = {
       },
       {
         "type": "separator",
-        "margin": "xxl"
+        "margin": "md"
       },
       {
         "type": "box",
@@ -440,7 +461,7 @@ RequestDataMsgText = {
       },
       {
         "type": "separator",
-        "margin": "sm"
+        "margin": "md"
       },
       {
         "type": "box",
@@ -451,12 +472,12 @@ RequestDataMsgText = {
             "action": {
               "type": "postback",
               "label": "Show on map",
-              "data": "Show_on_map"
+              "data": "ShowOnMap"
             },
             "style": "primary",
             "gravity": "center",
             "height": "sm",
-            "margin": "md",
+            "margin": "lg",
             "offsetTop": "none",
             "offsetBottom": "none",
             "adjustMode": "shrink-to-fit"
@@ -484,7 +505,7 @@ def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTa
   local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
 
   #\ ID number
-  local_RequestDataMsgText["body"]["contents"][0]["text"] = DrgonflyData.IdNumber
+  local_RequestDataMsgText["body"]["contents"][0]["contents"][0]["text"] = DrgonflyData.IdNumber
 
   #\ Dates and Times
   local_RequestDataMsgText["body"]["contents"][1]["text"] = f"{DrgonflyData.Dates}, {DrgonflyData.Times}"
@@ -493,16 +514,21 @@ def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTa
   local_RequestDataMsgText["body"]["contents"][3]["contents"][0]["contents"][1]["text"] = DrgonflyData.User
 
   #\ City and District
-  local_RequestDataMsgText["body"]["contents"][3]["contents"][1]["contents"][1]["text"] = f"{DrgonflyData.City} {DrgonflyData.District}"
+  Address = f"{DrgonflyData.City} {DrgonflyData.District}"
+  local_RequestDataMsgText["body"]["contents"][3]["contents"][1]["contents"][1]["text"] = Address
 
   #\ Place
   local_RequestDataMsgText["body"]["contents"][3]["contents"][2]["contents"][1]["text"] = DrgonflyData.Place
 
   #\ Longitude and Latitude
   try :
-    LatLngData = f"({round(float(DrgonflyData.Latitude), index.PositionPrecision)}, {round(float(DrgonflyData.Longitude), index.PositionPrecision)})"
+    Lat = round(float(DrgonflyData.Latitude), index.PositionPrecision)
+    Lng = round(float(DrgonflyData.Longitude), index.PositionPrecision)
+    LatLngData = f"({Lat}, {Lng})"
   except :
+    Lat, Lng = None, None
     LatLngData = "None"
+
   local_RequestDataMsgText["body"]["contents"][3]["contents"][3]["contents"][1]["text"] = LatLngData
 
   #\ Species name
@@ -510,10 +536,59 @@ def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTa
 
   #\ Description
   local_RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DrgonflyData.Description
+
+  #\ Set the Button function to send the data for Post back event
+  local_RequestDataMsgText_tmp = Set_PostMsg_Map_Request(local_RequestDataMsgText, DrgonflyData.IdNumber, f"{Address} {DrgonflyData.Place}", Lat, Lng)
+
+  #\ Update the star icon for the rarity
+  Return_List = SetRarity2Species(local_RequestDataMsgText_tmp, DrgonflyData)
+
+  return Return_List
+
+
+
+#\ Set the Post back message for the RequestDataMsgText when button event triggering.
+def Set_PostMsg_Map_Request(_RequestDataMsgText:dict, ID:str, Address:str, Lat:str, Lng:str):
+
+  #\ Copy the list of list (2D arary)
+  local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
+
+  #\ Post back data message to display the info for the ID, position, address infomation
+  ShowOnMapMsgBtn = lambda ID, Address, lat, lng : f"ShowOnMap_{ID}_{Address}_{lat}_{lng}"
+
+  #\ set the lat and long to the post back data
+  #\ "ShowOnMap_Lat_Lng"
+  local_RequestDataMsgText["body"]["contents"][7]["contents"][0]["action"]["data"] = ShowOnMapMsgBtn(ID,
+                                                                                                     Address,
+                                                                                                     Lat,
+                                                                                                     Lng)
+
   return local_RequestDataMsgText
 
 
 
+#\ Set the Star for the rarity of the species
+def SetRarity2Species(_RequestDataMsgText:dict, DrgonflyData:DetailedTableInfo)->dict:
+  #\ Copy the list of list (2D arary)
+  local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
+
+  print(f"[INFO] In SetRarity2Species() the rarity is :{DrgonflyData.rarity}")
+  if DrgonflyData is not None:
+    #\ set the rank to the three ranks and there will be three stars for displaying.
+    if DrgonflyData.rarity is "SR" :
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][3]["url"] = index.StarURL
+
+    elif DrgonflyData.rarity is "R" :
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
+
+    else:
+      pass
+
+    return local_RequestDataMsgText
+
+
+#\ -----------------------------------------------------------------------------------------------------------------------------------
 #\ testing
 # l = []
 # test = [DetailedTableInfo("123", "123","123","123","123","123","123","123","123","123","123","123","123","123","123"),

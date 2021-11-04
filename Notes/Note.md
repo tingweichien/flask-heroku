@@ -391,3 +391,10 @@ i.e.
 1. Add the function for using the LINE Notify.
 
 2. Not planning to use due to that it will not showing the message in your app.
+
+
+## [2021/11/1]
+
+1. Add the clock function to update the database and send the hourly summary with the filter to the LINE Bot users.
+
+2. Fix the issues for the fake_useragent : [Ref](https://stackoverflow.com/questions/68772211/fake-useragent-module-not-connecting-properly-indexerror-list-index-out-of-ra)

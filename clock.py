@@ -91,7 +91,8 @@ def Send_Hourly_Summary(session, Conn, DB_Variable_Data:dict):
                                               AllDayData=False,
                                               filter=index.Hourly_Summary_default_data_filter,
                                               conn=Conn,
-                                              DragonflyData_session=session)
+                                              DragonflyData_session=session
+                                              )
 
 
 
