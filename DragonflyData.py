@@ -424,19 +424,25 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
 
 
 #\ Check the species rank rates
-#\ return the maximum rank number in the list
+#\ return the "maximum" rank number in the list
 def CheckSpeciesRarityRates(Species_intersection:list, species_filter:list)->str:
 
     if Species_intersection is not None and species_filter is not None:
-        rarity = max([species_filter.index(species) for species in Species_intersection])
+        for species in Species_intersection:
+            if species in species_filter:
+                rarity = max([species_filter.index(species)])
+            else:
+                rarity = -1 #\ this specify the species is not in the filter, which you want to filter out and don't want to see
         print(f"[INFO] in CheckSpeciesRarityRates() the rarity is : {rarity}")
 
         if rarity >= species_filter.index(index.StartOfSR_Species) :
             return "SR" #\ Super Rare
         elif rarity >= species_filter.index(index.StartOfR_Species) :
             return "R" #\ Rare
-        else:
+        elif rarity > 0:
             return "N" #\ Normal
+        else:
+            return "None" #\ to usual to see.
 
 
 
