@@ -355,6 +355,7 @@ def CrawDataByDate(session, start_time:datetime, end_time:datetime, species_filt
     return result_list
 
 
+
 #\ Check if the Data Date is valid or not
 def CheckIDDate(start_time:datetime, end_time:datetime, check_time:datetime)->bool:
     if start_time <= check_time <= end_time:
@@ -377,6 +378,7 @@ def CheckDataSameOrNot(result_list:list, ID_find_result:list):
                 result_list[idx].append(ID_find_result)
 
 
+
 #\ filter to filter out the data with specific condition
 def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_filter:list=None, KeepOrFilter:bool=None)->list:
     """
@@ -392,7 +394,6 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
           True: keep
           False: not to keep to filter out
     """
-
     Filter_State = False
 
     #\ No input then return True, since nothing is going to filter
@@ -403,24 +404,15 @@ def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_
     if user_filter is not None:
         if len(user_filter) > 0:
             Filter_State = Data.User in user_filter
-            # for user2filter in user_filter:
-            #     if user2filter == Data.User:
-            #         Filter_State = True
-
     #\ species filter
     if species_filter is not None:
         if len(species_filter) > 0:
             Species_intersection_set = set(Data.SpeciesList) & set(species_filter)
             Filter_State = len(Species_intersection_set) > 0
-            # for species in Data.SpeciesList:
-            #     for species2filter in species_filter:
-            #         if species2filter == species:
-            #             Filter_State = True
-            #             break
-            #         else:
-            #             Filter_State = False
 
     return [Filter_State if KeepOrFilter is True else not Filter_State, Species_intersection_set]
+
+
 
 
 #\ Check the species rank rates
@@ -433,7 +425,7 @@ def CheckSpeciesRarityRates(Species_intersection:list, species_filter:list)->str
                 rarity = max([species_filter.index(species)])
             else:
                 rarity = -1 #\ this specify the species is not in the filter, which you want to filter out and don't want to see
-        print(f"[INFO] in CheckSpeciesRarityRates() the rarity is : {rarity}")
+        #print(f"[INFO] in CheckSpeciesRarityRates() the rarity is : {rarity}")
 
         if rarity >= species_filter.index(index.StartOfSR_Species) :
             return "SR" #\ Super Rare
