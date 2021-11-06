@@ -289,7 +289,7 @@ RequestDataMsgText = {
           {
             "type": "icon",
             "size": "xxl",
-            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png"
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gray_star_28.png"
           },
           {
             "type": "icon",
@@ -576,11 +576,16 @@ def SetRarity2Species(_RequestDataMsgText:dict, DrgonflyData:DetailedTableInfo)-
   if DrgonflyData is not None:
     #\ set the rank to the three ranks and there will be three stars for displaying.
     if DrgonflyData.rarity is "SR" :
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
       local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
       local_RequestDataMsgText["body"]["contents"][0]["contents"][3]["url"] = index.StarURL
 
     elif DrgonflyData.rarity is "R" :
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
       local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
+
+    elif DrgonflyData.rarity is "N" :
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
 
     else:
       pass
