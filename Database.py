@@ -167,10 +167,10 @@ def ReadFromDB(conn, query, FetchOneOrNot=True, CloseConn=True):
     try:
         if FetchOneOrNot:
             returnData = cursor.fetchone()
-            print(f"[INFO] Read from DB fetchone: \n{returnData}")
+            # print(f"[INFO] Read from DB fetchone: \n{returnData}")
         else:
             returnData = cursor.fetchall()
-            print(f"[INFO] Read from DB fetchall: \n{returnData}")
+            # print(f"[INFO] Read from DB fetchall: \n{returnData}")
 
         #\ Don't Close connection
         if CloseConn is True:
