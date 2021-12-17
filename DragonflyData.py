@@ -244,7 +244,7 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None, Species_filter:
         # print("\n\n->"+str(soup2.find("textarea", {'id':'R_MEMO'}).text))
         # print(str(soup2.find(id='R_MEMO').text))
         if soup2.find(id='R_MEMO').text is not None and len(soup2.find(id='R_MEMO').text.replace(" ", "")) is not 0:
-            Description = soup2.find(id='R_MEMO').text
+            Description = soup2.find(id='R_MEMO').text.replace(" ", "")
         else:
             Description = "None"
 
