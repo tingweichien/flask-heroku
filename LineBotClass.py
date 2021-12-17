@@ -830,7 +830,7 @@ def Check_LN_Key_exist(userid: str):
         #\ the code can be got, then can start to ask the LINE Notify for the access token
         create_auth_link(userid)
     else:
-        cache.set("gLN_AccessToken", Userinfo_access_token)
+        cache.set("gLN_AccessToken", Userinfo_access_token[0])
 
 
 
