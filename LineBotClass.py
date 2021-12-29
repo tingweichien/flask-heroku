@@ -740,7 +740,9 @@ def InitCache(_cache):
 #\ handle post back event
 @gHandler.add(PostbackEvent)
 def handle_postback_event(event):
-    PostbackEvent = CheckPostEvent(event.postback.data.lower().replace(" ", ""))
+    PostBackEventRawString = event.postback.data.lower().replace(" ", "")
+    print(f"[INFO] PostBackEventRawString: {PostBackEventRawString}")
+    PostbackEvent = CheckPostEvent(PostBackEventRawString)
 
     #\ Go to second main richmenu
     if PostbackEvent == eLineBotPostEvent.OTHERS.value:
@@ -752,7 +754,7 @@ def handle_postback_event(event):
         print("[INFO] Go back to the Main Richmenu")
 
     elif PostbackEvent == eLineBotPostEvent.SHOWONMAP.value:
-        [ID, Addr, Lat, Lng] = PostbackEvent.split("_")[1:]
+        [ID, Addr, Lat, Lng] = PostBackEventRawString.split("_")[1:]
         print("[INFO] In the POST back event, the ID: {ID}, Addr: {Addr}, Lat: {Lat}, Lng: {Lng}")
         if Lat and Lng is not None:
             gLine_bot_api.push_message(event.source.user_id,
