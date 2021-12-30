@@ -755,7 +755,7 @@ def handle_postback_event(event):
 
     elif PostbackEvent == eLineBotPostEvent.SHOWONMAP.value:
         [ID, Addr, Lat, Lng] = PostBackEventRawString.split("_")[1:]
-        print("[INFO] In the POST back event, the ID: {ID}, Addr: {Addr}, Lat: {Lat}, Lng: {Lng}")
+        # print(f"[INFO] In the POST back event, the ID: {ID}, Addr: {Addr}, Lat: {Lat}, Lng: {Lng}")
         if Lat and Lng is not None:
             gLine_bot_api.push_message(event.source.user_id,
                                         LocationSendMessage(title=f'# {ID}',
