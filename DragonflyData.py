@@ -355,7 +355,6 @@ def CrawDataByDate(session, start_time:datetime, end_time:datetime, species_filt
     return result_list
 
 
-
 #\ Check if the Data Date is valid or not
 def CheckIDDate(start_time:datetime, end_time:datetime, check_time:datetime)->bool:
     if start_time <= check_time <= end_time:
@@ -446,7 +445,7 @@ def CheckSpeciesRarityRates(Species_intersection:list, species_filter:list)->str
 #\  same as the it's record date. Therefore, we select the data
 #\  based on the ID renew in the midnight everyday to tell which
 #\  ID correspond to the start of the that day to indicate the time.
-def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->List[DataClass.DetailedTableInfo]:
+def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:DataClass.FilterObject)->List[DataClass.DetailedTableInfo]:
     """[summary]
 
     Args:
@@ -458,13 +457,13 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->L
     Returns:
         list:
     """
-    [User_filter, Species_filter, KeepOrFilter] = filter_object
+    # [User_filter, Species_filter, KeepOrFilter] = filter_object
     Max_ID_Num = None
     counter = 0
     condition = True
     result_list = []
     while condition:
-        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, End_ID, Max_ID_Num, Species_filter)
+        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, End_ID, Max_ID_Num, filter_object.SpeciesFilter)
 
         #\ Return if overflow
         if overflow:
@@ -478,7 +477,8 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->L
         #\ Check the condition
         if End_ID >= Start_ID:
             #\ Filter out the unwanted info
-            [Status, Species_intersection_set] = DataFilter(ID_find_result, User_filter, Species_filter, KeepOrFilter)
+            # [Status, Species_intersection_set] = DataFilter(ID_find_result, User_filter, Species_filter, KeepOrFilter)
+            [Status, Species_intersection_set] = filter_object.DataFilter(ID_find_result)
             if Status:
                 result_list.append(ID_find_result)
 
@@ -491,7 +491,7 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:list)->L
 
 
 #\ Craw today's data
-def CrawTodayData(session, TodayFirstID:int, filter_object:List):
+def CrawTodayData(session, TodayFirstID:int, filter_object:DataClass.FilterObject):
     #CrawDataByDate(session, datetime.now(), datetime.now())
     return CrawlDataByIDRange(session, TodayFirstID, None, filter_object)
 

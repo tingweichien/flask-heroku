@@ -24,6 +24,7 @@ import urllib
 import urllib.request, urllib.parse
 import json
 import yaml
+import DataClass
 
 
 #\ -- Global --
@@ -276,7 +277,7 @@ def IDRequestCallback(event):
             cache.set("gEventCnt", 0)
             return False
 
-        #\ This will get the newest filter, but I think it will not changed dramatically.
+        #\ This will automatically get the newest filter, but I think it will not changed dramatically.
         # _, Species_filter_list_name = DragonflyData.GetSpeciesRecordingNumberRank(cache.get("Dragonfly_session"))
         # index.Hourly_Summary_default_data_filter[1] = Species_filter_list_name[index.HSDDFilter_start_index:]
 
@@ -577,7 +578,7 @@ def OEMSetDefaultRichmenu(linebot_api, event):
 
 #\ Callback for today's Data
 def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:bool=True,
-                             filter:List=index.DefaultFilterObject, conn=None, DragonflyData_session=None):
+                             filter:DataClass.FilterObject=None, conn=None, DragonflyData_session=None):
     """Callback for today's Data or data in certain time period(control by AllDayData) and apply the filter if needed
     Args:
         user_id (str, optional) : [description]. Defaults to None.
@@ -610,7 +611,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
                                                           filter
                                                           )
 
-    #\ --- Get the specific time interval data based on current_crawling_id ---
+    #\ --- Get the specific time interval data base on current_crawling_id ---
     #\ ------------------------------------------------------------------------
     else :
         #\ Get the data for certain time interval
@@ -754,11 +755,11 @@ def handle_postback_event(event):
         print("[INFO] Go back to the Main Richmenu")
 
     elif PostbackEvent == eLineBotPostEvent.SHOWONMAP.value:
-        [ID, Addr, Lat, Lng] = PostBackEventRawString.split("_")[1:]
+        [Id, Addr, Lat, Lng, species] = PostBackEventRawString.split("_")[1:]
         # print(f"[INFO] In the POST back event, the ID: {ID}, Addr: {Addr}, Lat: {Lat}, Lng: {Lng}")
         if Lat and Lng is not None:
             gLine_bot_api.push_message(event.source.user_id,
-                                        LocationSendMessage(title=f'# {ID}',
+                                        LocationSendMessage(title=f'#{Id}-{species}',
                                                             address=Addr,
                                                             latitude=float(Lat),
                                                             longitude=float(Lng)
