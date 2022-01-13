@@ -578,15 +578,13 @@ def SetRarity2Species(_RequestDataMsgText:dict, DragonflyData:DetailedTableInfo)
   if DragonflyData is not None:
     #\ set the rank to the three ranks and there will be three stars for displaying.
     if DragonflyData.rarity is "SR" :
-      local_RequestDataMsgText["body"]["contents"][0]["contents"][1:3]["url"] = [index.StarURL]*3
-      # local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
-      # local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
-      # local_RequestDataMsgText["body"]["contents"][0]["contents"][3]["url"] = index.StarURL
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][3]["url"] = index.StarURL
 
     elif DragonflyData.rarity is "R" :
-      local_RequestDataMsgText["body"]["contents"][0]["contents"][1:2]["url"] = [index.StarURL]*2
-      # local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
-      # local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
 
     elif DragonflyData.rarity is "N" :
       local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
