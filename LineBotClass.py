@@ -768,6 +768,10 @@ def handle_postback_event(event):
             print("[INFO] Show the address on the map")
 
         else:
+            gLine_bot_api.push_message(event.source.user_id,
+                                        TextSendMessage(
+                                            text="The Latitude and the Longitude is None, might due to the submitter selfishness for not sharing the info")
+                                        )
             print("[INFO] The Latitude and Longitude is None")
 
     else :
