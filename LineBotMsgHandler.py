@@ -562,7 +562,7 @@ def Set_PostMsg_Map_Request(_RequestDataMsgText:dict, DragonflyData:DetailedTabl
                                                                                                     {DragonflyData.City+DragonflyData.District+DragonflyData.Place},
                                                                                                     {DragonflyData.Latitude},
                                                                                                     {DragonflyData.Longitude},
-                                                                                                    {', '.join(DragonflyData)})
+                                                                                                    {', '.join(DragonflyData.Species)})
   print("[INFO] In Set_PostMsg_Map_Request() msg: " + local_RequestDataMsgText["body"]["contents"][7]["contents"][0]["action"]["data"])
 
   return local_RequestDataMsgText
