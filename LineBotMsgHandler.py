@@ -554,15 +554,15 @@ def Set_PostMsg_Map_Request(_RequestDataMsgText:dict, DragonflyData:DetailedTabl
   local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
 
   #\ Post back data message to display the info for the ID, position, address infomation
-  # ShowOnMapMsgBtn = lambda ID, Address, lat, lng, species, place : f"ShowOnMap_{ID}_{Address}_{lat}_{lng}_{species}_{place}"
+  ShowOnMapMsgBtn = lambda ID, Address, lat, lng, species : f"ShowOnMap_{ID}_{Address}_{lat}_{lng}_{species}"
 
   #\ set the lat and long to the post back data
   #\ "ShowOnMap_ID_Address_Lat_Lng_Species"
-  local_RequestDataMsgText["body"]["contents"][7]["contents"][0]["action"]["data"] = f"ShowOnMap_{DragonflyData.IdNumber}_\
-                                                                                                  {DragonflyData.City+DragonflyData.District+DragonflyData.Place}_\
-                                                                                                  {DragonflyData.Latitude}_\
-                                                                                                  {DragonflyData.Longitude}_\
-                                                                                                  {DragonflyData.Species}"
+  local_RequestDataMsgText["body"]["contents"][7]["contents"][0]["action"]["data"] = ShowOnMapMsgBtn({DragonflyData.IdNumber},
+                                                                                                    {DragonflyData.City+DragonflyData.District+DragonflyData.Place},
+                                                                                                    {DragonflyData.Latitude},
+                                                                                                    {DragonflyData.Longitude},
+                                                                                                    {DragonflyData.Species})
   print("[INFO] In Set_PostMsg_Map_Request() msg: " + local_RequestDataMsgText["body"]["contents"][7]["contents"][0]["action"]["data"])
 
   return local_RequestDataMsgText
