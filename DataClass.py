@@ -31,7 +31,7 @@ class DetailedTableInfo(simplifyTableInfo):
         self.Latitude       = Latitude
         self.Longitude      = Longitude
         self.SpeciesFamily  = SpeciesFamily
-        self.Species        = Species #\ In this program we don't use this
+        self.Species        = Species
         self.SpeciesList    = SpeciesList
         self.Description    = Description
         self.weather        = weather

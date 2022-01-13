@@ -445,7 +445,7 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:DataClas
             [Status, Species_intersection] = filter_object.DataFilter(ID_find_result)
             if Status:
                 #\ Set the filter resultant to the dragonfly data object and append to the list
-                ID_find_result.SpeciesList = Species_intersection
+                ID_find_result.Species = Species_intersection #\ use this to store the filtered species
                 result_list.append(ID_find_result)
 
         else :
