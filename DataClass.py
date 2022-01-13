@@ -31,7 +31,7 @@ class DetailedTableInfo(simplifyTableInfo):
         self.Latitude       = Latitude
         self.Longitude      = Longitude
         self.SpeciesFamily  = SpeciesFamily
-        self.Species        = Species
+        self.Species        = Species #\ In this program we don't use this
         self.SpeciesList    = SpeciesList
         self.Description    = Description
         self.weather        = weather
@@ -82,7 +82,6 @@ class FilterObject:
         self.KeepOrFilter = KeepOrFilter
 
     #\ Filter to filter out the data with specific condition
-    # def DataFilter(Data:DetailedTableInfo, user_filter:list=None, species_filter:list=None, KeepOrFilter:bool=None)->list:
     def DataFilter(self, Data:DetailedTableInfo)->list:
         """
         @params:
@@ -122,4 +121,4 @@ class FilterObject:
             Filter_State =  datetime.strptime(Data.Dates, "%Y-%m-%d").date() == date.today()
 
 
-        return [Filter_State if self.KeepOrFilter is True else not Filter_State, Species_intersection_set]
+        return [Filter_State if self.KeepOrFilter is True else not Filter_State, list(Species_intersection_set)]

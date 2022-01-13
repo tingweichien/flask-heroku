@@ -526,7 +526,7 @@ def RequestDataMsgText_handler(_RequestDataMsgText:dict, DragonflyData:DetailedT
     DragonflyData.Longitude = round(float(DragonflyData.Longitude), index.PositionPrecision)
     LatLngData = f"({DragonflyData.Latitude}, {DragonflyData.Longitude})"
   except :
-    DragonflyData.Latitude, DragonflyData.Longitude = None, None
+    DragonflyData.Latitude, DragonflyData.Longitude = "None", "None"
     LatLngData = "None"
 
   local_RequestDataMsgText["body"]["contents"][3]["contents"][3]["contents"][1]["text"] = LatLngData
@@ -562,7 +562,7 @@ def Set_PostMsg_Map_Request(_RequestDataMsgText:dict, DragonflyData:DetailedTabl
                                                                                                     {DragonflyData.City+DragonflyData.District+DragonflyData.Place},
                                                                                                     {DragonflyData.Latitude},
                                                                                                     {DragonflyData.Longitude},
-                                                                                                    {DragonflyData.Species})
+                                                                                                    {DragonflyData.SpeciesList})
   print("[INFO] In Set_PostMsg_Map_Request() msg: " + local_RequestDataMsgText["body"]["contents"][7]["contents"][0]["action"]["data"])
 
   return local_RequestDataMsgText
@@ -578,13 +578,15 @@ def SetRarity2Species(_RequestDataMsgText:dict, DragonflyData:DetailedTableInfo)
   if DragonflyData is not None:
     #\ set the rank to the three ranks and there will be three stars for displaying.
     if DragonflyData.rarity is "SR" :
-      local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
-      local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
-      local_RequestDataMsgText["body"]["contents"][0]["contents"][3]["url"] = index.StarURL
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][1:3]["url"] = [index.StarURL]*3
+      # local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
+      # local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
+      # local_RequestDataMsgText["body"]["contents"][0]["contents"][3]["url"] = index.StarURL
 
     elif DragonflyData.rarity is "R" :
-      local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
-      local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
+      local_RequestDataMsgText["body"]["contents"][0]["contents"][1:2]["url"] = [index.StarURL]*2
+      # local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
+      # local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
 
     elif DragonflyData.rarity is "N" :
       local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL

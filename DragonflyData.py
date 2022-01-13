@@ -7,8 +7,10 @@ import index
 from fake_useragent import UserAgent, FakeUserAgentError
 import re
 from datetime import datetime
+from opencc import OpenCC
 
-
+#\ Make sure there is no simple chinese, if so, change to tradition chinese
+Word_S2Tcc = OpenCC('s2t')
 
 
 #\--->Now use random fake user agent
@@ -280,7 +282,7 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None, Species_filter:
                                                     soup2.find(id='時間').get('value'),
                                                     City,
                                                     District,
-                                                    soup2.find(id='地點').get('value'),
+                                                    Word_S2Tcc.convert(soup2.find(id='地點').get('value')),
                                                     soup2.find(id='R_ELEVATION').get('value'),
                                                     soup2.find(id='紀錄者').get('value'),
                                                     soup2.find(id='R_LAT').get('value'),
@@ -288,7 +290,7 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None, Species_filter:
                                                     "",
                                                     "",
                                                     SpeciesList,
-                                                    Description,
+                                                    Word_S2Tcc.convert(Description),
                                                     "",
                                                     rarity
                                                     )
@@ -377,43 +379,6 @@ def CheckDataSameOrNot(result_list:list, ID_find_result:list):
                 result_list[idx].append(ID_find_result)
 
 
-
-#\ filter to filter out the data with specific condition
-def DataFilter(Data:DataClass.DetailedTableInfo, user_filter:list=None, species_filter:list=None, KeepOrFilter:bool=None)->list:
-    """
-     @params:
-          user to filter
-          species to filter
-          KeepOrFilter: indicate to do filter(False) or keep(True) the data if satisfied the condition
-     @return:
-        if KeepOrFilter True to keep the data
-          True: Filter out
-          False: Not Filter out to keep
-        if KeepOrFilter False to filter the data
-          True: keep
-          False: not to keep to filter out
-    """
-    Filter_State = False
-
-    #\ No input then return True, since nothing is going to filter
-    if user_filter is None and species_filter is None:
-        return True
-
-    #\ user filter
-    if user_filter is not None:
-        if len(user_filter) > 0:
-            Filter_State = Data.User in user_filter
-    #\ species filter
-    if species_filter is not None:
-        if len(species_filter) > 0:
-            Species_intersection_set = set(Data.SpeciesList) & set(species_filter)
-            Filter_State = len(Species_intersection_set) > 0
-
-    return [Filter_State if KeepOrFilter is True else not Filter_State, Species_intersection_set]
-
-
-
-
 #\ Check the species rank rates
 #\ return the "maximum" rank number in the list
 def CheckSpeciesRarityRates(Species_intersection:list, species_filter:list)->str:
@@ -477,9 +442,10 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:DataClas
         #\ Check the condition
         if End_ID >= Start_ID:
             #\ Filter out the unwanted info
-            # [Status, Species_intersection_set] = DataFilter(ID_find_result, User_filter, Species_filter, KeepOrFilter)
-            [Status, Species_intersection_set] = filter_object.DataFilter(ID_find_result)
+            [Status, Species_intersection] = filter_object.DataFilter(ID_find_result)
             if Status:
+                #\ Set the filter resultant to the dragonfly data object and append to the list
+                ID_find_result.SpeciesList = Species_intersection
                 result_list.append(ID_find_result)
 
         else :
