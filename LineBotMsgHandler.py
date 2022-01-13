@@ -559,10 +559,11 @@ def Set_PostMsg_Map_Request(_RequestDataMsgText:dict, DragonflyData:DetailedTabl
   #\ set the lat and long to the post back data
   #\ "ShowOnMap_ID_Address_Lat_Lng_Species"
   local_RequestDataMsgText["body"]["contents"][7]["contents"][0]["action"]["data"] = f"ShowOnMap_{DragonflyData.IdNumber}_\
-                                                                                                  {DragonflyData.City} {DragonflyData.District} {DragonflyData.Place}_\
+                                                                                                  {DragonflyData.City+DragonflyData.District+DragonflyData.Place}_\
                                                                                                   {DragonflyData.Latitude}_\
                                                                                                   {DragonflyData.Longitude}_\
                                                                                                   {DragonflyData.Species}"
+  print("[INFO] In Set_PostMsg_Map_Request() msg: " + local_RequestDataMsgText["body"]["contents"][7]["contents"][0]["action"]["data"])
 
   return local_RequestDataMsgText
 
