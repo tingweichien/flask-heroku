@@ -110,6 +110,7 @@ class FilterObject:
         if self.SpeciesFilter is not None:
             if len(self.SpeciesFilter) > 0:
                 Species_intersection_set = set(Data.SpeciesList) & set(self.SpeciesFilter)
+                print(f"[INFO] In DataFilter() Species_intersection_set: {Species_intersection_set}")
                 Filter_State = len(Species_intersection_set) > 0
 
         #\ Time filter
