@@ -281,7 +281,7 @@ def IDRequestCallback(event):
         # _, Species_filter_list_name = DragonflyData.GetSpeciesRecordingNumberRank(cache.get("Dragonfly_session"))
         # index.Hourly_Summary_default_data_filter[1] = Species_filter_list_name[index.HSDDFilter_start_index:]
 
-        [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, IDNumber, None, index.Species_rare_rank_from_last_60)
+        [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, IDNumber, None, index.Hourly_Summary_default_data_filter)
 
         if overflow:
             print(f"[INFO] The ID is overflow, please use the ID smaller {Max_ID_Num}")
@@ -771,7 +771,7 @@ def handle_postback_event(event):
         else:
             gLine_bot_api.push_message(event.source.user_id,
                                         TextSendMessage(
-                                            text="The Latitude and the Longitude is None, might due to the submitter selfishness for not sharing the info")
+                                            text="Sorry~\n The Latitude and the Longitude is None, might due to the submitter selfishness for not sharing the info")
                                         )
             print("[INFO] The Latitude and Longitude is None")
 

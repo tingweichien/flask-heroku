@@ -26,16 +26,16 @@ class simplifyTableInfo:
 class DetailedTableInfo(simplifyTableInfo):
     def __init__(self, IdNumber:str="", Dates:str="", Times:str="", City:str="", District:str="", Place:str="",
                 Altitude:str="", User:str="", Latitude:str="", Longitude:str="", SpeciesFamily:str="",
-                Species:str="", SpeciesList:list=[""], Description:str="", weather:str="", rarity:list=[""]):
+                FilteredSpeciesList:list=[""], SpeciesList:list=[""], Description:str="", weather:str="", rarity:list=[""]):
         super(DetailedTableInfo, self).__init__(IdNumber, Dates, Times, City, District, Place, Altitude, User)
-        self.Latitude       = Latitude
-        self.Longitude      = Longitude
-        self.SpeciesFamily  = SpeciesFamily
-        self.Species        = Species
-        self.SpeciesList    = SpeciesList
-        self.Description    = Description
-        self.weather        = weather
-        self.rarity         = rarity
+        self.Latitude               = Latitude
+        self.Longitude              = Longitude
+        self.SpeciesFamily          = SpeciesFamily
+        self.FilteredSpeciesList    = FilteredSpeciesList
+        self.SpeciesList            = SpeciesList
+        self.Description            = Description
+        self.weather                = weather
+        self.rarity                 = rarity
 
         #\ handle the Description to make it print better
         self.Description = list(self.Description.split("\n"))
@@ -62,7 +62,7 @@ class DetailedTableInfo(simplifyTableInfo):
                 '\n-->[User]:           ' + self.User + \
                 '\n-->[Latitude]:       ' + self.Latitude + \
                 '\n-->[Longitude]:      ' + self.Longitude + \
-                '\n-->[Species]:        ' + self.Species + \
+                '\n-->[Species]:        ' + ", ".join(self.FilteredSpeciesList)+ \
                 '\n-->[SpeciesFamily]:  ' + self.SpeciesFamily + \
                 '\n-->[SpeciesList]:    ' + ", ".join(self.SpeciesList) + \
                 '\n-->[Description]:    ' + self.Description + \
@@ -75,31 +75,34 @@ class DetailedTableInfo(simplifyTableInfo):
 #\ Filter Object for the dragonfly data
 class FilterObject:
     def __init__(self, UserFilter=None, SpeciesFilter=None, TimeFilter=None, RecordNotTodayDateFilter=None, KeepOrFilter=None):
-        self.UserFilter = UserFilter
-        self.SpeciesFilter = SpeciesFilter
-        self.TimeFilter = TimeFilter
-        self.RecordNotTodayDateFilter = RecordNotTodayDateFilter
-        self.KeepOrFilter = KeepOrFilter
+        self.UserFilter = UserFilter #\ user to filter
+        self.SpeciesFilter = SpeciesFilter #\ species to filter
+        self.TimeFilter = TimeFilter #\ time to filter
+        self.RecordNotTodayDateFilter = RecordNotTodayDateFilter #\ filter to decide whether to keep only today's data(Yes) or the data uploaded today but record other day(No)
+        self.KeepOrFilter = KeepOrFilter #\ KeepOrFilter: indicate to do filter(False) or keep(True) the data if satisfied the condition
 
     #\ Filter to filter out the data with specific condition
     def DataFilter(self, Data:DetailedTableInfo)->list:
         """
         @params:
-            user to filter
-            species to filter
-            KeepOrFilter: indicate to do filter(False) or keep(True) the data if satisfied the condition
+            Data: the data to filter, in DetaildTableInfo
         @return:
+            (1)
             if KeepOrFilter True to keep the data
                 True: keep
                 False: not to keep to filter out
             if KeepOrFilter False to filter the data
                 True: Filter out
                 False: Not Filter out, so to keep it
+            (2)
+            Species_intersection_set:list of the filtered species
         """
         Filter_State = False
 
         #\ No input then return True, since nothing is going to filter
-        if self.UserFilter is None and self.SpeciesFilter is None or self.KeepOrFilter is None:
+        if self.UserFilter is None and self.SpeciesFilter is None or \
+            self.KeepOrFilter is None or self.RecordNotTodayDateFilter is None:
+            print("[Warning] In DataFilter object the self.UserFilter is None and self.SpeciesFilter is None or self.KeepOrFilter is None or self.RecordNotTodayDateFilter is None:")
             return True if self.KeepOrFilter is True else False
 
         #\ User filter

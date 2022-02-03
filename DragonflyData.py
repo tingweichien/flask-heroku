@@ -105,12 +105,13 @@ def Login_Web(Input_account:str, Input_password:str)->list:
 
 
 ###################################################################
-def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None, Species_filter:list=[])->list:
+def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None, filter_object:DataClass.FilterObject=None)->list:
     """
     params:
         session : from the return object of the requests.Session()
         Input_ID : The ID you want to crawl, if not then it will auto set to the latest ID number
         InputMaxID : This is to avoid redundent of request to get the MaxID again when calling this function in the loop.
+        filter_object : filter object
     """
 
 
@@ -242,6 +243,7 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None, Species_filter:
         response_Detailed_discriptions2 = session.post(index.general_url + index.Detailed_discriptions_url + str(Input_ID), headers=headers)
         soup2 = BeautifulSoup(response_Detailed_discriptions2.text, 'html.parser')
 
+
         #\ find the description
         # print("\n\n->"+str(soup2.find("textarea", {'id':'R_MEMO'}).text))
         # print(str(soup2.find(id='R_MEMO').text))
@@ -250,10 +252,12 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None, Species_filter:
         else:
             Description = "None"
 
+
         #\ Find the city and district
         response_Brief_discriptions = session.post(index.general_url + index.Brief_discriptions_url + str(Input_ID), headers=headers)
         response_Brief_discriptions_text = BeautifulSoup(response_Brief_discriptions.text, 'html.parser')
         Max_All_Observation_Data_response_Data = response_Brief_discriptions_text.find_all('td')
+
 
         """print the colume in sequence
         for i in range(len(Max_All_Observation_Data_response_Data)):
@@ -273,27 +277,41 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None, Species_filter:
                 District = CityDistrict[3:]
                 # print(f"[INFO] City for ID : {Input_ID} -> {City}\n[INFO] District for ID : {Input_ID} -> {District}")
 
-        #\ Set the rarity for the species
-        rarity = CheckSpeciesRarityRates(SpeciesList, Species_filter)
+
+        #\ Set the highest rarity among the input species list
+        if filter_object != None:
+            rarity = CheckSpeciesRarityRates(SpeciesList, filter_object.SpeciesFilter)
+        else:
+            print("[Warning] The filter_object is None, please speciefy!!!!")
+
 
         #\ Save the info to data class
-        ID_find_result = DataClass.DetailedTableInfo(str(Input_ID),
-                                                    soup2.find(id='日期').get('value'),
-                                                    soup2.find(id='時間').get('value'),
-                                                    City,
-                                                    District,
-                                                    Word_S2Tcc.convert(soup2.find(id='地點').get('value')),
-                                                    soup2.find(id='R_ELEVATION').get('value'),
-                                                    soup2.find(id='紀錄者').get('value'),
-                                                    soup2.find(id='R_LAT').get('value'),
-                                                    soup2.find(id='R_LNG').get('value'),
-                                                    "",
-                                                    "",
-                                                    SpeciesList,
-                                                    Word_S2Tcc.convert(Description),
-                                                    "",
-                                                    rarity
+        ID_find_result = DataClass.DetailedTableInfo(str(Input_ID), #\ ID
+                                                    soup2.find(id='日期').get('value'), #\ date
+                                                    soup2.find(id='時間').get('value'), #\ time
+                                                    City,#\city
+                                                    District, #\ district
+                                                    Word_S2Tcc.convert(soup2.find(id='地點').get('value')), #\ detailed place info
+                                                    soup2.find(id='R_ELEVATION').get('value'), #\ altitude
+                                                    soup2.find(id='紀錄者').get('value'), #\ recorder/user
+                                                    soup2.find(id='R_LAT').get('value'), #\ latitude
+                                                    soup2.find(id='R_LNG').get('value'), #\ longitude
+                                                    "", #\ species family
+                                                    "", #\ filtered species
+                                                    SpeciesList, #\ species list
+                                                    Word_S2Tcc.convert(Description), #\ description
+                                                    "",#\ weather
+                                                    rarity #\ rarity list
                                                     )
+
+
+        #\ Filter the species with the filter object
+        if filter_object != None:
+            [Status, Species_intersection] = filter_object.DataFilter(ID_find_result)
+            if Status:
+                #\ Set the filter resul to the dragonfly data object and append to the list
+                ID_find_result.FilteredSpeciesList = Species_intersection #\ use this to store the filtered species
+
 
     # print(f"[INFO] Return Object: {ID_find_result}")
     return [ID_find_result, overflow, int(Max_ID_Num)]
@@ -323,14 +341,14 @@ def GetMaxID(session)->int:
 
 
 #\ Craw data as request date range
-def CrawDataByDate(session, start_time:datetime, end_time:datetime, species_filter:list):
+def CrawDataByDate(session, start_time:datetime, end_time:datetime, filter_object:DataClass.FilterObject):
     condition = True
     initID = None
     counter = 0
     result_list = [] # this will be the 2D list
     Max_ID_Num = None
     while condition:
-        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, initID, Max_ID_Num, species_filter)
+        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, initID, Max_ID_Num, filter_object)
         print(f"ID: {initID}")
 
         #\ return if overflow
@@ -357,6 +375,7 @@ def CrawDataByDate(session, start_time:datetime, end_time:datetime, species_filt
     return result_list
 
 
+
 #\ Check if the Data Date is valid or not
 def CheckIDDate(start_time:datetime, end_time:datetime, check_time:datetime)->bool:
     if start_time <= check_time <= end_time:
@@ -369,6 +388,7 @@ def CheckIDDate(start_time:datetime, end_time:datetime, check_time:datetime)->bo
 
 #\ Check if the data can accumulate to one with same day, same place, same city, same district, same recorder
 #\ if same then append the data.
+"""
 def CheckDataSameOrNot(result_list:list, ID_find_result:list):
     for idx, lst in enumerate(result_list):
         if lst.User == ID_find_result.User and \
@@ -377,6 +397,7 @@ def CheckDataSameOrNot(result_list:list, ID_find_result:list):
             lst.District == ID_find_result.District and \
             lst.Place == ID_find_result.Place:
                 result_list[idx].append(ID_find_result)
+"""
 
 
 #\ Check the species rank rates
@@ -405,12 +426,12 @@ def CheckSpeciesRarityRates(Species_intersection:list, species_filter:list)->str
 
 
 #\ Crawl data until certain ID
-#\  This function will be call in Todays data crwal function
+#\  This function will be call in Todays data crawling function
 #\  since the data been uploaded to the data web will not be the
 #\  same as the it's record date. Therefore, we select the data
 #\  based on the ID renew in the midnight everyday to tell which
 #\  ID correspond to the start of the that day to indicate the time.
-def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:DataClass.FilterObject)->List[DataClass.DetailedTableInfo]:
+def CrawlDataByIDRange(session, Start_ID:int=None, End_ID:int=None, filter_object:DataClass.FilterObject=None)->List[DataClass.DetailedTableInfo]:
     """[summary]
 
     Args:
@@ -427,29 +448,51 @@ def CrawlDataByIDRange(session, Start_ID:int, End_ID:int, filter_object:DataClas
     counter = 0
     condition = True
     result_list = []
+    SetEndID2Latest = False
+
+    #\ Check the input args (End_ID allow to be None for crawling from start to the latest ID)
+    if Start_ID is None or filter_object is None:
+        print("[Warning] In CrawlDataByIDRange() the Start_ID is None or filter_object is None")
+        return None
+
+    #\ This allow to crawl from certain start ID to the latest ID when the End_ID is None
+    if End_ID is None:
+        SetEndID2Latest = True
+    else:
+        #\ End_ID is not None
+        if Start_ID > End_ID:
+            print("[Warning] In CrawlDataByIDRange() the Start_ID > End_ID")
+            return None
+
+
+    #\ Loop through from start ID to end ID
     while condition:
-        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, End_ID, Max_ID_Num, filter_object.SpeciesFilter)
+
+        #\ Get the data
+        [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, End_ID, Max_ID_Num, filter_object)
 
         #\ Return if overflow
         if overflow:
-            print("[Warning] In the CrawDataByDate() ID overflow")
-            return
+            print("[Warning] In the CrawlDataByIDRange() ID overflow")
+            return None
+
+        #\ Filter out the unwanted info -------------------------
+        if len(ID_find_result.FilteredSpeciesList) != 0:
+            result_list.append(ID_find_result)
 
         #\ Go to the next ID
-        counter += 1
-        End_ID = Max_ID_Num - counter
+        if SetEndID2Latest is True:
+            #\ This allow to crawl from certain start ID to the latest ID when the End_ID is None
+            counter += 1
+            End_ID = Max_ID_Num - counter
+        else:
+            End_ID -= 1
 
-        #\ Check the condition
-        if End_ID >= Start_ID:
-            #\ Filter out the unwanted info
-            [Status, Species_intersection] = filter_object.DataFilter(ID_find_result)
-            if Status:
-                #\ Set the filter resultant to the dragonfly data object and append to the list
-                ID_find_result.Species = Species_intersection #\ use this to store the filtered species
-                result_list.append(ID_find_result)
-
-        else :
+        #TODO: Re construct the species filter
+        #\ Check the condition for the while loop
+        if End_ID < Start_ID:
             condition = False
+
 
     # print(f"[INFO] In CrawlDataByIDRange() the result list is {result_list}")
     return result_list
@@ -505,7 +548,13 @@ def GetSpeciesRecordingNumberRank(session)->list:
 
 #\ Test
 #\ Use this to test the function required session
-# [session, Login_Response, Login_state] = Login_Web("USER", "PW")
-# print(GetSpeciesRecordingNumberRank(session)[1][60:])
-# print(GetSpeciesRecordingNumberRank(session)[1])
-# print(GetSpeciesRecordingNumberRank(session))
+# if __name__ == "__main__":
+#     [session, Login_Response, Login_state] = Login_Web("ACCOUNT", "PW")
+#     filter_object = DataClass.FilterObject(None, index.Species_rare_rank_from_last_60, None, True, True)
+# #     [ID_find_result, overflow, Max_ID_Num] = DataCrawler(session, Input_ID=90256, filter_object=filter_object)
+# #     print(ID_find_result)
+#     for result in CrawlDataByIDRange(session, 90256, 90258, filter_object):
+#         print(result)
+#   print(GetSpeciesRecordingNumberRank(session)[1][60:])
+#   print(GetSpeciesRecordingNumberRank(session)[1])
+#   print(GetSpeciesRecordingNumberRank(session))
