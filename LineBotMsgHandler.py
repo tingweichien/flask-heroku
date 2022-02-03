@@ -128,9 +128,9 @@ LoginCheckText={
 
 #\ for testing
 """
-#\ account
+# account
 LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = "@@@@@@@@@@@@@@@@"
-# \ password
+# password
 LoginCheckText["body"]["contents"][1]["contents"][1]["contents"][1]["text"] = "################"
 print(LoginCheckText)
 """
@@ -498,93 +498,95 @@ RequestDataMsgText = {
 
 
 #\ handle the RequestDataMsgText
-def RequestDataMsgText_handler(_RequestDataMsgText:dict, DrgonflyData:DetailedTableInfo) :
+def RequestDataMsgText_handler(_RequestDataMsgText:dict, DragonflyData:DetailedTableInfo) :
   #\ if use this function in the loop all the RequestDataMsgText will point to the same dictionary
   #\ When changing the value all the dict point to this will change
   #\ Therefore, use copy to copy to a new dict as local variable
   local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
 
   #\ ID number
-  local_RequestDataMsgText["body"]["contents"][0]["contents"][0]["text"] = DrgonflyData.IdNumber
+  local_RequestDataMsgText["body"]["contents"][0]["contents"][0]["text"] = DragonflyData.IdNumber
 
   #\ Dates and Times
-  local_RequestDataMsgText["body"]["contents"][1]["text"] = f"{DrgonflyData.Dates}, {DrgonflyData.Times}"
+  local_RequestDataMsgText["body"]["contents"][1]["text"] = f"{DragonflyData.Dates}, {DragonflyData.Times}"
 
   #\ User namE
-  local_RequestDataMsgText["body"]["contents"][3]["contents"][0]["contents"][1]["text"] = DrgonflyData.User
+  local_RequestDataMsgText["body"]["contents"][3]["contents"][0]["contents"][1]["text"] = DragonflyData.User
 
   #\ City and District
-  Address = f"{DrgonflyData.City} {DrgonflyData.District}"
+  Address = f"{DragonflyData.City} {DragonflyData.District}"
   local_RequestDataMsgText["body"]["contents"][3]["contents"][1]["contents"][1]["text"] = Address
 
   #\ Place
-  local_RequestDataMsgText["body"]["contents"][3]["contents"][2]["contents"][1]["text"] = DrgonflyData.Place
+  local_RequestDataMsgText["body"]["contents"][3]["contents"][2]["contents"][1]["text"] = DragonflyData.Place
 
   #\ Longitude and Latitude
   try :
-    Lat = round(float(DrgonflyData.Latitude), index.PositionPrecision)
-    Lng = round(float(DrgonflyData.Longitude), index.PositionPrecision)
-    LatLngData = f"({Lat}, {Lng})"
+    DragonflyData.Latitude = str(round(float(DragonflyData.Latitude), index.PositionPrecision))
+    DragonflyData.Longitude = str(round(float(DragonflyData.Longitude), index.PositionPrecision))
+    LatLngData = f"({DragonflyData.Latitude}, {DragonflyData.Longitude})"
   except :
-    Lat, Lng = None, None
+    DragonflyData.Latitude, DragonflyData.Longitude = "None", "None"
     LatLngData = "None"
 
   local_RequestDataMsgText["body"]["contents"][3]["contents"][3]["contents"][1]["text"] = LatLngData
 
   #\ Species name
-  local_RequestDataMsgText["body"]["contents"][3]["contents"][5]["contents"][1]["text"] = ', '.join(DrgonflyData.SpeciesList)
+  local_RequestDataMsgText["body"]["contents"][3]["contents"][5]["contents"][1]["text"] = ', '.join(DragonflyData.SpeciesList)
 
   #\ Description
-  local_RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DrgonflyData.Description
+  local_RequestDataMsgText["body"]["contents"][5]["contents"][1]["text"] = DragonflyData.Description
 
   #\ Set the Button function to send the data for Post back event
-  local_RequestDataMsgText_tmp = Set_PostMsg_Map_Request(local_RequestDataMsgText, DrgonflyData.IdNumber, f"{Address} {DrgonflyData.Place}", Lat, Lng)
+  local_RequestDataMsgText_tmp = Set_PostMsg_Map_Request(local_RequestDataMsgText, DragonflyData)
 
   #\ Update the star icon for the rarity
-  Return_List = SetRarity2Species(local_RequestDataMsgText_tmp, DrgonflyData)
+  Return_List = SetRarity2Species(local_RequestDataMsgText_tmp, DragonflyData)
 
   return Return_List
 
 
 
 #\ Set the Post back message for the RequestDataMsgText when button event triggering.
-def Set_PostMsg_Map_Request(_RequestDataMsgText:dict, ID:str, Address:str, Lat:str, Lng:str):
+def Set_PostMsg_Map_Request(_RequestDataMsgText:dict, DragonflyData:DetailedTableInfo):
 
   #\ Copy the list of list (2D arary)
   local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
 
   #\ Post back data message to display the info for the ID, position, address infomation
-  ShowOnMapMsgBtn = lambda ID, Address, lat, lng : f"ShowOnMap_{ID}_{Address}_{lat}_{lng}"
+  ShowOnMapMsgBtn = lambda ID, Address, lat, lng, species : f"ShowOnMap_{ID}_{Address}_{lat}_{lng}_{species}"
 
   #\ set the lat and long to the post back data
-  #\ "ShowOnMap_Lat_Lng"
-  local_RequestDataMsgText["body"]["contents"][7]["contents"][0]["action"]["data"] = ShowOnMapMsgBtn(ID,
-                                                                                                     Address,
-                                                                                                     Lat,
-                                                                                                     Lng)
+  #\ "ShowOnMap_ID_Address_Lat_Lng_Species"
+  local_RequestDataMsgText["body"]["contents"][7]["contents"][0]["action"]["data"] = ShowOnMapMsgBtn(DragonflyData.IdNumber,
+                                                                                                    DragonflyData.City+DragonflyData.District+DragonflyData.Place,
+                                                                                                    DragonflyData.Latitude,
+                                                                                                    DragonflyData.Longitude,
+                                                                                                    ', '.join(DragonflyData.SpeciesList))
+  print("[INFO] In Set_PostMsg_Map_Request() msg: " + local_RequestDataMsgText["body"]["contents"][7]["contents"][0]["action"]["data"])
 
   return local_RequestDataMsgText
 
 
 
 #\ Set the Star for the rarity of the species
-def SetRarity2Species(_RequestDataMsgText:dict, DrgonflyData:DetailedTableInfo)->dict:
+def SetRarity2Species(_RequestDataMsgText:dict, DragonflyData:DetailedTableInfo)->dict:
   #\ Copy the list of list (2D arary)
   local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
 
-  print(f"[INFO] In SetRarity2Species() the rarity is :{DrgonflyData.rarity}")
-  if DrgonflyData is not None:
+  print(f"[INFO] In SetRarity2Species() the rarity is :{DragonflyData.rarity}")
+  if DragonflyData is not None:
     #\ set the rank to the three ranks and there will be three stars for displaying.
-    if DrgonflyData.rarity is "SR" :
+    if DragonflyData.rarity is "SR" :
       local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
       local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
       local_RequestDataMsgText["body"]["contents"][0]["contents"][3]["url"] = index.StarURL
 
-    elif DrgonflyData.rarity is "R" :
+    elif DragonflyData.rarity is "R" :
       local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
       local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
 
-    elif DrgonflyData.rarity is "N" :
+    elif DragonflyData.rarity is "N" :
       local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
 
     else:

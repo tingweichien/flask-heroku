@@ -42,7 +42,8 @@ def SetTimer2Update_job():
 #\ Update database to the google sheets
 def update_gSheets_daily():
     #\ Update the database to the google sheets
-    [status, gSheetResult] = gSheetAPI.GetDragonflyDataGoogleSheets()
+    # [status, gSheetResult] = gSheetAPI.GetDragonflyDataGoogleSheets()
+    None
 
 
 
