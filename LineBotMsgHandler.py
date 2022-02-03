@@ -128,9 +128,9 @@ LoginCheckText={
 
 #\ for testing
 """
-#\ account
+# account
 LoginCheckText["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = "@@@@@@@@@@@@@@@@"
-# \ password
+# password
 LoginCheckText["body"]["contents"][1]["contents"][1]["contents"][1]["text"] = "################"
 print(LoginCheckText)
 """
@@ -522,8 +522,8 @@ def RequestDataMsgText_handler(_RequestDataMsgText:dict, DragonflyData:DetailedT
 
   #\ Longitude and Latitude
   try :
-    DragonflyData.Latitude = round(float(DragonflyData.Latitude), index.PositionPrecision)
-    DragonflyData.Longitude = round(float(DragonflyData.Longitude), index.PositionPrecision)
+    DragonflyData.Latitude = str(round(float(DragonflyData.Latitude), index.PositionPrecision))
+    DragonflyData.Longitude = str(round(float(DragonflyData.Longitude), index.PositionPrecision))
     LatLngData = f"({DragonflyData.Latitude}, {DragonflyData.Longitude})"
   except :
     DragonflyData.Latitude, DragonflyData.Longitude = "None", "None"
@@ -562,7 +562,7 @@ def Set_PostMsg_Map_Request(_RequestDataMsgText:dict, DragonflyData:DetailedTabl
                                                                                                     DragonflyData.City+DragonflyData.District+DragonflyData.Place,
                                                                                                     DragonflyData.Latitude,
                                                                                                     DragonflyData.Longitude,
-                                                                                                    ', '.join(DragonflyData.Species))
+                                                                                                    ', '.join(DragonflyData.SpeciesList))
   print("[INFO] In Set_PostMsg_Map_Request() msg: " + local_RequestDataMsgText["body"]["contents"][7]["contents"][0]["action"]["data"])
 
   return local_RequestDataMsgText

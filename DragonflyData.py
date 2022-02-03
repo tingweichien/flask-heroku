@@ -263,6 +263,7 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None, filter_object:D
         for i in range(len(Max_All_Observation_Data_response_Data)):
             print(f"({i})\t"+Max_All_Observation_Data_response_Data[i].text)
         """
+        SpeciesList = []
         for idx in range(len(Max_All_Observation_Data_response_Data)):
             #\ Find the Species list
             if Max_All_Observation_Data_response_Data[idx].text == index.dragonfly_simple_info_species_col_name:
