@@ -97,24 +97,27 @@ class FilterObject:
             (2)
             Species_intersection_set:list of the filtered species
         """
-        Filter_State = False
+        UserFilter_State = False
+        SpeciesFilter_State = False
+        TodayDataFilter_State = False
 
         #\ No input then return True, since nothing is going to filter
         if self.UserFilter is None and self.SpeciesFilter is None or \
             self.KeepOrFilter is None or self.RecordNotTodayDateFilter is None:
             print("[Warning] In DataFilter object the self.UserFilter is None and self.SpeciesFilter is None or self.KeepOrFilter is None or self.RecordNotTodayDateFilter is None:")
-            return True if self.KeepOrFilter is True else False
+            return [True if self.KeepOrFilter is True else False, []]
 
         #\ User filter
         if self.UserFilter is not None:
             if len(self.UserFilter) > 0:
-                Filter_State = Data.User in self.UserFilter
+                UserFilter_State = Data.User in self.UserFilter
+
         #\ Species filter
+        Species_intersection_set = []
         if self.SpeciesFilter is not None:
             if len(self.SpeciesFilter) > 0:
                 Species_intersection_set = set(Data.SpeciesList) & set(self.SpeciesFilter)
-                print(f"[INFO] In DataFilter() Species_intersection_set: {Species_intersection_set}")
-                Filter_State = len(Species_intersection_set) > 0
+                SpeciesFilter_State = len(Species_intersection_set) > 0
 
         #\ Time filter
 
@@ -122,7 +125,24 @@ class FilterObject:
         if self.RecordNotTodayDateFilter is not None and self.RecordNotTodayDateFilter is False:
             #\ Filter out the data that is old but upload to the database today and get the newer ID.
             #\ Time data got from web: 2020-01-12 -> datetime.datetime(2020,1,12) for comparison
-            Filter_State =  datetime.strptime(Data.Dates, "%Y-%m-%d").date() == date.today()
+            Check = True
+            #\ This is the workaround that some user might forget to type the dates (0000-00-00)
+            #\ It'll cause error when using datetime library
+            try:
+                datetime.strptime(Data.Dates, "%Y-%m-%d").date()
+            except:
+                Check = False
+                print(f"[Warning] The time might not be vaild since user input incorrect: {Data.Dates}")
+
+            if Check:
+                TodayDataFilter_State =  datetime.strptime(Data.Dates, "%Y-%m-%d").date() == date.today()
+                if TodayDataFilter_State:
+                    print(f"Filter out the data(ID: {Data.IdNumber}) that's not record today({Data.Dates}) but submit today({date.today()})")
+
+        #\ Considering all the filter and get the final result
+        Filter_State = UserFilter_State & SpeciesFilter_State & TodayDataFilter_State
+        if Filter_State:
+            print(f"[INFO] In DataFilter() Filter_State: {Filter_State}, ID: {Data.IdNumber}, Species_intersection_set: {Species_intersection_set}")
 
 
         return [Filter_State if self.KeepOrFilter is True else not Filter_State, list(Species_intersection_set)]
