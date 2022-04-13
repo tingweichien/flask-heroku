@@ -178,8 +178,29 @@ DAYAlarm = {"hour": INDEX["Alarm"]["DailyUpdate"]["Hour"], "minute": INDEX["Alar
 
 
 #\ --Species directory--
-# Dragonfly_Orders
+#\ Damselfly Family list (English/Chinese)
+Damselfly_Family_list_ENG = INDEX_SPECIES["Family_Class"]["Damselfly_Family_Class"]["ENG"]
+Damselfly_Family_list_CHN = INDEX_SPECIES["Family_Class"]["Damselfly_Family_Class"]["CHN"]
 
+#\ Dragonfly Family list (ENGlish/Chinese)
+Dragonfly_Family_list_ENG = INDEX_SPECIES["Family_Class"]["Dragonfly_Family_Class"]["ENG"]
+Dragonfly_Family_list_CHN = INDEX_SPECIES["Family_Class"]["Dragonfly_Family_Class"]["CHN"]
+
+#\ Family list (Summary) (English/Chinese)
+Family_list_ENG = Damselfly_Family_list_ENG + Dragonfly_Family_list_ENG
+Family_list_CHN = Damselfly_Family_list_CHN + Dragonfly_Family_list_CHN
+
+#\ Damselfly Species dictionary (English/Chinese) dictionary
+Damselfly_Species_dict_list_CHN = INDEX_SPECIES["Species_List"]["Damselfly"]
+Damselfly_Species_dict_list_ENG = INDEX_SPECIES["Species_key"]["Damselfly"]
+
+#\ Dragonfly Species dictionary (English/Chinese) dictionary
+Dragonfly_Species_dict_list_ENG = INDEX_SPECIES["Species_key"]["Dragonfly"]
+Dragonfly_Species_dict_list_CHN = INDEX_SPECIES["Species_List"]["Dragonfly"]
+
+#\ Species dictionary (Summary) (English/Chinese)
+Species_dict_ENG = {**Damselfly_Species_dict_list_ENG, **Dragonfly_Species_dict_list_ENG}
+Species_dict_list_CHN = {**Damselfly_Species_dict_list_CHN, **Dragonfly_Species_dict_list_CHN}
 
 
 

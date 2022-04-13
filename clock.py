@@ -79,10 +79,10 @@ def Send_Hourly_Summary(session, Conn, DB_Variable_Data:dict):
                                       True,
                                       False
                                       )
-
+ 
     #\ Get the filter to the filter object : [user_list, species_list, keep_or_filter ]
     _, Species_filter_list_name = DragonflyData.GetSpeciesRecordingNumberRank(session)
-    index.Hourly_Summary_default_data_filter[1] = Species_filter_list_name[index.HSDDFilter_start_index:]
+    index.Hourly_Summary_default_data_filter.SpeciesFilter = Species_filter_list_name[index.HSDDFilter_start_index:]
     # print(f"[INFO] The Filter is {index.Hourly_Summary_default_data_filter}")
 
     #\ Send to all the user
@@ -98,7 +98,7 @@ def Send_Hourly_Summary(session, Conn, DB_Variable_Data:dict):
 
 
 
-
+#\ Currently using this function (or can be switch by the token at the end of the file)
 #\ The main function to run the clock.py function every heroku dependency defined schedule time.
 def RunClockFunctionbyHeroku():
     #\ Get the date time
@@ -127,7 +127,7 @@ def RunClockFunctionbyHeroku():
         print("[INFO][Clock]Send the data to the user for hourly summary")
 
     #\ for testing (remove when pushing to heroku master)
-    # Send_Hourly_Summary(session, conn, DB_Variable_Data)
+    Send_Hourly_Summary(session, conn, DB_Variable_Data)
 
 
 
@@ -136,19 +136,19 @@ def RunClockFunctionbyHeroku():
 
 
 ################################################################################################
+if __name__ == '__main__':
+    #\ ----------------------------------------------------------------
+    #\ Method 1: Run the clock by the schedul of apscheduler
+    if index.ClockStandAloneVer:
+        #\ Add the job
+        sched.add_job(UpdateDataBase_job, "cron", id="UpdateDataBase_job_ID", hour=0, minute=1, second=0)
 
-#\ ----------------------------------------------------------------
-#\ Run the clock by the schedul of apscheduler
-if index.ClockStandAloneVer:
-    #\ Add the job
-    sched.add_job(UpdateDataBase_job, "cron", id="UpdateDataBase_job_ID", hour=0, minute=1, second=0)
+        #\ start the clock
+        sched.start()
 
-    #\ start the clock
-    sched.start()
+    #\ Method2: Run the clock by the schedule of the Heroku add-on
+    #\          The heroku schedule set to run every hour
+    elif index.ClockHerokuDependancyVer:
 
-#\ Run the clock by the schedule of the Heroku add-on
-#\ The heroku schedule set to run every hour
-elif index.ClockHerokuDependancyVer:
-
-    #\ Main function for the clock
-    RunClockFunctionbyHeroku()
+        #\ Main function for the clock
+        RunClockFunctionbyHeroku()
