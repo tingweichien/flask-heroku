@@ -619,11 +619,12 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
             print("[Warning] The connection(conn) is None")
             return
 
-        current_crawling_id_tmp = Database.ReadFromDB(conn,
+        current_crawling_id_tmp = int(Database.ReadFromDB(conn,
                                                       Database.Read_col_userinfo_query("current_crawling_id", user_id),
                                                       True,
                                                       False
                                                       )[0]
+                                      )
 
         #\ Get the latest ID
         Latest_ID = DragonflyData.GetMaxID(DragonflyData_session)

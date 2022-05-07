@@ -108,9 +108,10 @@ class FilterObject:
             return [True if self.KeepOrFilter is True else False, []]
 
         #\ User filter
-        if self.UserFilter is not None:
-            if len(self.UserFilter) > 0:
-                UserFilter_State = Data.User in self.UserFilter
+        if self.UserFilter is not None and len(self.UserFilter) > 0:
+            UserFilter_State = Data.User in self.UserFilter
+        else:
+            UserFilter_State = True
 
         #\ Species filter
         Species_intersection_set = []
@@ -135,13 +136,13 @@ class FilterObject:
                 print(f"[Warning] The time might not be vaild since user input incorrect: {Data.Dates}")
 
             if Check:
-                TodayDataFilter_State =  datetime.strptime(Data.Dates, "%Y-%m-%d").date() != date.today()
-                if TodayDataFilter_State:
+                TodayDataFilter_State =  datetime.strptime(Data.Dates, "%Y-%m-%d").date() == date.today()
+                if not TodayDataFilter_State:
                     print(f"Filter out the data(ID: {Data.IdNumber}) that's not record today({Data.Dates}) but submit today({date.today()})")
 
         #\ Considering all the filter and get the final result
         Filter_State = UserFilter_State & SpeciesFilter_State & TodayDataFilter_State
-        if Filter_State:
+        if not (self.KeepOrFilter & Filter_State) :
             print(f"[INFO] In DataFilter() Filter_State: {Filter_State}, ID: {Data.IdNumber}, Species_intersection_set: {Species_intersection_set}")
 
 
