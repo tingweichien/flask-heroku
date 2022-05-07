@@ -135,7 +135,7 @@ class FilterObject:
                 print(f"[Warning] The time might not be vaild since user input incorrect: {Data.Dates}")
 
             if Check:
-                TodayDataFilter_State =  datetime.strptime(Data.Dates, "%Y-%m-%d").date() == date.today()
+                TodayDataFilter_State =  datetime.strptime(Data.Dates, "%Y-%m-%d").date() != date.today()
                 if TodayDataFilter_State:
                     print(f"Filter out the data(ID: {Data.IdNumber}) that's not record today({Data.Dates}) but submit today({date.today()})")
 
