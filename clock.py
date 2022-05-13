@@ -137,6 +137,7 @@ if __name__ == '__main__':
     #\ ----------------------------------------------------------------
     #\ Method 1: Run the clock by the schedul of apscheduler
     if index.ClockStandAloneVer:
+        print("[Clock] ClockStandAloneVer")
         #\ Add the job
         sched.add_job(UpdateDataBase_job, "cron", id="UpdateDataBase_job_ID", hour=0, minute=1, second=0)
 
@@ -146,6 +147,6 @@ if __name__ == '__main__':
     #\ Method2: Run the clock by the schedule of the Heroku add-on
     #\          The heroku schedule set to run every hour
     elif index.ClockHerokuDependancyVer:
-
+        print("[Clock] ClockHerokuDependancyVer")
         #\ Main function for the clock
         RunClockFunctionbyHeroku()
