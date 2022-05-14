@@ -195,6 +195,10 @@ def callback_nofity():
     except:
         return "Failed to execute the LINE Notify callback redirect URL"
 
+#\ Setting page
+@app.route("/Setting/<name>")
+def urlREST(name):
+    return "<h1>Hello {} !! This is Setting example</h1>".format(name)
 
 
 #\ handle the message
