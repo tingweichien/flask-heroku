@@ -665,10 +665,10 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
 
 
         #\ Update the current ID and save the CCID(Current Crawling ID) to datbase
-        # Database.InsertDB(conn,
-        #                 Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
-        #                 (Latest_ID, user_id)
-        #                 )
+        Database.InsertDB(conn,
+                        Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
+                        (Latest_ID, user_id)
+                        )
         print(f"[INFO] Update the current crawling ID to the database: {Latest_ID}")
 
 
