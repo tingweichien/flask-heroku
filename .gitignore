@@ -2,3 +2,4 @@ Private_Index.py
 ./Notes/image/
 ./Test/
 ./flask_session/
+./__pycache__/

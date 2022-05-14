@@ -85,7 +85,8 @@
             "Hourly_Summary_default_User_filter": [],
             "Hourly_Summary_default_Time_filter": [],
             "Hourly_Summary_default_Species_filter": [],
-            "Hourly_Summary_default_RecordNotTodayDate_filter": false,
+            "Hourly_Summary_default_RecordOnlyTodayDate_filter": false,
+            "Hourly_Summary_default_RecordOnlyThisWeekDate_filter": true,
             "Hourly_Summary_default_KeepOrFilter": true,
             "HSDDFilter_start_index": 60,
             "Species_rare_rank_from_last_60": [
