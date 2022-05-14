@@ -127,7 +127,7 @@ def RunClockFunctionbyHeroku():
         print("[INFO][Clock]Send the data to the user for hourly summary")
 
     #\ only for checking on local
-    # Send_Hourly_Summary(session, conn, DB_Variable_Data)
+    Send_Hourly_Summary(session, conn, DB_Variable_Data)
 
 
 

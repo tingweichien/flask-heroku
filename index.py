@@ -150,7 +150,8 @@ DefaultFilterObject = FilterObject()
 Hourly_Summary_default_data_filter = FilterObject(INDEX["DataBase"]["filter"]["Hourly_Summary_default_User_filter"],
                                                   INDEX["DataBase"]["filter"]["Hourly_Summary_default_Species_filter"],
                                                   INDEX["DataBase"]["filter"]["Hourly_Summary_default_Time_filter"],
-                                                  INDEX["DataBase"]["filter"]["Hourly_Summary_default_RecordNotTodayDate_filter"],
+                                                  INDEX["DataBase"]["filter"]["Hourly_Summary_default_RecordOnlyTodayDate_filter"],
+                                                  INDEX["DataBase"]["filter"]["Hourly_Summary_default_RecordOnlyThisWeekDate_filter"],
                                                   INDEX["DataBase"]["filter"]["Hourly_Summary_default_KeepOrFilter"])
 Hourly_Summary_default_data_filter.SpeciesFilter = Species_rare_rank_from_last_60.copy()
 

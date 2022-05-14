@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 #\ Data class for the simplify imfomation
 class simplifyTableInfo:
     def __init__(self, IdNumber, Dates, Times, City, District, Place, Altitude, User):
@@ -74,12 +74,19 @@ class DetailedTableInfo(simplifyTableInfo):
 
 #\ Filter Object for the dragonfly data
 class FilterObject:
-    def __init__(self, UserFilter=None, SpeciesFilter=None, TimeFilter=None, RecordNotTodayDateFilter=None, KeepOrFilter=None):
+    def __init__(self, UserFilter=None, SpeciesFilter=None, TimeFilter=None, RecordOnlyTodayDateFilter=None, RecordOnlyThisWeekDateFilter=None, KeepOrFilter=None):
         self.UserFilter = UserFilter #\ user to filter
         self.SpeciesFilter = SpeciesFilter #\ species to filter
         self.TimeFilter = TimeFilter #\ time to filter
-        self.RecordNotTodayDateFilter = RecordNotTodayDateFilter #\ filter to decide whether to keep only today's data(Yes) or the data uploaded today but record other day(No)
+        self.RecordOnlyTodayDateFilter = RecordOnlyTodayDateFilter #\ filter to decide whether to keep only today's data(Yes) or the data uploaded today but record other day(No)
+        self.RecordOnlyThisWeekDateFilter = RecordOnlyThisWeekDateFilter #\ filter to decide whether to keep only this week's data(Yes) or the data uploaded today but record a week ago(No)
         self.KeepOrFilter = KeepOrFilter #\ KeepOrFilter: indicate to do filter(False) or keep(True) the data if satisfied the condition
+
+        #\ Only one of these filter can enable: RecordOnlyTodayDateFilter, RecordOnlyThisWeekDateFilter,
+        #\ Priority: day > week
+        if self.RecordOnlyTodayDateFilter and self.RecordOnlyThisWeekDateFilter:
+            self.RecordOnlyThisWeekDateFilter = False
+
 
     #\ Filter to filter out the data with specific condition
     def DataFilter(self, Data:DetailedTableInfo)->list:
@@ -100,11 +107,12 @@ class FilterObject:
         UserFilter_State = False
         SpeciesFilter_State = False
         TodayDataFilter_State = False
+        ThisWeekDataFilter_State = False
 
         #\ No input then return True, since nothing is going to filter
         if self.UserFilter is None and self.SpeciesFilter is None or \
-            self.KeepOrFilter is None or self.RecordNotTodayDateFilter is None:
-            print("[Warning] In DataFilter object the self.UserFilter is None and self.SpeciesFilter is None or self.KeepOrFilter is None or self.RecordNotTodayDateFilter is None:")
+            self.KeepOrFilter is None or self.RecordOnlyTodayDateFilter is None:
+            print("[Warning] In DataFilter object the self.UserFilter is None and self.SpeciesFilter is None or self.KeepOrFilter is None or self.RecordOnlyTodayDateFilter is None:")
             return [True if self.KeepOrFilter is True else False, []]
 
         #\ User filter
@@ -121,27 +129,43 @@ class FilterObject:
                 SpeciesFilter_State = len(Species_intersection_set) > 0
 
         #\ Time filter
+        # ...
+
+        #\ Transfer the date to the datetime format.
+        #\ It'll cause error when using datetime library
+        #\ This is the workaround that some user might forget to type the dates (0000-00-00)
+        Check = True
+        try:
+            datetime.strptime(Data.Dates, "%Y-%m-%d").date()
+        except:
+            Check = False
+            print(f"[Warning] The time might not be vaild since user input incorrect: {Data.Dates}")
 
         #\ Record Not Today Date Filter
-        if self.RecordNotTodayDateFilter is not None and self.RecordNotTodayDateFilter is False:
+        if self.RecordOnlyTodayDateFilter is not None and self.RecordOnlyTodayDateFilter is True:
             #\ Filter out the data that is old but upload to the database today and get the newer ID.
             #\ Time data got from web: 2020-01-12 -> datetime.datetime(2020,1,12) for comparison
-            Check = True
-            #\ This is the workaround that some user might forget to type the dates (0000-00-00)
-            #\ It'll cause error when using datetime library
-            try:
-                datetime.strptime(Data.Dates, "%Y-%m-%d").date()
-            except:
-                Check = False
-                print(f"[Warning] The time might not be vaild since user input incorrect: {Data.Dates}")
-
             if Check:
                 TodayDataFilter_State =  datetime.strptime(Data.Dates, "%Y-%m-%d").date() == date.today()
                 if not TodayDataFilter_State:
                     print(f"Filter out the data(ID: {Data.IdNumber}) that's not record today({Data.Dates}) but submit today({date.today()})")
+        else:
+            TodayDataFilter_State = True
+
+        #\ Record Not This Week Date Filter
+        if self.RecordOnlyThisWeekDateFilter is not None and  self.RecordOnlyThisWeekDateFilter is True:
+            #\ Filter out the data that is old but upload to the database today and get the newer ID.
+            #\ Time data got from web: 2020-01-12 -> datetime.datetime(2020,1,12) for comparison
+            if Check:
+                ThisWeekDataFilter_State =  datetime.strptime(Data.Dates, "%Y-%m-%d").date() >= (date.today()-timedelta(days=7))
+                if not ThisWeekDataFilter_State:
+                    print(f"Filter out the data(ID: {Data.IdNumber}) that's not record within this week({Data.Dates}) but submit today({date.today()})")
+        else:
+            ThisWeekDataFilter_State = True
+
 
         #\ Considering all the filter and get the final result
-        Filter_State = UserFilter_State & SpeciesFilter_State & TodayDataFilter_State
+        Filter_State = UserFilter_State & SpeciesFilter_State & TodayDataFilter_State & ThisWeekDataFilter_State
         if not (self.KeepOrFilter & Filter_State) :
             print(f"[INFO] In DataFilter() Filter_State: {Filter_State}, ID: {Data.IdNumber}, Species_intersection_set: {Species_intersection_set}")
 
