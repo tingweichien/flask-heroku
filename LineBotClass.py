@@ -623,8 +623,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
                                                       Database.Read_col_userinfo_query("current_crawling_id", user_id),
                                                       True,
                                                       False
-                                                      )[0]
-                                      )
+                                                      )[0])
 
         #\ Get the latest ID
         Latest_ID = DragonflyData.GetMaxID(DragonflyData_session)
@@ -655,6 +654,10 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
                     please check the database query execution")
             return None
 
+        #\ Do not crawl the data if the start and the end of the ID is same.
+        if int(current_cawling_ID) == int(Latest_ID):
+            print("[Info] The current ID is equal to Latest ID, no need to update.")
+            return None
 
         #\ Get the data
         TimeIntevalDataList = DragonflyData.CrawlDataByIDRange(DragonflyData_session,

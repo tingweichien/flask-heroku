@@ -196,7 +196,6 @@ def callback_nofity():
         return "Failed to execute the LINE Notify callback redirect URL"
 
 
-
 #\ handle the message
 # @LineBotClass.gHandler.add(MessageEvent, message=TextMessage)
 # def handle_message(event):
