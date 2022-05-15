@@ -639,11 +639,15 @@ MultiRequestDataMsgText = lambda content_list:{
 #\ Init the line bot api
 #\ ---------------------------------------
 #\required
-"""
-config = configparser.ConfigParser()
-config.read('config.ini')
-gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
-"""
+# import configparser
+# from linebot import LineBotApi
+# from linebot.models.rich_menu import RichMenu, RichMenuArea, RichMenuSize, RichMenuBounds
+# from linebot.models import MessageAction, URIAction, PostbackAction
+# config = configparser.ConfigParser()
+# config.read('./Key/config.ini')
+# gLine_bot_api = LineBotApi(config.get("line-bot", "channel_access_token"))
+
+
 
 
 #\ Richmenu general setting
@@ -750,7 +754,7 @@ RichMenu_Create_MainMenu = RichMenu(size=RichMenuSize(width=2500, height=1686),
                                                                               text="Record")),
                                            RichMenuArea(bounds=RichMenuBounds(x=1666, y=0, width=833, height=843),
                                                         action=URIAction(label="DragonflyWeb",
-                                                                          uri="https://liff.line.me/1656015794-QgErjV75")),
+                                                                          uri="https://liff-playground.netlify.app/")),
                                            RichMenuArea(bounds=RichMenuBounds(x=0, y=843, width=833, height=843),
                                                         action=MessageAction(label="Search",
                                                                               text="Search")),
