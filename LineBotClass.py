@@ -577,8 +577,37 @@ def OEMSetDefaultRichmenu(linebot_api, event):
     LineBotMsgHandler.DefaultRichMenu(linebot_api, LoginState)
 
 
+#\ Check the current crwawling id and the latest id
+def CheckCurrentAndLatestID(conn, current_crawling_id_db:int, Latest_ID:int, user_id:str):
+    #\ Check if the current crawling data is None or not
+    if current_crawling_id_db is not None:
+        current_cawling_ID = current_crawling_id_db
+        #\ Update the current crawling ID
+        Database.InsertDB(  conn,
+                Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
+                (current_cawling_ID, user_id)
+                )
+        logging.debug(f"Current Crawling ID pass: {current_cawling_ID}")
+        return current_cawling_ID
+    elif current_crawling_id_db is None and Latest_ID is not None:
+        current_cawling_ID = Latest_ID
+        #\ Update the current crawling data
+        logging.debug("Update the current crawling ID to the database since there is no current crawling ID")
+        Database.InsertDB(  conn,
+                            Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
+                            (Latest_ID, user_id)
+                            )
+
+        #\ Since the current latest ID is equal to the current crawling ID so there will be no data to upate, return this function
+        return None
+    else:
+        logging.warning("In GetTodayDataSend2LINEBot() both current_crawling_id_db and Latest_ID read from the database are None,\
+                please check the database query execution")
+        return None
+
+
 #\ Callback for today's Data
-def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:bool=True,
+def GetTodayDataSend2LINEBot(user_id:str="", reply_token:str="", AllDayData:bool=True,
                              filter:DataClass.FilterObject=None, conn=None, DragonflyData_session=None):
     """Callback for today's Data or data in certain time period(control by AllDayData) and apply the filter if needed
     Args:
@@ -590,11 +619,11 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
         filter (list of list, optional): Filter to filter out the data you want. Defaults to index.DefaultFilterObject.
     """
     #\ Check the input args
-    if user_id is None:
+    if user_id is "":
         logging.critical("In GetTodayDataSend2LINEBot() No user id been specify")
         return
 
-    if reply_token is not None:
+    if reply_token is not "":
         gLine_bot_api.reply_message(reply_token,
                                     TextSendMessage(text="Please be patient, it might take a while~~")
                                     )
@@ -620,8 +649,8 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
             logging.warning("The connection(conn) is None")
             return
 
-        current_crawling_id_tmp = int(Database.ReadFromDB(conn,
-                                                      Database.Read_col_userinfo_query("current_crawling_id", user_id),
+        current_crawling_id_db = int(Database.ReadFromDB(conn,
+                                                      Database.Read_col_userinfo_query(index.UserInfo_current_crawling_id, user_id),
                                                       True,
                                                       False
                                                       )[0])
@@ -629,40 +658,19 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
         #\ Get the latest ID
         Latest_ID = DragonflyData.GetMaxID(DragonflyData_session)
 
-        #\ Check if the current crawling data is None or not
-        if current_crawling_id_tmp is not None:
-            current_cawling_ID = current_crawling_id_tmp
-
-        elif current_crawling_id_tmp is None and Latest_ID is not None:
-            current_cawling_ID = Latest_ID
-            #\ Update the current crawling data
-            Database.InsertDB(  conn,
-                                Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
-                                (Latest_ID, user_id)
-                             )
-
-            #\ Save the CCID(Current Crawling ID) to datbase
-            logging.debug("Update the current crawling ID to the database since there is no current crawling ID")
-            Database.InsertDB(conn,
-                              Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
-                              (current_cawling_ID, user_id)
-                              )
-            #\ Since the current latest ID is equal to the current crawling ID so there will be no data to upate, return this function
-            return None
-
-        else:
-            logging.warning("In GetTodayDataSend2LINEBot() both current_crawling_id_tmp and Latest_ID read from the database are None,\
-                    please check the database query execution")
+        current_cawling_ID = CheckCurrentAndLatestID(conn, current_crawling_id_db, Latest_ID, user_id)
+        if current_cawling_ID is None:
+            logging.info("The current ID is None")
             return None
 
         #\ Do not crawl the data if the start and the end of the ID is same.
-        if int(current_cawling_ID) == int(Latest_ID):
+        if current_cawling_ID == int(Latest_ID):
             logging.info("The current ID is equal to Latest ID, no need to update.")
             return None
 
         #\ Get the data
         TimeIntevalDataList = DragonflyData.CrawlDataByIDRange(DragonflyData_session,
-                                                            int(current_cawling_ID),
+                                                            current_cawling_ID,
                                                             int(Latest_ID),
                                                             filter
                                                             )
