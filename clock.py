@@ -10,7 +10,7 @@ import DragonflyData
 import LineBotClass
 import Database
 import pytz
-import gSheetAPI
+import logging
 
 
 sched = BlockingScheduler()
@@ -79,6 +79,8 @@ def Send_Hourly_Summary(session, Conn, DB_Variable_Data:dict):
                                       True,
                                       False
                                       )
+    if userid_list is None:
+        logging.warning("In Send_Hourly_Summary, the user ID list is none")
 
     #\ Get the filter to the filter object : [user_list, species_list, keep_or_filter ]
     _, Species_filter_list_name = DragonflyData.GetSpeciesRecordingNumberRank(session)
@@ -126,8 +128,11 @@ def RunClockFunctionbyHeroku():
         Send_Hourly_Summary(session, conn, DB_Variable_Data)
         print("[INFO][Clock]Send the data to the user for hourly summary")
 
+    ####################################################
+    #\ Remember to comment out this
     #\ only for checking on local
-    Send_Hourly_Summary(session, conn, DB_Variable_Data)
+    # Send_Hourly_Summary(session, conn, DB_Variable_Data)
+    ####################################################
 
 
 
