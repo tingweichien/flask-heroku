@@ -12,6 +12,12 @@
 
 import json
 from DataClass import FilterObject
+import logging
+
+#\ Logging leveland config
+LoggingLevel = logging.DEBUG #\ DEBUG < INFO < WARNING < CRITICAL
+logging.basicConfig(format='[%(levelname)s]: %(message)s', level=logging.INFO)
+
 
 #\ Load data from json file
 with open("./Setting/Index.json", encoding="utf-8") as f:

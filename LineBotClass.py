@@ -12,6 +12,7 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage, FollowEve
 import configparser
 from flask import request, abort
 import index
+from index import *
 from VarIndex import * #\ remeber to include this to use the cache function
 import LineBotMsgHandler
 import DragonflyData
@@ -22,9 +23,9 @@ import random
 from gSheetAPI import Sheet_id_dict
 import urllib
 import urllib.request, urllib.parse
-import json
 import yaml
 import DataClass
+# import logging
 
 
 #\ -- Global --
@@ -46,19 +47,19 @@ def LineBotHandler(app):
     #\ get X-Line-Signature header value
     #\ 如果該HTTP POST訊息是來自LINE平台，在HTTP請求標頭中一定會包括X-Line-Signature項目，
     #\ 該項目的內容值是即為數位簽章。例如：
-    print("[INFO]LineBotHandler")
+    logging.debug("LineBotHandler")
     signature = request.headers['X-Line-Signature']
 
     #\ get request body as text
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
-    print(f"[INFO] body-->{body}")
+    logging.info(f"Body-->{body}")
 
     #\ handle webhook body
     try:
         gHandler.handle(body, signature)
     except InvalidSignatureError:
-        print("Invalid signature. Please check your channel access token/channel secret.")
+        logging.warning("Invalid signature. Please check your channel access token/channel secret.")
         abort(400)
 
     return 'OK'
@@ -68,10 +69,10 @@ def LineBotHandler(app):
 #\ handle the message
 @gHandler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    print(f"[INFO] TextMessage\n[INFO] Event :{event}")
+    logging.debug(f"TextMessage\n[INFO] Event :{event}")
 
     #\ Check if there are user info store in the database, if True, then skip the login check
-    print(f'[INFO] gIsJustText : {cache.get("gIsJustText")}\n[INFO] gEvent : {cache.get("gEvent")}\n[INFO] gLoginStatus: {cache.get("gLoginStatus")}')
+    logging.debug(f'[INFO] gIsJustText : {cache.get("gIsJustText")}\n[INFO] gEvent : {cache.get("gEvent")}\n[INFO] gLoginStatus: {cache.get("gLoginStatus")}')
     if cache.get("gLoginStatus") is False :
         #\ If the user info had been created
         if CheckUserInfo(event) is True:
@@ -169,7 +170,7 @@ def handle_text_message(event):
             cache.set("gIsJustText", True)
 
     else :
-        print("[EVENT] Echo")
+        logging.debug("[EVENT] Echo")
         cache.set("gEvent", eLineBotEvent.NONE.value)
         gLine_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
 
@@ -211,7 +212,7 @@ def CheckEvent(event_text:str):
     else:
         cache.set("gEvent", eLineBotEvent.NONE.value)
 
-    print(f'[INFO] CheckEvent : {event_text}, (gIsJustText : {cache.get("gIsJustText")})')
+    logging.debug(f'CheckEvent : {event_text}, (gIsJustText : {cache.get("gIsJustText")})')
 
 
 
@@ -220,13 +221,13 @@ def CheckUserInfo(event):
     DB_Data = Database.ReadFromDB(Database.CreateDBConection(),
                                     Database.Read_userinfo_query(event.source.user_id),
                                     True)
-    print(f"[INFO] In the CkeckUserInfo() the Data return from the DB is {DB_Data}")
+    logging.debug(f"In the CkeckUserInfo() the Data return from the DB is {DB_Data}")
     if DB_Data is not None:
         cache.set("gLoginStatus", True)
-        print("[INFO] The User has user info data store in the database")
+        logging.debug("The User has user info data store in the database")
         return True
     else :
-        print("[INFO] The User has no user info data store in the database")
+        logging.debug("[INFO] The User has no user info data store in the database")
         return False
 
 
@@ -273,7 +274,7 @@ def IDRequestCallback(event):
             IDNumber = int(event.message.text)
         except:
             gLine_bot_api.reply_message(event.reply_token, "Input ID number is not integer !!!!!!!!!!!")
-            print("[Warning] Input ID number is not integer")
+            logging.warning("Input ID number is not integer")
             cache.set("gEventCnt", 0)
             return False
 
@@ -284,12 +285,12 @@ def IDRequestCallback(event):
         [ID_find_result, overflow, Max_ID_Num] = DragonflyData.DataCrawler(DragonflyData_session, IDNumber, None, index.Hourly_Summary_default_data_filter)
 
         if overflow:
-            print(f"[INFO] The ID is overflow, please use the ID smaller {Max_ID_Num}")
+            logging.debug(f"The ID is overflow, please use the ID smaller {Max_ID_Num}")
             gLine_bot_api.reply_message(event.reply_token,
                                 TextSendMessage(text=f"The ID is overflow, please use the ID smaller {Max_ID_Num}")
                                 )
         else:
-            print(f"[INFO] Successfully craw the data")
+            logging.debug(f"Successfully craw the data")
             #\ handle the Description to align
             if ID_find_result.Description is not None:
                 ID_find_result.Description = f"\n{' '*10}".join(list(ID_find_result.Description.split("\n")))
@@ -356,12 +357,12 @@ def CreateWebSession(event=None, CloseDBConn=True):
     else:
         read_query = Database.Read_all_query(index.UserInfoTableName)
         fetchone = False
-    print(f"[INFO] in CrateWebSession read query : {read_query}")
+    logging.debug(f"in CrateWebSession read query : {read_query}")
 
     #\ read the data from DB
     conn = Database.CreateDBConection()
     if conn is None:
-        print("[Warming] Fail to do CreateWebSession() due to the CreateDBConnection() fail")
+        logging.warning("Fail to do CreateWebSession() due to the CreateDBConnection() fail")
         return None, None
 
     DB_Data = Database.ReadFromDB(conn,
@@ -373,7 +374,7 @@ def CreateWebSession(event=None, CloseDBConn=True):
 
     #\ check the return from the database is vaild or not
     if DB_Data is None:
-        print("[Warning] No DB Data return, skip the requwst ID function")
+        logging.warning("No DB Data return, skip the requwst ID function")
 
     #\ handle the account and password read from the database with fetchone and fetchall
     if event is not None and fetchone is True:
@@ -386,10 +387,10 @@ def CreateWebSession(event=None, CloseDBConn=True):
     #\ return session
     [session, _, Login_state] = DragonflyData.Login_Web(ACC, PW)
     if Login_state is False:
-        print("[Warning] In CreateWebSession() Login_state is False")
+        logging.warning("In CreateWebSession() Login_state is False")
         return None, None
     else:
-        print("[INFO] In CreateWebSession() successfully login")
+        logging.info("In CreateWebSession() successfully login")
         return session, conn
 
 
@@ -400,7 +401,7 @@ def CreateWebSession(event=None, CloseDBConn=True):
 def handle_follow_message(event):
     # cache.set("gEvent", eLineBotEvent.LOGIN.value)
     # cache.set("gIsJustText", False)
-    print("[INFO]: JoinEvent")
+    logging.info("JoinEvent")
     for idx in range(len(index.JoinEventText)):
         gLine_bot_api.reply_message(
                         event.reply_token,
@@ -417,26 +418,26 @@ def handle_follow_message(event):
 
 #\ login to web
 def LineBotLogin2Web(login_account:str, login_password:str)->str:
-    print("[INFO] LineBotLogin2Web")
+    logging.info("LineBotLogin2Web")
 
     #\ Get the login PW and ACCOUNT
-    print(f'[INFO] Account: {login_account}, Password: {login_password}')
+    logging.info(f'Account: {login_account}, Password: {login_password}')
 
     #\ Main function to login
     [Dragonfly_session, Login_Response, Login_state] = DragonflyData.Login_Web(login_account, login_password)
-    print(f"[INFO] Login_Response: {Login_Response}, Login_state: {Login_state}")
+    logging.info(f"Login_Response: {Login_Response}, Login_state: {Login_state}")
 
     #\ Check the login state
     if (Login_state == False):
-        print("[Warning] Warning!!! Account or Password might be incorrect!!!!")  #incorrect account or password
+        logging.warning(f"Warning!!! Account or Password might be incorrect!!!!")  #incorrect account or password
         return "Account or Password might be incorrect!!!!"
 
     elif Login_Response == None and Login_state == None:
-        print("[Warning] No connection to server, check the internet connection!!!")
+        logging.warning(f"No connection to server, check the internet connection!!!")
         return " No connection to server, check the internet connection!!!"
 
     else: #\ Login_state == True and Login_Response not None
-        print("[info] Login state success")
+        logging.info("Login state success")
 
         #\ Function finish state
         cache.set("gLoginStatus", True)
@@ -462,7 +463,7 @@ def LoginProgress(event):
     #\ Increase the event count
     tmpCnt += 1
     cache.set("gEventCnt", tmpCnt)
-    print(f'[EVENT] Login gEventCnt: {cache.get("gEventCnt")}')
+    logging.info(f'Login gEventCnt: {cache.get("gEventCnt")}')
 
 
     #\\\\\\\ The login event \\\\\\\\
@@ -471,7 +472,7 @@ def LoginProgress(event):
     if cache.get("gEventCnt") == 4:
         #\ Button loginc onfirm
         if event.message.text == "LOGIN_CONFIRM":
-            print("[INFO] Login info user confirm")
+            logging.info("Login info user confirm")
             gLine_bot_api.reply_message(
                                         event.reply_token,
                                         TextSendMessage(text="Start to Login~")
@@ -479,7 +480,7 @@ def LoginProgress(event):
 
             #\ Start Login to web method
             LoginStateMessage = LineBotLogin2Web(cache.get("gAccount"), cache.get("gPassword"))
-            print(f"[INFO] LoginStateMessage: {LoginStateMessage}")
+            logging.info(f"LoginStateMessage: {LoginStateMessage}")
             gLine_bot_api.push_message(event.source.user_id,
                                         TextSendMessage(text=LoginStateMessage)
                                         )
@@ -520,12 +521,12 @@ def LoginProgress(event):
 
         #\ Button Login not confirm
         elif event.message.text == "LOGIN_FAIL":
-            print("[INFO] Login info user decline")
+            logging.info("Login info user decline")
             cache.set("gEventCnt", 1)
 
         #\ Button Exit the login process
         elif event.message.text == "LOGIN_EXIT":
-            print("[INFO] Exit login")
+            logging.info("Exit login")
             cache.set("gEventCnt", 0)
 
 
@@ -563,7 +564,7 @@ def LoginProgress(event):
     #\ -- gEventCnt = else --
     else:
         #\ reset the is-just-text flag and the event count and event
-        print("[INFO] RESET event data~~~~~~~~~")
+        logging.debug("RESET event data~~~~~~~~~")
         cache.set("gIsJustText", True)
         cache.set("gEventCnt", 0)
         cache.set("gEvent", eLineBotEvent.NONE.value)
@@ -590,7 +591,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
     """
     #\ Check the input args
     if user_id is None:
-        print("[Error] In GetTodayDataSend2LINEBot() No user id been specify")
+        logging.critical("In GetTodayDataSend2LINEBot() No user id been specify")
         return
 
     if reply_token is not None:
@@ -616,7 +617,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
     else :
         #\ Get the data for certain time interval
         if conn is None:
-            print("[Warning] The connection(conn) is None")
+            logging.warning("The connection(conn) is None")
             return
 
         current_crawling_id_tmp = int(Database.ReadFromDB(conn,
@@ -641,7 +642,7 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
                              )
 
             #\ Save the CCID(Current Crawling ID) to datbase
-            print("[INFO] Update the current crawling ID to the database since there is no current crawling ID")
+            logging.debug("Update the current crawling ID to the database since there is no current crawling ID")
             Database.InsertDB(conn,
                               Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
                               (current_cawling_ID, user_id)
@@ -650,13 +651,13 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
             return None
 
         else:
-            print("[Warning] In GetTodayDataSend2LINEBot() both current_crawling_id_tmp and Latest_ID read from the database are None,\
+            logging.warning("In GetTodayDataSend2LINEBot() both current_crawling_id_tmp and Latest_ID read from the database are None,\
                     please check the database query execution")
             return None
 
         #\ Do not crawl the data if the start and the end of the ID is same.
         if int(current_cawling_ID) == int(Latest_ID):
-            print("[Info] The current ID is equal to Latest ID, no need to update.")
+            logging.info("The current ID is equal to Latest ID, no need to update.")
             return None
 
         #\ Get the data
@@ -672,12 +673,12 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
                         Database.Update_userinfo_query(index.UserInfo_current_crawling_id),
                         (Latest_ID, user_id)
                         )
-        print(f"[INFO] Update the current crawling ID to the database: {Latest_ID}")
+        logging.info(f"Update the current crawling ID to the database: {Latest_ID}")
 
 
         #\ return in the returned data list is None
         if len(TimeIntevalDataList) is 0:
-            print("[INFO] In GetTodayDataSend2LINEBot() No data need to update")
+            logging.info("In GetTodayDataSend2LINEBot() No data need to update")
             return None
 
     #\ End of the AllDayData is False ------------------------------------------------------------------------
@@ -691,9 +692,9 @@ def GetTodayDataSend2LINEBot(user_id:str=None, reply_token:str=None, AllDayData:
 
 
     #\ Handling the carsoul text message with limitation number by LINE API
-    # print(f"[INFO] in GetTodayDataSend2LINEBot() content list\n{content_list}")
+    logging.debug(f"In GetTodayDataSend2LINEBot() content list\n{content_list}")
     if len(content_list) is 0:
-        print("[INFO] In GetTodayDataSend2LINEBot() No data need to update")
+        logging.info("In GetTodayDataSend2LINEBot() No data need to update")
         gLine_bot_api.push_message(user_id,
                         TextSendMessage(text="No data updated today")
                         )
@@ -746,21 +747,21 @@ def InitCache(_cache):
 @gHandler.add(PostbackEvent)
 def handle_postback_event(event):
     PostBackEventRawString = event.postback.data.lower().replace(" ", "")
-    print(f"[INFO] PostBackEventRawString: {PostBackEventRawString}")
+    logging.info(f"PostBackEventRawString: {PostBackEventRawString}")
     PostbackEvent = CheckPostEvent(PostBackEventRawString)
 
     #\ Go to second main richmenu
     if PostbackEvent == eLineBotPostEvent.OTHERS.value:
         gLine_bot_api.link_rich_menu_to_user(event.source.user_id,cache.get("RichMenuID")["Main2 Richmenu"])
-        print("[INFO] Switch to the Main2 Richmenu")
+        logging.debug("Switch to the Main2 Richmenu")
 
     elif PostbackEvent == eLineBotPostEvent.GOBACKMAIN.value:
         gLine_bot_api.link_rich_menu_to_user(event.source.user_id,cache.get("RichMenuID")["Main Richmenu"])
-        print("[INFO] Go back to the Main Richmenu")
+        logging.debug("Go back to the Main Richmenu")
 
     elif PostbackEvent == eLineBotPostEvent.SHOWONMAP.value:
         [Id, Addr, Lat, Lng, species] = PostBackEventRawString.split("_")[1:]
-        print(f"[INFO] In the POST back event, the ID: {Id}, Addr: {Addr}, Lat: {Lat}, Lng: {Lng}, species:{species}")
+        logging.debug(f"In the POST back event, the ID: {Id}, Addr: {Addr}, Lat: {Lat}, Lng: {Lng}, species:{species}")
         #\ becareful every POST back meg is in lower case
         if Lat != "none" and Lng != "none":
             gLine_bot_api.push_message(event.source.user_id,
@@ -770,17 +771,17 @@ def handle_postback_event(event):
                                                             longitude=float(Lng)
                                                             )
                                         )
-            print("[INFO] Show the address on the map")
+            logging.debug("Show the address on the map")
 
         else:
             gLine_bot_api.push_message(event.source.user_id,
                                         TextSendMessage(
                                             text="Sorry~\n The Latitude and the Longitude is None, might due to the submitter selfishness for not sharing the info")
                                         )
-            print("[INFO] The Latitude and Longitude is None")
+            logging.debug("The Latitude and Longitude is None")
 
     else :
-        print("[INFO] No POST event been specified")
+        logging.debug("No POST event been specified")
 
 
 #\ Check the post event
@@ -807,7 +808,7 @@ def CheckPostEvent(event_text:str):
 #\ --- Line Bot for Line Notify ---
 #\ send this url to the user to get the access token
 def create_auth_link(user_id, client_id=index.LN_Client_ID, redirect_uri=index.LN_redirect_uri):
-    print("[LINE Notify] Request the user to authorize the LINE Notify")
+    logging.debug("[LINE Notify] Request the user to authorize the LINE Notify")
     data = {
         'response_type': 'code',
         'client_id': client_id,
@@ -834,9 +835,9 @@ def Check_LN_Key_exist(userid: str):
     #\ Set the User ID to cache
     cache.set("gUserID", userid)
 
-    print(f"[Info] In Check_LN_Key_exist() the access token is {Userinfo_access_token}")
+    logging.debug(f"In Check_LN_Key_exist() the access token is {Userinfo_access_token}")
     if Userinfo_access_token[0] is None:
-        print("[Info] Updating the LINE Notify access token")
+        logging.debug("Updating the LINE Notify access token")
         #\ Send the link to the user to authorize and get the access token
         #\ After the user click authorize, it'll redirect to the callback_nofity() in app.py
         #\ the code can be got, then can start to ask the LINE Notify for the access token
@@ -860,7 +861,7 @@ def LN_get_token(code:str, client_id:str=index.LN_Client_ID, client_secret:str=i
     Returns:
         str: access token
     """
-    print("[LINE Notify] Get Token")
+    logging.debug("[LINE Notify] Get Token")
     url = 'https://notify-bot.line.me/oauth/token'
     headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
     data = {
@@ -885,7 +886,7 @@ def LN_get_token(code:str, client_id:str=index.LN_Client_ID, client_secret:str=i
                       (res['access_token'], cache.get("gUserID")))
     #\ Set to the cache
     cache.set("gLN_AccessToken", res['access_token'])
-    print(f"[LINE Notify] Access Token : {res['access_token']}")
+    logging.debug(f"[LINE Notify] Access Token : {res['access_token']}")
     return res['access_token']
 
 
@@ -900,11 +901,11 @@ def LN_send_message(access_token:str=None, text_message:str=None, picurl:str=Non
         text_message (str, optional): [test message to sen]. Defaults to None.
         picurl (str, optional): [piecture url]. Defaults to None.
     """
-    print("[LINE Notify] Send message")
+    logging.debug("[LINE Notify] Send message")
 
     #\ Handle the access token and check the input data vaildation
     if access_token is None:
-        print("[Warning][LINE Notify] access token is None")
+        logging.debug("[Warning][LINE Notify] access token is None")
         return
     else:
         url = 'https://notify-api.line.me/api/notify'
@@ -912,7 +913,7 @@ def LN_send_message(access_token:str=None, text_message:str=None, picurl:str=Non
 
     #\ The LINE Notify required the text message no matter whether the picture url is specify or not
     if text_message is None:
-        print("[Warning][LINE Notify] Not specify the mandatory text message to send")
+        logging.debug("[Warning][LINE Notify] Not specify the mandatory text message to send")
         return
 
     DataToSend = dict()
