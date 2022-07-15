@@ -108,29 +108,34 @@ def ExecuteDB(conn, query):
 
 
 #\ Insert into DB SQL command
-def InsertDB(conn, query:str, data:tuple, close_connection:bool=True):
+def InsertDB(conn, query:str, data:tuple, close_connection:bool=False)->bool:
     """[summary]
 
     Args:
         conn ([type]): connection for the database
         query (string): query(the column) to insert
         data (tuple): data to be insert
+    return :
+        True: success to insert
+        False: fail to insert
     """
     try:
         cursor = conn.cursor()
         cursor.execute(query, data)
         conn.commit()
         print("[INFO] Successfully execute the insert database query")
-
+        Staus = True
     except:
         print("[WARNING] Unable to execute the insert database query")
+        Staus = False
 
     if close_connection:
         CloseDBConnection(conn)
+    return Staus
 
 
 #\ Insert multi data into DB SQL command
-def InsertManyDB(conn, query, datas, close_connection=True):
+def InsertManyDB(conn, query, datas, close_connection=False):
     """Insert multi data into DB SQL command
 
     Args:
@@ -160,7 +165,7 @@ def UpdateDB(conn, query, data):
 
 
 #\ Read the data
-def ReadFromDB(conn, query, FetchOneOrNot=True, CloseConn=True):
+def ReadFromDB(conn, query, FetchOneOrNot=True, CloseConn=False):
     """
     @params
         conn : Connection
