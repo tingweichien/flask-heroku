@@ -100,12 +100,8 @@ def Leaflet():
     MapData = []
     MapDataStatus = 0
     if request.method == "POST":
-        print(f"request.form: {request.form}")
         [MapDataStatus, MapData] = gSheetAPI.GetDragonflyDataGoogleSheets(request.form['Family']+request.form['Species'], None)
-        print("[INFO] Leaflet router method : POST")
-    else:
-        print("[INFO] Leaflet router method : GET")
-
+    
     return render_template("Leaflet.html",
                             _index=index,
                             _MenuBarSetting=L_MenuBarSetting,
@@ -143,33 +139,15 @@ def LineBotEcho():
     body_text = request.get_data(as_text=True)
     body = json.loads(body_text)
 
-    # 修正重點：防止 LINE 的 Verify 驗證(空 event)導致陣列越界當機
     if len(body.get("events", [])) == 0:
         return "ok", 200
-
-    if cache.get("gLN_AccessToken") is None:
-        try:
-            user_id = body["events"][0]["source"]["userId"]
-            LineBotClass.Check_LN_Key_exist(user_id)
-        except Exception as e:
-            logging.error(f"[LineBotEcho Error] Failed to check LN Key: {e}")
 
     LineBotClass.LineBotHandler(app)
     return "ok"
 
 @app.route("/callback/notify", methods=['GET'])
 def callback_nofity():
-    if not USE_LINE:
-        return "LINE is disabled", 200
-
-    try:
-        assert request.headers['referer'] == 'https://notify-bot.line.me/'
-        code = request.args.get('code')
-        state = request.args.get('state')
-        access_token = LineBotClass.LN_get_token(code, index.LN_Client_ID, index.LN_Client_Secret, index.LN_redirect_uri)
-        return "恭喜完成 LINE Notify 連動！請關閉此視窗。"
-    except:
-        return "Failed to execute the LINE Notify callback redirect URL"
+    return "LINE Notify function is currently disabled.", 200
 
 #\ -- Telegram Bot --
 @app.route('/TelegramWebhook', methods=['POST'])
@@ -183,7 +161,6 @@ def TelegramWebhook():
         user_text = update["message"]["text"]
 
         reply_text = f"你傳送了: {user_text}\n(Telegram Bot 正常運作中！)"
-
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
         payload = {"chat_id": chat_id, "text": reply_text}
         requests.post(url, json=payload)
