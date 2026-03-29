@@ -575,18 +575,18 @@ def SetRarity2Species(_RequestDataMsgText:dict, DragonflyData:DetailedTableInfo)
   local_RequestDataMsgText = copy.deepcopy(_RequestDataMsgText)
 
   print(f"[INFO] In SetRarity2Species() the rarity is :{DragonflyData.rarity}")
-  if DragonflyData is not None:
+  if DragonflyData != None:
     #\ set the rank to the three ranks and there will be three stars for displaying.
-    if DragonflyData.rarity is "SR" :
+    if DragonflyData.rarity == "SR" :
       local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
       local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
       local_RequestDataMsgText["body"]["contents"][0]["contents"][3]["url"] = index.StarURL
 
-    elif DragonflyData.rarity is "R" :
+    elif DragonflyData.rarity == "R" :
       local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
       local_RequestDataMsgText["body"]["contents"][0]["contents"][2]["url"] = index.StarURL
 
-    elif DragonflyData.rarity is "N" :
+    elif DragonflyData.rarity == "N" :
       local_RequestDataMsgText["body"]["contents"][0]["contents"][1]["url"] = index.StarURL
 
     else:
@@ -700,7 +700,7 @@ def UploadRichMenu(line_bot_api ,file_path:str, rich_menu_id:str, content_type:s
 #\ Default Richmenu handling
 def DefaultRichMenu(linebot_api, LoginState):
   rich_menu_dict = Get_RichMenu(linebot_api)
-  if LoginState is True:
+  if LoginState == True:
     linebot_api.set_default_rich_menu(rich_menu_dict["Main Richmenu"])
     print("[INFO] Set the Richmenu to Main Richmenu")
   else:

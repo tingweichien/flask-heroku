@@ -220,7 +220,7 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None, filter_object:D
     #\先確ID認是否超處範圍
     #\ Design to let the function not getting max number again when in the loop.
     overflow = False
-    if InputMaxID is None:
+    if InputMaxID == None:
         # soup_ID_check = BeautifulSoup(All_Observation_Data_response.text, 'html.parser')
         # All_Observation_Data_response_Data_Set = soup_ID_check.find(id='theRow')
         # Max_All_Observation_Data_response_Data = All_Observation_Data_response_Data_Set.find_all('td')
@@ -231,11 +231,11 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None, filter_object:D
 
     #\ This is the patch for parsing the data from the latest
     #\ If the input ID is not specified(None) then set the ID to the latest
-    if Input_ID is None :
+    if Input_ID == None :
         Input_ID = Max_ID_Num
 
     #\check if the ID is out of the range
-    if (Input_ID is not None) and (Input_ID > Max_ID_Num) or (Input_ID < 0):
+    if (Input_ID != None) and (Input_ID > Max_ID_Num) or (Input_ID < 0):
         overflow = True
         ID_find_result = []
     else:
@@ -247,7 +247,7 @@ def DataCrawler(session, Input_ID:int=None, InputMaxID:int=None, filter_object:D
         #\ find the description
         # print("\n\n->"+str(soup2.find("textarea", {'id':'R_MEMO'}).text))
         # print(str(soup2.find(id='R_MEMO').text))
-        if soup2.find(id='R_MEMO').text is not None and len(soup2.find(id='R_MEMO').text.replace(" ", "")) is not 0:
+        if soup2.find(id='R_MEMO').text != None and len(soup2.find(id='R_MEMO').text.replace(" ", "")) != 0:
             Description = soup2.find(id='R_MEMO').text.replace(" ", "").replace("\n", "").replace("\t", "")
         else:
             Description = "None"
@@ -407,7 +407,7 @@ def CheckSpeciesRarityRates(Species_intersection:list, species_filter:list)->str
     #\ this specify the species is not in the filter, which you want to filter out and don't want to see
     rarity = -1
 
-    if Species_intersection is not None and species_filter is not None:
+    if Species_intersection != None and species_filter != None:
         for species in Species_intersection:
             if species in species_filter:
                 rarity = max([species_filter.index(species)])
@@ -452,12 +452,12 @@ def CrawlDataByIDRange(session, Start_ID:int=None, End_ID:int=None, filter_objec
     SetEndID2Latest = False
 
     #\ Check the input args (End_ID allow to be None for crawling from start to the latest ID)
-    if Start_ID is None or filter_object is None:
+    if Start_ID == None or filter_object == None:
         print("[Warning] In CrawlDataByIDRange() the Start_ID is None or filter_object is None")
         return None
 
     #\ This allow to crawl from certain start ID to the latest ID when the End_ID is None
-    if End_ID is None:
+    if End_ID == None:
         SetEndID2Latest = True
     else:
         #\ End_ID is not None
@@ -482,7 +482,7 @@ def CrawlDataByIDRange(session, Start_ID:int=None, End_ID:int=None, filter_objec
             result_list.append(ID_find_result)
 
         #\ Go to the next ID
-        if SetEndID2Latest is True:
+        if SetEndID2Latest == True:
             #\ This allow to crawl from certain start ID to the latest ID when the End_ID is None
             counter += 1
             End_ID = Max_ID_Num - counter

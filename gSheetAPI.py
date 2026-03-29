@@ -1,147 +1,79 @@
 # \ This is the google sheet api feature
-# \ reference : https://www.maxlist.xyz/2018/09/25/python_googlesheet_crud/
-# \              https://www.learncodewithmike.com/2020/08/python-write-to-google-sheet.html
-
 import pygsheets
 import index
 from typing import List
-# import gspread
-# from oauth2client.service_account import ServiceAccountCredentials
+import logging
 
 # \ -- Authorize --
-client = pygsheets.authorize(service_file=index.GSheetApiKeyPath)
+client = None
+try:
+    # 加入防呆：如果金鑰失效或被 Google 拒絕，不要讓整個 App 崩潰
+    client = pygsheets.authorize(service_file=index.GSheetApiKeyPath)
+    logging.info("[INFO] Google Sheets API authorized successfully.")
+except Exception as e:
+    logging.error(f"[Google Auth Error] Failed to authorize Google Sheets API. Your JWT signature might be invalid or expired. Error: {e}")
 
-"""For example
-sheet = gc.open_by_url(
-    "https://docs.google.com/spreadsheets/d/1dZtaLtbP4PKsjcQ01mj25HDkEBzk-nF0094tUhce1YU/edit?usp=sharing")
-
-# \--  Open the sheets --
-wks_list = sheet.worksheets()
-print(wks_list)
-
-# \ -- Select the worksheet --
-# \ Select by order
-wks_order = sheet[0]
-
-# \ Select by name
-wks_name = sheet.worksheet_by_title("Table2")
-
-# \ Update title
-wks_order.title = "New Table2"
-
-
-# \ -- Read the worksheets --
-A1 = wks_order.cell("A1")
-print(f"Al : {A1.value}")
-A2 = wks_order.get_value("A2")
-print(f"A2 : {A2}")
-ALL = wks_name.get_all_values(include_tailing_empty=False,
-                              include_tailing_empty_rows=False)
-print(f"All: {ALL}")
-
-
-# \ -- Update the google sheets --
-wks_name.update_value('A1', 'test')
-
-"""
-def OpenGSheet(Species_table:str, gSheetIDList:list)->pygsheets.Worksheet:
-    #\Get the sheet
+def OpenGSheet(Species_table:str, gSheetIDList:list=None):
     global client
+    if client is None:
+        logging.error("[Google Auth Error] Client not initialized. Cannot open Google Sheet.")
+        return None
 
-    #\ Get the list
     if gSheetIDList is None:
         gSheetIDList = Sheet_id_dict()
 
-    #\ get the url correspond to the input Species_table name
-    #\ https://docs.google.com/spreadsheets/d/1dZtaLtbP4PKsjcQ01mj25HDkEBzk-nF0094tUhce1YU/edit?usp=sharing
-    SpeciesUrl = None
     try:
         SpeciesUrl = index.GeneralgSheetUrl(gSheetIDList[Species_table])
-        status = True
-    except :
-        # SpeciesUrl =  index.GeneralgSheetUrl(gSheetIDList["Calopterygidae01"])
-        status = False
+    except Exception as e:
+        logging.error(f"[Google Sheets Error] Cannot find the sheet URL for {Species_table}: {e}")
+        return None
 
+    try:
+        sheet = client.open_by_url(SpeciesUrl)
+        wks_order = sheet.worksheets()[0]
+        return wks_order
+    except Exception as e:
+        logging.error(f"[Google Sheets Error] Failed to open worksheet: {e}")
+        return None
 
-    #\ Open the sheets
-    sheet = client.open_by_url(SpeciesUrl)
-    wks_list = sheet.worksheets()
-
-    #\ Select the worksheet
-    #\ Select by order
-    wks_order = wks_list[0]
-
-    return wks_order
-
-#\ Set the data to the gsheets
 def SetDragonflyDataGoogleSheets(Species_table:str, gSheetIDList:list=None, NumRows:int=1, Data2Update:list=[]):
-    """Set the data to the gsheets
-
-    Args:
-        Species_table (str): [description]
-        gSheetIDList (list, optional): [description]. Defaults to None.
-        NumRows (int, optional): [description]. Defaults to 1.
-        Data2Update (list, optional): [description]. Defaults to [].
-    """
-    #\ Open the sheets
     wks_order = OpenGSheet(Species_table, gSheetIDList)
-    #\ 2 is to skip the column name.
-    wks_order.insert_rows(2, number=NumRows, value=Data2Update)
+    if wks_order:
+        try:
+            wks_order.insert_rows(2, number=NumRows, value=Data2Update)
+        except Exception as e:
+            logging.error(f"[Google Sheets Error] Failed to insert rows: {e}")
 
-
-
-#\ Function to get the dragonfly data from the google sheets
 def GetDragonflyDataGoogleSheets(Species_table:str, gSheetIDList:list=None)->list:
-    """Function to get the dragonfly data from the google sheets
-    Args:
-        Species_table (str): title of the gsheet
-        gSheetIDList (list, optional): gsheet list. Defaults to None, or you can put the cache.get("gGSheetList"). If None then funciton will get the sheet list itself.
-
-    Returns:
-        list: list of list, list of the data in the gsheet
-        status: success or fail
-    """
-
-    #\ Open the sheets
     wks_order = OpenGSheet(Species_table, gSheetIDList)
+    if wks_order is None:
+        return [False, []]
 
+    try:
+        ALL = wks_order.get_all_values(include_tailing_empty=False, include_tailing_empty_rows=False)
+        gSheetResult = []
+        ColumNum = len(ALL[0])-2
+        for data in ALL:
+            if len(data) == ColumNum:
+                gSheetResult.append(data)
+        return [True, gSheetResult]
+    except Exception as e:
+        logging.error(f"[Google Sheets Error] Failed to get all values: {e}")
+        return [False, []]
 
-    #\ Read the worksheets
-    ALL = wks_order.get_all_values(include_tailing_empty=False,
-                                include_tailing_empty_rows=False)
-
-    #\ eliminate the null lat lon data
-    gSheetResult = []
-    ColumNum = len(ALL[0])-2 #\ minus 2 is because the weather and discription column are not using
-    for data in ALL:
-        if len(data) == ColumNum:
-            gSheetResult.append(data)
-
-    # print(f"All: {gSheetResult}")
-
-    return gSheetResult
-
-
-
-#\ Function to get the google sheet list of dictionay id
-def Sheet_id_dict()->list:
-    """Function to get the google sheet id list of dictionay
-    Returns:
-        list: google sheet list of dict [{name:id}, ....]
-    """
+def Sheet_id_dict()->dict:
     global client
     sheet = {}
-    meta_list = client.drive.list()
-    # print(meta_list)
-    for file_meta in meta_list:
-        if file_meta['mimeType'] == 'application/vnd.google-apps.spreadsheet':
-            sheet[file_meta['name']] = file_meta['id']
-    print(sheet)
-    return sheet
+    if client is None:
+        logging.error("[Google Auth Error] Client not initialized. Cannot fetch sheet list.")
+        return sheet
 
-
-########################################################
-#\ Test case
-# IDList = Sheet_id_dict()
-# print(IDList)
-# GetDragonflyDataGoogleSheets("Calopterygidae", IDList)
+    try:
+        meta_list = client.drive.list()
+        for file_meta in meta_list:
+            if file_meta['mimeType'] == 'application/vnd.google-apps.spreadsheet':
+                sheet[file_meta['name']] = file_meta['id']
+        return sheet
+    except Exception as e:
+        logging.error(f"[Google Drive Error] Failed to fetch drive list: {e}")
+        return sheet

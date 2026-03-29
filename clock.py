@@ -79,8 +79,8 @@ def Send_Hourly_Summary(session, Conn, DB_Variable_Data:dict):
                                       True,
                                       False
                                       )
-    if userid_list is None:
-        logging.warning("In Send_Hourly_Summary, the user ID list is none")
+    if userid_list == None:
+        logging.warning("In Send_Hourly_Summary, the user ID list == none")
 
     #\ Get the filter to the filter object : [user_list, species_list, keep_or_filter ]
     _, Species_filter_list_name = DragonflyData.GetSpeciesRecordingNumberRank(session)
